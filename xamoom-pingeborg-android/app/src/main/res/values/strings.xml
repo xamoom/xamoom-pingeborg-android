@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">pingeb.org</string>
 
-    <string name="hello_world">Hello pingeb.org!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_refresh">Aktualisieren</string>
+    <string name="menu_item_artists_name">Künstler</string>
+    <string name="menu_item_map_name">Map</string>
+    <string name="menu_item_about_name">Über pingeb.org</string>
+    <string name="menu_item_settings_name">Einstellungen</string>
+    <string name="pingeborg_system_name">pingeb.org Kärnten</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

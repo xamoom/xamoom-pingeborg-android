@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-        <style name="Theme.Pingeborg" parent="Theme.AppCompat.Light">
+        <style name="Theme.Pingeborg" parent="Theme.AppCompat.Light.NoActionBar">
 
             <!-- colorPrimary is used for the default action bar background -->
             <item name="colorPrimary">@color/pingeborg_yellow</item>
