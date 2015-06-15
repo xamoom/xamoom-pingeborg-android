@@ -2,7 +2,6 @@ package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -16,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
 import com.xamoom.android.mapping.Content;
@@ -123,21 +123,22 @@ public class ArtistListFragment extends Fragment {
     public static class SimpleStringRecyclerViewAdapter extends RecyclerView.Adapter<SimpleStringRecyclerViewAdapter.ViewHolder> {
 
         private final TypedValue mTypedValue = new TypedValue();
+        private final Context mContext;
         private int mBackground;
-        private List<Content> mValues;
+        private List<Content> mContentList;
 
         public static class ViewHolder extends RecyclerView.ViewHolder {
-            public String mBoundString;
+            public Content mBoundContent;
 
             public final View mView;
-            //public final ImageView mImageView;
+            public final ImageView mImageView;
             public final TextView mTextView;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                //mImageView = (ImageView) view.findViewById(R.id.avatar);
-                mTextView = (TextView) view.findViewById(R.id.text1);
+                mImageView = (ImageView) view.findViewById(R.id.artistListItemImageView);
+                mTextView = (TextView) view.findViewById(R.id.artistListItemTextView);
             }
 
             @Override
@@ -147,13 +148,14 @@ public class ArtistListFragment extends Fragment {
         }
 
         public Content getValueAt(int position) {
-            return mValues.get(position);
+            return mContentList.get(position);
         }
 
         public SimpleStringRecyclerViewAdapter(Context context, List<Content> items) {
             context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
             mBackground = mTypedValue.resourceId;
-            mValues = items;
+            mContentList = items;
+            mContext = context;
         }
 
         @Override
@@ -166,8 +168,14 @@ public class ArtistListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            //holder.mBoundString = mValues.get(position);
-            holder.mTextView.setText("Hellyeah Yeah");
+            //save content for later use
+            holder.mBoundContent = mContentList.get(position);
+
+            //set text
+            holder.mTextView.setText(holder.mBoundContent.getTitle());
+
+            //download and set image via picasso
+            Picasso.with(mContext).load(holder.mBoundContent.getImagePublicUrl()).into(holder.mImageView);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -177,7 +185,7 @@ public class ArtistListFragment extends Fragment {
                     //intent.putExtra(CheeseDetailActivity.EXTRA_NAME, holder.mBoundString);
 
                     //context.startActivity(intent);
-                    Snackbar.make(v, "Hello", Snackbar.LENGTH_LONG);
+                    Snackbar.make(v, "Hello", Snackbar.LENGTH_LONG).show();
                 }
             });
 
@@ -191,7 +199,7 @@ public class ArtistListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            return mContentList.size();
         }
     }
 }

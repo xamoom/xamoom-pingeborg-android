@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/frameLayoutPadding">
+    android:paddingLeft="@dimen/halfFrameLayoutPadding"
+    android:paddingRight="@dimen/halfFrameLayoutPadding"
+    android:paddingTop="@dimen/halfFrameLayoutPadding">
 
     <!-- A CardView that contains a TextView -->
     <android.support.v7.widget.CardView
@@ -13,14 +15,32 @@
         android:id="@+id/card_view"
         android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        card_view:cardCornerRadius="4dp">
+        android:layout_height="wrap_content"
+        card_view:cardElevation="2sp"
+        card_view:cardCornerRadius="2dp"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardPreventCornerOverlap="false">
+
+        <ImageView
+            android:id="@+id/artistListItemImageView"
+            android:layout_width="fill_parent"
+            android:layout_height="134dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder"
+            android:contentDescription="Pingeborg Cover Image"/>
 
         <TextView
-            android:id="@+id/text1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:id="@+id/artistListItemTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="30dp"
+            android:layout_gravity="bottom"
+            android:text="Test"
+            android:gravity="center|start"
+            android:paddingLeft="@dimen/artist_list_text_padding"
+            android:textSize="18sp"
+            android:textColor="@color/artist_list_text"
+            android:background="@color/artist_list_text_background"/>
 
     </android.support.v7.widget.CardView>
 
-</LinearLayout>
+</RelativeLayout>
