@@ -9,13 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.xamoom.android.mapping.Content;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
 
-import org.w3c.dom.Text;
-
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -49,43 +45,43 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 0:
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_1_layout, parent, false);
-                return new ViewHolder0(view);
+                return new ContentBlock0ViewHolder(view);
             case 1:
                 View view1 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
-                return new ViewHolder1(view1);
+                return new ContentBlock1ViewHolder(view1);
             case 2:
                 View view2 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
-                return new ViewHolder2(view2);
+                return new ContentBlock2ViewHolder(view2);
             case 3:
                 View view3 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
-                return new ViewHolder3(view3);
+                return new ContentBlock3ViewHolder(view3);
             case 4:
                 View view4 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
-                return new ViewHolder4(view4);
+                return new ContentBlock4ViewHolder(view4);
             case 5:
                 View view5 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
-                return new ViewHolder5(view5);
+                return new ContentBlock5ViewHolder(view5);
             case 6:
                 View view6 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
-                return new ViewHolder6(view6);
+                return new ContentBlock6ViewHolder(view6);
             case 7:
                 View view7 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
-                return new ViewHolder7(view7);
+                return new ContentBlock7ViewHolder(view7);
             case 8:
                 View view8 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
-                return new ViewHolder8(view8);
+                return new ContentBlock8ViewHolder(view8);
             case 9:
                 View view9 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
-                return new ViewHolder9(view9);
+                return new ContentBlock9ViewHolder(view9);
             default:
                 return null;
         }
@@ -98,60 +94,62 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         ContentBlock cb = mContentBlocks.get(position);
 
         switch (holder.getClass().toString()) {
-            case "class com.xamoom.android.xamoomcontentblocks.ViewHolder0":
+            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock0ViewHolder":
                 ContentBlockType0 cb0 = (ContentBlockType0)cb;
-                ViewHolder0 newHolder = (ViewHolder0) holder;
+                ContentBlock0ViewHolder newHolder = (ContentBlock0ViewHolder) holder;
 
-                if(cb0.getTitle() != null)
-                    newHolder.mTitleTextView.setText(cb0.getTitle());
-                else
-                    newHolder.mTitleTextView.setHeight(0);
+                newHolder.setupContentBlock0(cb0);
 
-                if(cb0.getText() != null)
-                    newHolder.mContentTextView.setText(Html.fromHtml(cb0.getText()));
-                else
-                    newHolder.mContentTextView.setHeight(0);
-
-            case "class com.xamoom.android.xamoomcontentblocks.ViewHolder1":
+            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock1ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
-            case "class com.xamoom.android.xamoomcontentblocks.ViewHolder2":
+            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock2ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
-            case "class com.xamoom.android.xamoomcontentblocks.ViewHolder3":
+            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock3ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
-            case "class com.xamoom.android.xamoomcontentblocks.ViewHolder4":
+            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock4ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
-            case "class com.xamoom.android.xamoomcontentblocks.ViewHolder5":
+            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock5ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
-            case "class com.xamoom.android.xamoomcontentblocks.ViewHolder6":
+            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock6ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
-            case "class com.xamoom.android.xamoomcontentblocks.ViewHolder7":
+            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock7ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
-            case "class com.xamoom.android.xamoomcontentblocks.ViewHolder8":
+            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock8ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
-            case "class com.xamoom.android.xamoomcontentblocks.ViewHolder9":
+            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock9ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
         }
     }
 }
 
-class ViewHolder0 extends RecyclerView.ViewHolder {
+class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
 
     public TextView mTitleTextView;
     public TextView mContentTextView;
 
-    public ViewHolder0(View itemView) {
+    public ContentBlock0ViewHolder(View itemView) {
         super(itemView);
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mContentTextView = (TextView) itemView.findViewById(R.id.contentTextView);
     }
 
-    public static void fuckthis(){}
+    public void setupContentBlock0(ContentBlockType0 cb0){
+        if(cb0.getTitle() != null)
+            mTitleTextView.setText(cb0.getTitle());
+        else
+            mTitleTextView.setHeight(0);
+
+        if(cb0.getText() != null)
+            mContentTextView.setText(Html.fromHtml(cb0.getText()));
+        else
+            mContentTextView.setHeight(0);
+    }
 }
 
 
-class ViewHolder1 extends RecyclerView.ViewHolder {
+class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
 
-    public ViewHolder1(View itemView) {
+    public ContentBlock1ViewHolder(View itemView) {
         super(itemView);
 
         TextView tv = (TextView) itemView.findViewById(R.id.OMG);
@@ -160,9 +158,9 @@ class ViewHolder1 extends RecyclerView.ViewHolder {
     }
 }
 
-class ViewHolder2 extends RecyclerView.ViewHolder {
+class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
 
-    public ViewHolder2(View itemView) {
+    public ContentBlock2ViewHolder(View itemView) {
         super(itemView);
 
         TextView tv = (TextView) itemView.findViewById(R.id.OMG);
@@ -172,9 +170,9 @@ class ViewHolder2 extends RecyclerView.ViewHolder {
 }
 
 
-class ViewHolder3 extends RecyclerView.ViewHolder {
+class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
 
-    public ViewHolder3(View itemView) {
+    public ContentBlock3ViewHolder(View itemView) {
         super(itemView);
 
         TextView tv = (TextView) itemView.findViewById(R.id.OMG);
@@ -183,9 +181,9 @@ class ViewHolder3 extends RecyclerView.ViewHolder {
     }
 }
 
-class ViewHolder4 extends RecyclerView.ViewHolder {
+class ContentBlock4ViewHolder extends RecyclerView.ViewHolder {
 
-    public ViewHolder4(View itemView) {
+    public ContentBlock4ViewHolder(View itemView) {
         super(itemView);
         TextView tv = (TextView) itemView.findViewById(R.id.OMG);
 
@@ -193,9 +191,9 @@ class ViewHolder4 extends RecyclerView.ViewHolder {
     }
 }
 
-class ViewHolder5 extends RecyclerView.ViewHolder {
+class ContentBlock5ViewHolder extends RecyclerView.ViewHolder {
 
-    public ViewHolder5(View itemView) {
+    public ContentBlock5ViewHolder(View itemView) {
         super(itemView);
 
         TextView tv = (TextView) itemView.findViewById(R.id.OMG);
@@ -204,9 +202,9 @@ class ViewHolder5 extends RecyclerView.ViewHolder {
     }
 }
 
-class ViewHolder6 extends RecyclerView.ViewHolder {
+class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
 
-    public ViewHolder6(View itemView) {
+    public ContentBlock6ViewHolder(View itemView) {
         super(itemView);
 
         TextView tv = (TextView) itemView.findViewById(R.id.OMG);
@@ -215,9 +213,9 @@ class ViewHolder6 extends RecyclerView.ViewHolder {
     }
 }
 
-class ViewHolder7 extends RecyclerView.ViewHolder {
+class ContentBlock7ViewHolder extends RecyclerView.ViewHolder {
 
-    public ViewHolder7(View itemView) {
+    public ContentBlock7ViewHolder(View itemView) {
         super(itemView);
 
         TextView tv = (TextView) itemView.findViewById(R.id.OMG);
@@ -226,9 +224,9 @@ class ViewHolder7 extends RecyclerView.ViewHolder {
     }
 }
 
-class ViewHolder8 extends RecyclerView.ViewHolder {
+class ContentBlock8ViewHolder extends RecyclerView.ViewHolder {
 
-    public ViewHolder8(View itemView) {
+    public ContentBlock8ViewHolder(View itemView) {
         super(itemView);
 
         TextView tv = (TextView) itemView.findViewById(R.id.OMG);
@@ -237,9 +235,9 @@ class ViewHolder8 extends RecyclerView.ViewHolder {
     }
 }
 
-class ViewHolder9 extends RecyclerView.ViewHolder {
+class ContentBlock9ViewHolder extends RecyclerView.ViewHolder {
 
-    public ViewHolder9(View itemView) {
+    public ContentBlock9ViewHolder(View itemView) {
         super(itemView);
 
         TextView tv = (TextView) itemView.findViewById(R.id.OMG);
