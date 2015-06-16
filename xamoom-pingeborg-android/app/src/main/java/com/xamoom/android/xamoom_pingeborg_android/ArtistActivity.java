@@ -31,7 +31,7 @@ public class ArtistActivity extends ActionBarActivity implements ArtistListFragm
         setSupportActionBar(toolbar);
 
         final ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(R.mipmap.ic_launcher);
+        ab.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
         ab.setDisplayHomeAsUpEnabled(true);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);

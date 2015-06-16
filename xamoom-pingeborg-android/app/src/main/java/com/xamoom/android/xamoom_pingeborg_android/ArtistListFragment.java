@@ -152,7 +152,9 @@ public class ArtistListFragment extends Fragment {
         }
 
         public SimpleStringRecyclerViewAdapter(Context context, List<Content> items) {
-            context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
+            if(context != null)
+                context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
+            
             mBackground = mTypedValue.resourceId;
             mContentList = items;
             mContext = context;
