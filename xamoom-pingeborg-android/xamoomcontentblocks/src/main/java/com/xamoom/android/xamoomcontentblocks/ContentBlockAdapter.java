@@ -1,16 +1,24 @@
 package com.xamoom.android.xamoomcontentblocks;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+import com.squareup.picasso.Transformation;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
 
 import java.util.List;
 
@@ -56,8 +64,8 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 return new ContentBlock2ViewHolder(view2);
             case 3:
                 View view3 = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.test_layout, parent, false);
-                return new ContentBlock3ViewHolder(view3);
+                        .inflate(R.layout.content_block_3_layout, parent, false);
+                return new ContentBlock3ViewHolder(view3, mContext);
             case 4:
                 View view4 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
@@ -89,8 +97,6 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Log.v("pingeborg", "onBindViewHolder: " + holder.getClass());
-
         ContentBlock cb = mContentBlocks.get(position);
 
         switch (holder.getClass().toString()) {
@@ -98,26 +104,38 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 ContentBlockType0 cb0 = (ContentBlockType0)cb;
                 ContentBlock0ViewHolder newHolder = (ContentBlock0ViewHolder) holder;
 
-                newHolder.setupContentBlock0(cb0);
-
+                newHolder.setupContentBlock(cb0);
+                break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock1ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
+                break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock2ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
+                break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock3ViewHolder":
-                Log.v("pingeborg", "Hellyeah");
+                ContentBlockType3 cb3 = (ContentBlockType3)cb;
+                ContentBlock3ViewHolder newHolder3 = (ContentBlock3ViewHolder)  holder;
+
+                newHolder3.setupContentBlock(cb3);
+                break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock4ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
+                break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock5ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
+                break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock6ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
+                break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock7ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
+                break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock8ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
+                break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock9ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
+                break;
         }
     }
 }
@@ -133,7 +151,7 @@ class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
         mContentTextView = (TextView) itemView.findViewById(R.id.contentTextView);
     }
 
-    public void setupContentBlock0(ContentBlockType0 cb0){
+    public void setupContentBlock(ContentBlockType0 cb0){
         if(cb0.getTitle() != null)
             mTitleTextView.setText(cb0.getTitle());
         else
@@ -172,12 +190,27 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
 
 class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
 
-    public ContentBlock3ViewHolder(View itemView) {
+    private Context mContext;
+    public TextView mTitleTextView;
+    public ImageView mImageView;
+
+    public ContentBlock3ViewHolder(View itemView, Context context) {
         super(itemView);
 
-        TextView tv = (TextView) itemView.findViewById(R.id.OMG);
+        mContext = context;
+        mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+        mImageView = (ImageView) itemView.findViewById(R.id.imageImageView);
+    }
 
-        tv.setText("ContentBlock 3");
+    public void setupContentBlock(ContentBlockType3 cb3) {
+        if(cb3.getTitle() != null)
+            mTitleTextView.setText(cb3.getTitle());
+        else
+            mTitleTextView.setHeight(0);
+
+        if(cb3.getFileId() != null) {
+            Picasso.with(mContext).load(cb3.getFileId()).into(mImageView);
+        }
     }
 }
 

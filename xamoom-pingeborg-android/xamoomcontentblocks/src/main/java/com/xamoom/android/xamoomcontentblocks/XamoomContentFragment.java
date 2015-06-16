@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
 import com.xamoom.android.mapping.ContentById;
 import com.xamoom.android.mapping.ContentByLocationIdentifier;
 import com.xamoom.android.mapping.ContentList;
@@ -60,6 +62,12 @@ public class XamoomContentFragment extends Fragment {
             @Override
             public void finished(ContentById result) {
                 Log.v("pingeborg", "Hellyeah: " + result);
+
+                ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
+                result.getContent().getContentBlocks().add(0, cb0);
+
+                ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
+                result.getContent().getContentBlocks().add(1, cb3);
 
                 //DISPLAY DATA
                 mRecyclerView.setAdapter(new ContentBlockAdapter(getActivity(), result.getContent().getContentBlocks()));

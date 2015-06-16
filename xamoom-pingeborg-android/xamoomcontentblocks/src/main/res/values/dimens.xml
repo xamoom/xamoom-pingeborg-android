@@ -2,4 +2,5 @@
 <resources>
     <dimen name="activity_horizontal_margin">8dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="contentblock_title_size">24sp</dimen>
 </resources>

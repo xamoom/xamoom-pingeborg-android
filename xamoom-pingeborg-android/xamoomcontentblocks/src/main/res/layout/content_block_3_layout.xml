@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:paddingStart="@dimen/activity_horizontal_margin"
     android:paddingEnd="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:paddingTop="@dimen/activity_vertical_margin"
+    >
 
     <TextView
         android:id="@+id/titleTextView"
@@ -14,10 +15,10 @@
         android:textSize="@dimen/contentblock_title_size"
         />
 
-    <TextView
-        android:id="@+id/contentTextView"
+    <ImageView
+        android:id="@+id/imageImageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        />
-
+        android:scaleType="centerInside"
+        android:background="@color/material_blue_grey_800"/>
 </LinearLayout>
