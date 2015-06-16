@@ -2,6 +2,7 @@ package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -154,7 +155,7 @@ public class ArtistListFragment extends Fragment {
         public SimpleStringRecyclerViewAdapter(Context context, List<Content> items) {
             if(context != null)
                 context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
-            
+
             mBackground = mTypedValue.resourceId;
             mContentList = items;
             mContext = context;
@@ -182,21 +183,13 @@ public class ArtistListFragment extends Fragment {
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Context context = v.getContext();
-                    //Intent intent = new Intent(context, CheeseDetailActivity.class);
-                    //intent.putExtra(CheeseDetailActivity.EXTRA_NAME, holder.mBoundString);
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, ArtistDetailActivity.class);
+                    intent.putExtra(ArtistDetailActivity.XAMOOM_CONTENT_ID, holder.mBoundContent.getContentId());
 
-                    //context.startActivity(intent);
-                    Snackbar.make(v, "Hello", Snackbar.LENGTH_LONG).show();
+                    context.startActivity(intent);
                 }
             });
-
-            /*
-            Glide.with(holder.mImageView.getContext())
-                    .load(Cheeses.getRandomCheeseDrawable())
-                    .fitCenter()
-                    .into(holder.mImageView);
-                    */
         }
 
         @Override
