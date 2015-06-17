@@ -2,9 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="@dimen/activity_horizontal_margin"
-    android:paddingEnd="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:layout_marginBottom="@dimen/contentblock_to_contentblock_margin">
 
     <TextView
         android:id="@+id/titleTextView"
@@ -18,11 +16,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/contentblock_title_size"
-        />
+        android:layout_marginTop="@dimen/contentblock_children_margin"/>
 
     <Button
         android:id="@+id/playPauseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Play/Pause"/>
+        android:text="Play/Pause"
+        android:layout_marginTop="@dimen/contentblock_children_margin"/>
 </LinearLayout>

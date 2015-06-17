@@ -3,4 +3,6 @@
         xmlns:tools="http://schemas.android.com/tools"
         tools:context="com.xamoom.android.xamoomcontentblocks.XamoomContentFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:padding="@dimen/fragment_margin"
+        android:clipToPadding="false"/>

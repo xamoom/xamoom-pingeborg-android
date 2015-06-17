@@ -1,22 +1,21 @@
 package com.xamoom.android.xamoomcontentblocks;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
 import com.xamoom.android.mapping.ContentById;
 import com.xamoom.android.mapping.ContentByLocationIdentifier;
-import com.xamoom.android.mapping.ContentList;
 
 import java.io.IOException;
 
@@ -33,11 +32,13 @@ public class XamoomContentFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String CONTENT_ID = "contentIdParam";
     private static final String LOCATION_IDENTIFIER = "locationIdentifierParam";
+    private static final String YOUTUBE_API_KEY = "youtubeApiKeyParam";
 
     private RecyclerView mRecyclerView;
 
     private String mContentId;
     private String mLocationIdentifier;
+    private String mYoutubeApiKey;
 
     private OnXamoomContentBlocksFragmentInteractionListener mListener;
 
@@ -48,11 +49,12 @@ public class XamoomContentFragment extends Fragment {
      * @param contentId contentId.
      * @return A new instance of fragment XamoomContentFragment.
      */
-    public static XamoomContentFragment newInstance(String contentId, String locationIdentifier) {
+    public static XamoomContentFragment newInstance(String contentId, String locationIdentifier, String youtubeApiKey) {
         XamoomContentFragment fragment = new XamoomContentFragment();
         Bundle args = new Bundle();
         args.putString(CONTENT_ID, contentId);
         args.putString(LOCATION_IDENTIFIER, locationIdentifier);
+        args.putString(YOUTUBE_API_KEY, youtubeApiKey);
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,7 +72,7 @@ public class XamoomContentFragment extends Fragment {
                 result.getContent().getContentBlocks().add(1, cb3);
 
                 //DISPLAY DATA
-                mRecyclerView.setAdapter(new ContentBlockAdapter(getActivity(), result.getContent().getContentBlocks()));
+                mRecyclerView.setAdapter(new ContentBlockAdapter(getActivity(), result.getContent().getContentBlocks(), mYoutubeApiKey));
             }
         });
     }
@@ -93,6 +95,7 @@ public class XamoomContentFragment extends Fragment {
         if (getArguments() != null) {
             mContentId = getArguments().getString(CONTENT_ID);
             mLocationIdentifier = getArguments().getString(LOCATION_IDENTIFIER);
+            mYoutubeApiKey = getArguments().getString(YOUTUBE_API_KEY);
 
             if(mContentId != null)
                 loadFromContentId(mContentId);
@@ -104,7 +107,6 @@ public class XamoomContentFragment extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
         }
     }
 

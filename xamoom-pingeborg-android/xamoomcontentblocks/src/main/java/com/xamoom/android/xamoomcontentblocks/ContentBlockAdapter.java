@@ -1,6 +1,7 @@
 package com.xamoom.android.xamoomcontentblocks;
 
-import android.content.Context;
+import android.app.Activity;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -15,26 +16,34 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
+import com.google.android.youtube.player.YouTubeThumbnailLoader;
+import com.google.android.youtube.player.YouTubeThumbnailView;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType1;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType2;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
 
 import java.io.IOException;
-import java.sql.BatchUpdateException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by raphaelseher on 16.06.15.
  */
 public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private Context mContext;
+    private Activity mParentActivity;
     private List<ContentBlock> mContentBlocks;
+    private String mYoutubeApiKey;
 
-    public ContentBlockAdapter(Context context, List<ContentBlock> contentBlocks) {
-        mContext = context;
+    public ContentBlockAdapter(Activity context, List<ContentBlock> contentBlocks, String youtubeApiKey) {
+        mParentActivity = context;
         mContentBlocks = contentBlocks;
+        mYoutubeApiKey = youtubeApiKey;
     }
 
     @Override
@@ -59,15 +68,15 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 1:
                 View view1 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_1_layout, parent, false);
-                return new ContentBlock1ViewHolder(view1, mContext);
+                return new ContentBlock1ViewHolder(view1, mParentActivity);
             case 2:
                 View view2 = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.test_layout, parent, false);
-                return new ContentBlock2ViewHolder(view2);
+                        .inflate(R.layout.content_block_2_layout, parent, false);
+                return new ContentBlock2ViewHolder(view2, mParentActivity, mYoutubeApiKey);
             case 3:
                 View view3 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_3_layout, parent, false);
-                return new ContentBlock3ViewHolder(view3, mContext);
+                return new ContentBlock3ViewHolder(view3, mParentActivity);
             case 4:
                 View view4 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
@@ -114,7 +123,9 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 newHolder1.setupContentBlock(cb1);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock2ViewHolder":
-                Log.v("pingeborg", "Hellyeah");
+                ContentBlockType2 cb2 = (ContentBlockType2)cb;
+                ContentBlock2ViewHolder newHolder2 = (ContentBlock2ViewHolder) holder;
+                newHolder2.setupContentBlock(cb2);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock3ViewHolder":
                 ContentBlockType3 cb3 = (ContentBlockType3)cb;
@@ -165,18 +176,17 @@ class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
     }
 }
 
-
 class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
 
-    private Context mContext;
+    private Activity mParentActivity;
     public TextView mTitleTextView;
     public TextView mArtistTextView;
     public Button mPlayPauseButton;
     public MediaPlayer mMediaPlayer;
 
-    public ContentBlock1ViewHolder(View itemView, Context context) {
+    public ContentBlock1ViewHolder(View itemView, Activity activity) {
         super(itemView);
-        mContext = context;
+        mParentActivity = activity;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mArtistTextView = (TextView) itemView.findViewById(R.id.artistTextView);
         mPlayPauseButton = (Button) itemView.findViewById(R.id.playPauseButton);
@@ -193,7 +203,7 @@ class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
-                mMediaPlayer.setDataSource(mContext, Uri.parse(cb1.getFileId()));
+                mMediaPlayer.setDataSource(mParentActivity, Uri.parse(cb1.getFileId()));
                 mMediaPlayer.prepare();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -210,32 +220,88 @@ class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
                 }
             });
         }
-
     }
 }
 
-class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
+class ContentBlock2ViewHolder extends RecyclerView.ViewHolder implements YouTubeThumbnailView.OnInitializedListener {
 
-    public ContentBlock2ViewHolder(View itemView) {
+    final static String reg = "(?:youtube(?:-nocookie)?\\.com\\/(?:[^\\/\\n\\s]+\\/\\S+\\/|(?:v|e(?:mbed)?)\\/|\\S*?[?&]v=)|youtu\\.be\\/)([a-zA-Z0-9_-]{11})";
+
+    private Activity mParentActivity;
+    public TextView mTitleTextView;
+    public YouTubeThumbnailView mYoutubeThumbnail;
+    public String mYoutubeVideoCode;
+    public String mYoutubeApiKey;
+
+    public ContentBlock2ViewHolder(View itemView, Activity activity, String youtubeApiKey) {
         super(itemView);
+        mParentActivity = activity;
+        mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+        mYoutubeThumbnail = (YouTubeThumbnailView) itemView.findViewById(R.id.youtubeThumbnailView);
+        mYoutubeApiKey = youtubeApiKey;
+    }
 
-        TextView tv = (TextView) itemView.findViewById(R.id.OMG);
+    public void setupContentBlock(ContentBlockType2 cb2) {
+        mYoutubeVideoCode = getVideoId(cb2.getYoutubeUrl());
 
-        tv.setText("ContentBlock 2");
+        if(cb2.getTitle() != null)
+            mTitleTextView.setText(cb2.getTitle());
+
+        if(mYoutubeThumbnail != null)
+            mYoutubeThumbnail.initialize(mYoutubeApiKey, this);
+    }
+
+    public static String getVideoId(String videoUrl) {
+        if (videoUrl == null || videoUrl.trim().length() <= 0)
+            return null;
+
+        Pattern pattern = Pattern.compile(reg, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(videoUrl);
+
+        if (matcher.find())
+            return matcher.group(1);
+        return null;
+    }
+
+    @Override
+    public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
+        youTubeThumbnailLoader.setVideo(mYoutubeVideoCode);
+        youTubeThumbnailLoader.setOnThumbnailLoadedListener(new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
+            @Override
+            public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
+                youTubeThumbnailView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //open video in YoutubeStandalonePlayer
+                        Intent intent = YouTubeStandalonePlayer.createVideoIntent(mParentActivity, mYoutubeApiKey, mYoutubeVideoCode);
+                        mParentActivity.startActivity(intent);
+                    }
+                });
+            }
+
+            @Override
+            public void onThumbnailError(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader.ErrorReason errorReason) {
+                //TODO: Notify user
+            }
+        });
+    }
+
+    @Override
+    public void onInitializationFailure(YouTubeThumbnailView youTubeThumbnailView, YouTubeInitializationResult youTubeInitializationResult) {
+        //TODO: Notify user
     }
 }
-
 
 class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
 
-    private Context mContext;
+    private Activity mActivity;
     public TextView mTitleTextView;
     public ImageView mImageView;
 
-    public ContentBlock3ViewHolder(View itemView, Context context) {
+    public ContentBlock3ViewHolder(View itemView, Activity activity) {
         super(itemView);
 
-        mContext = context;
+        mActivity = activity;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mImageView = (ImageView) itemView.findViewById(R.id.imageImageView);
     }
@@ -247,7 +313,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
             mTitleTextView.setHeight(0);
 
         if(cb3.getFileId() != null) {
-            Glide.with(mContext)
+            Glide.with(mActivity)
                     .load(cb3.getFileId())
                     .crossFade()
                     .fitCenter()

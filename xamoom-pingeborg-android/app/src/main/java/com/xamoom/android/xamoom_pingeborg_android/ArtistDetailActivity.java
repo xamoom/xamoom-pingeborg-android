@@ -39,7 +39,10 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
     }
 
     private void setupXamoomContentFrameLayout(String contentId, String locationIdentifier) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.XamoomContentFrameLayout, XamoomContentFragment.newInstance(contentId, locationIdentifier)).commit();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.XamoomContentFrameLayout, XamoomContentFragment.newInstance(contentId, locationIdentifier, Config.YOUTUBE_API_KEY))
+                .commit();
     }
 
     @Override
