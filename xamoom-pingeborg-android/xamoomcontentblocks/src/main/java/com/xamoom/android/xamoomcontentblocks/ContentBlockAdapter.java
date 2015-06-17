@@ -1,29 +1,28 @@
 package com.xamoom.android.xamoomcontentblocks;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.SizeReadyCallback;
-import com.bumptech.glide.request.target.Target;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType1;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
 
+import java.io.IOException;
+import java.sql.BatchUpdateException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by raphaelseher on 16.06.15.
@@ -55,12 +54,12 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         switch (viewType) {
             case 0:
                 View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.content_block_1_layout, parent, false);
+                        .inflate(R.layout.content_block_0_layout, parent, false);
                 return new ContentBlock0ViewHolder(view);
             case 1:
                 View view1 = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.test_layout, parent, false);
-                return new ContentBlock1ViewHolder(view1);
+                        .inflate(R.layout.content_block_1_layout, parent, false);
+                return new ContentBlock1ViewHolder(view1, mContext);
             case 2:
                 View view2 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
@@ -110,7 +109,9 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 newHolder.setupContentBlock(cb0);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock1ViewHolder":
-                Log.v("pingeborg", "Hellyeah");
+                ContentBlockType1 cb1 = (ContentBlockType1)cb;
+                ContentBlock1ViewHolder newHolder1 = (ContentBlock1ViewHolder) holder;
+                newHolder1.setupContentBlock(cb1);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock2ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
@@ -155,27 +156,61 @@ class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setupContentBlock(ContentBlockType0 cb0){
-        if(cb0.getTitle() != null)
+        if(cb0.getTitle() != null) {
             mTitleTextView.setText(cb0.getTitle());
-        else
-            mTitleTextView.setHeight(0);
+        }
 
         if(cb0.getText() != null)
             mContentTextView.setText(Html.fromHtml(cb0.getText()));
-        else
-            mContentTextView.setHeight(0);
     }
 }
 
 
 class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
 
-    public ContentBlock1ViewHolder(View itemView) {
+    private Context mContext;
+    public TextView mTitleTextView;
+    public TextView mArtistTextView;
+    public Button mPlayPauseButton;
+    public MediaPlayer mMediaPlayer;
+
+    public ContentBlock1ViewHolder(View itemView, Context context) {
         super(itemView);
+        mContext = context;
+        mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+        mArtistTextView = (TextView) itemView.findViewById(R.id.artistTextView);
+        mPlayPauseButton = (Button) itemView.findViewById(R.id.playPauseButton);
+    }
 
-        TextView tv = (TextView) itemView.findViewById(R.id.OMG);
+    public void setupContentBlock(ContentBlockType1 cb1) {
+        if(cb1.getTitle() != null)
+            mTitleTextView.setText(cb1.getTitle());
 
-        tv.setText("ContentBlock 1");
+        if(cb1.getArtist() != null)
+            mArtistTextView.setText(cb1.getArtist());
+
+        if(cb1.getFileId() != null) {
+            mMediaPlayer = new MediaPlayer();
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            try {
+                mMediaPlayer.setDataSource(mContext, Uri.parse(cb1.getFileId()));
+                mMediaPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            mPlayPauseButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(mMediaPlayer.isPlaying()) {
+                        mMediaPlayer.pause();
+                    } else {
+                        mMediaPlayer.start();
+                    }
+                }
+            });
+        }
+
     }
 }
 
