@@ -13,14 +13,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
-import com.squareup.picasso.Transformation;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.SizeReadyCallback;
+import com.bumptech.glide.request.target.Target;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by raphaelseher on 16.06.15.
@@ -209,7 +212,11 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
             mTitleTextView.setHeight(0);
 
         if(cb3.getFileId() != null) {
-            Picasso.with(mContext).load(cb3.getFileId()).into(mImageView);
+            Glide.with(mContext)
+                    .load(cb3.getFileId())
+                    .crossFade()
+                    .fitCenter()
+                    .into(mImageView);
         }
     }
 }

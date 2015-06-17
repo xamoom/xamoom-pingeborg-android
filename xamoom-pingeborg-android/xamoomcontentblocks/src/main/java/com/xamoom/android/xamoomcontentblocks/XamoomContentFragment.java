@@ -61,8 +61,6 @@ public class XamoomContentFragment extends Fragment {
         XamoomEndUserApi.getInstance().getContentById(contentId, false, false, null, new APICallback<ContentById>() {
             @Override
             public void finished(ContentById result) {
-                Log.v("pingeborg", "Hellyeah: " + result);
-
                 ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
                 result.getContent().getContentBlocks().add(0, cb0);
 
@@ -79,7 +77,6 @@ public class XamoomContentFragment extends Fragment {
         XamoomEndUserApi.getInstance().getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
             @Override
             public void finished(ContentByLocationIdentifier result) {
-                Log.v("pingeborg", "Hellyeah: " + result);
             }
         });
     }
