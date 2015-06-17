@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
 import com.xamoom.android.mapping.Content;
@@ -178,7 +178,10 @@ public class ArtistListFragment extends Fragment {
             holder.mTextView.setText(holder.mBoundContent.getTitle());
 
             //download and set image via picasso
-            Picasso.with(mContext).load(holder.mBoundContent.getImagePublicUrl()).into(holder.mImageView);
+            Glide.with(mContext)
+                    .load(holder.mBoundContent.getImagePublicUrl())
+                    .crossFade()
+                    .into(holder.mImageView);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
