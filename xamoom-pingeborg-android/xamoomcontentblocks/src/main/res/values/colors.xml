@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="default_linkblock_background_color">#d1d1d1</color>
+    <color name="amazon_linkblock_background_color">#ff9900</color>
+</resources>

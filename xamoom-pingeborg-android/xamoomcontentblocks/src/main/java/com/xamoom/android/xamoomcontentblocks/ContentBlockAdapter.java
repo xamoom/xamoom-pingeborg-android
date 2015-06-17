@@ -2,6 +2,8 @@ package com.xamoom.android.xamoomcontentblocks;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -25,6 +28,7 @@ import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType1;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType2;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType4;
 
 import java.io.IOException;
 import java.util.List;
@@ -79,8 +83,8 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 return new ContentBlock3ViewHolder(view3, mParentActivity);
             case 4:
                 View view4 = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.test_layout, parent, false);
-                return new ContentBlock4ViewHolder(view4);
+                        .inflate(R.layout.content_block_4_layout, parent, false);
+                return new ContentBlock4ViewHolder(view4, mParentActivity);
             case 5:
                 View view5 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
@@ -114,7 +118,6 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock0ViewHolder":
                 ContentBlockType0 cb0 = (ContentBlockType0)cb;
                 ContentBlock0ViewHolder newHolder = (ContentBlock0ViewHolder) holder;
-
                 newHolder.setupContentBlock(cb0);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock1ViewHolder":
@@ -129,12 +132,13 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock3ViewHolder":
                 ContentBlockType3 cb3 = (ContentBlockType3)cb;
-                ContentBlock3ViewHolder newHolder3 = (ContentBlock3ViewHolder)  holder;
-
+                ContentBlock3ViewHolder newHolder3 = (ContentBlock3ViewHolder) holder;
                 newHolder3.setupContentBlock(cb3);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock4ViewHolder":
-                Log.v("pingeborg", "Hellyeah");
+                ContentBlockType4 cb4 = (ContentBlockType4) cb;
+                ContentBlock4ViewHolder newHolder4 = (ContentBlock4ViewHolder) holder;
+                newHolder4.setupContentBlock(cb4);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock5ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
@@ -167,12 +171,15 @@ class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setupContentBlock(ContentBlockType0 cb0){
-        if(cb0.getTitle() != null) {
+        if(cb0.getTitle() != null)
             mTitleTextView.setText(cb0.getTitle());
-        }
+        else
+            mTitleTextView.setText(null);
 
         if(cb0.getText() != null)
             mContentTextView.setText(Html.fromHtml(cb0.getText()));
+        else
+            mContentTextView.setText(null);
     }
 }
 
@@ -195,9 +202,13 @@ class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
     public void setupContentBlock(ContentBlockType1 cb1) {
         if(cb1.getTitle() != null)
             mTitleTextView.setText(cb1.getTitle());
+        else
+            mTitleTextView.setText(null);
 
         if(cb1.getArtist() != null)
             mArtistTextView.setText(cb1.getArtist());
+        else
+            mArtistTextView.setText(null);
 
         if(cb1.getFileId() != null) {
             mMediaPlayer = new MediaPlayer();
@@ -246,6 +257,8 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder implements YouTube
 
         if(cb2.getTitle() != null)
             mTitleTextView.setText(cb2.getTitle());
+        else
+            mTitleTextView.setText(null);
 
         if(mYoutubeThumbnail != null)
             mYoutubeThumbnail.initialize(mYoutubeApiKey, this);
@@ -300,7 +313,6 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
 
     public ContentBlock3ViewHolder(View itemView, Activity activity) {
         super(itemView);
-
         mActivity = activity;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mImageView = (ImageView) itemView.findViewById(R.id.imageImageView);
@@ -310,7 +322,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
         if(cb3.getTitle() != null)
             mTitleTextView.setText(cb3.getTitle());
         else
-            mTitleTextView.setHeight(0);
+            mTitleTextView.setText(null);
 
         if(cb3.getFileId() != null) {
             Glide.with(mActivity)
@@ -324,11 +336,56 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
 
 class ContentBlock4ViewHolder extends RecyclerView.ViewHolder {
 
-    public ContentBlock4ViewHolder(View itemView) {
-        super(itemView);
-        TextView tv = (TextView) itemView.findViewById(R.id.OMG);
+    private Activity mActivity;
+    private LinearLayout mRootLayout;
+    private TextView mTitleTextView;
+    private TextView mContentTextView;
+    private ImageView mIcon;
 
-        tv.setText("ContentBlock 4");
+    public ContentBlock4ViewHolder(View itemView, Activity activity) {
+        super(itemView);
+        mActivity = activity;
+        mRootLayout = (LinearLayout) itemView.findViewById(R.id.linkBlockLinearLayout);
+        mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+        mContentTextView = (TextView) itemView.findViewById(R.id.contentTextView);
+        mIcon = (ImageView) itemView.findViewById(R.id.iconImageView);
+    }
+
+    public void setupContentBlock(final ContentBlockType4 cb4) {
+        if(cb4.getTitle() != null)
+            mTitleTextView.setText(cb4.getTitle());
+        else
+            mTitleTextView.setText(null);
+
+        if(cb4.getText() != null)
+            mContentTextView.setText(cb4.getText());
+        else
+            mContentTextView.setText(null);
+
+        mRootLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_VIEW,Uri.parse(cb4.getLinkUrl()));
+                mActivity.startActivity(i);
+            }
+        });
+
+        switch (cb4.getLinkType()) {
+            case 0:
+                break;
+            case 3:
+                mRootLayout.setBackgroundResource(R.color.amazon_linkblock_background_color);
+                mIcon.setImageResource(R.drawable.ic_cart);
+                mTitleTextView.setTextColor(Color.BLACK);
+                mContentTextView.setTextColor(Color.BLACK);
+                break;
+            default:
+                mRootLayout.setBackgroundResource(R.color.default_linkblock_background_color);
+                mIcon.setImageResource(R.drawable.abc_ic_voice_search_api_mtrl_alpha);
+                mTitleTextView.setTextColor(Color.parseColor("#333333"));
+                mContentTextView.setTextColor(Color.parseColor("#333333"));
+                break;
+        }
     }
 }
 
