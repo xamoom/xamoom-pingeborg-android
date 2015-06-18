@@ -14,6 +14,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,6 +38,7 @@ import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType4;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType5;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType6;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType7;
 import com.xamoom.android.mapping.ContentById;
 
 import java.io.IOException;
@@ -105,7 +109,7 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 return new ContentBlock6ViewHolder(view6, mParentActivity, mListener);
             case 7:
                 View view7 = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.test_layout, parent, false);
+                        .inflate(R.layout.content_block_7_layout, parent, false);
                 return new ContentBlock7ViewHolder(view7);
             case 8:
                 View view8 = LayoutInflater.from(parent.getContext())
@@ -161,7 +165,9 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 newHolder6.setupContentBlock(cb6);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock7ViewHolder":
-                Log.v("pingeborg", "Hellyeah");
+                ContentBlockType7 cb7 = (ContentBlockType7) cb;
+                ContentBlock7ViewHolder newHolder7 = (ContentBlock7ViewHolder) holder;
+                newHolder7.setupContentBlock(cb7);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock8ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
@@ -509,7 +515,6 @@ class ContentBlock5ViewHolder extends RecyclerView.ViewHolder {
     private LinearLayout mRootLayout;
     private TextView mTitleTextView;
     private TextView mContentTextView;
-    private ImageView mIcon;
 
     public ContentBlock5ViewHolder(View itemView, Activity activity) {
         super(itemView);
@@ -517,7 +522,6 @@ class ContentBlock5ViewHolder extends RecyclerView.ViewHolder {
         mRootLayout = (LinearLayout) itemView.findViewById(R.id.linkBlockLinearLayout);
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mContentTextView = (TextView) itemView.findViewById(R.id.contentTextView);
-        mIcon = (ImageView) itemView.findViewById(R.id.iconImageView);
     }
 
     public void setupContentBlock(final ContentBlockType5 cb5) {
@@ -593,12 +597,33 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
  */
 class ContentBlock7ViewHolder extends RecyclerView.ViewHolder {
 
+    private TextView mTitleTextView;
+    private WebView mSoundCloudWebview;
+    private String mSoundCloudHTML = "<body style=\"margin: 0; padding: 0\">" +
+            "<iframe width='100%%' height='100%%' scrolling='no'" +
+            " frameborder='no' src='https://w.soundcloud.com/player/?url=%s&auto_play=false" +
+            "&hide_related=true&show_comments=false&show_comments=false" +
+            "&show_user=false&show_reposts=false&sharing=false&download=false&buying=false" +
+            "&visual=true'></iframe>" +
+            "<script src=\"https://w.soundcloud.com/player/api.js\" type=\"text/javascript\"></script>" +
+            "</body>";
+
     public ContentBlock7ViewHolder(View itemView) {
         super(itemView);
+        mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+        mSoundCloudWebview = (WebView) itemView.findViewById(R.id.soundcloudWebview);
+        WebSettings webSettings = mSoundCloudWebview.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+    }
 
-        TextView tv = (TextView) itemView.findViewById(R.id.OMG);
+    public void setupContentBlock(ContentBlockType7 cb7) {
+        if(cb7.getTitle() != null)
+            mTitleTextView.setText(cb7.getTitle());
+        else
+            mTitleTextView.setText(null);
 
-        tv.setText("ContentBlock 7");
+        String test =  String.format(mSoundCloudHTML, cb7.getSoundcloudUrl());
+        mSoundCloudWebview.loadData(test, "text/html", "utf-8");
     }
 }
 
