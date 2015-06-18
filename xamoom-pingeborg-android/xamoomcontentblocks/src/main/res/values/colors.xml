@@ -2,4 +2,13 @@
 <resources>
     <color name="default_linkblock_background_color">#d1d1d1</color>
     <color name="amazon_linkblock_background_color">#ff9900</color>
+    <color name="facebook_linkblock_background_color">#3b5998</color>
+    <color name="twitter_linkblock_background_color">#55acee</color>
+    <color name="linkedin_linkblock_background_color">#0976b4</color>
+    <color name="flickr_linkblock_background_color">#ff0084</color>
+    <color name="soundcloud_linkblock_background_color">#f80</color>
+    <color name="googleplus_linkblock_background_color">#dd4b39</color>
+    <color name="youtube_linkblock_background_color">#b31217</color>
+    <color name="spotify_linkblock_background_color">#2ebd59</color>
+    <color name="googlemaps_linkblock_background_color">#0f9d58</color>
 </resources>
