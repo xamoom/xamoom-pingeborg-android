@@ -159,6 +159,9 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 }
 
+/**
+ * TextBlock
+ */
 class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
 
     public TextView mTitleTextView;
@@ -183,6 +186,9 @@ class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
     }
 }
 
+/**
+ * AudioBlock
+ */
 class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
 
     private Activity mParentActivity;
@@ -234,6 +240,9 @@ class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
     }
 }
 
+/**
+ * YoutubeBlock
+ */
 class ContentBlock2ViewHolder extends RecyclerView.ViewHolder implements YouTubeThumbnailView.OnInitializedListener {
 
     final static String reg = "(?:youtube(?:-nocookie)?\\.com\\/(?:[^\\/\\n\\s]+\\/\\S+\\/|(?:v|e(?:mbed)?)\\/|\\S*?[?&]v=)|youtu\\.be\\/)([a-zA-Z0-9_-]{11})";
@@ -305,6 +314,9 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder implements YouTube
     }
 }
 
+/**
+ * ImageBlock
+ */
 class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
 
     private Activity mActivity;
@@ -334,6 +346,9 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
     }
 }
 
+/**
+ * LinkBlock
+ */
 class ContentBlock4ViewHolder extends RecyclerView.ViewHolder {
 
     private Activity mActivity;
@@ -471,6 +486,9 @@ class ContentBlock4ViewHolder extends RecyclerView.ViewHolder {
     }
 }
 
+/**
+ * EbookBlock
+ */
 class ContentBlock5ViewHolder extends RecyclerView.ViewHolder {
 
     public ContentBlock5ViewHolder(View itemView) {
@@ -482,6 +500,9 @@ class ContentBlock5ViewHolder extends RecyclerView.ViewHolder {
     }
 }
 
+/**
+ * ContentBlock
+ */
 class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
 
     public ContentBlock6ViewHolder(View itemView) {
@@ -493,6 +514,9 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
     }
 }
 
+/**
+ * SoundcloudBlock
+ */
 class ContentBlock7ViewHolder extends RecyclerView.ViewHolder {
 
     public ContentBlock7ViewHolder(View itemView) {
@@ -504,6 +528,9 @@ class ContentBlock7ViewHolder extends RecyclerView.ViewHolder {
     }
 }
 
+/**
+ * DownloadBlock
+ */
 class ContentBlock8ViewHolder extends RecyclerView.ViewHolder {
 
     public ContentBlock8ViewHolder(View itemView) {
@@ -515,6 +542,9 @@ class ContentBlock8ViewHolder extends RecyclerView.ViewHolder {
     }
 }
 
+/**
+ * SpotMapBlock
+ */
 class ContentBlock9ViewHolder extends RecyclerView.ViewHolder {
 
     public ContentBlock9ViewHolder(View itemView) {
