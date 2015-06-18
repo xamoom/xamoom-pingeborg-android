@@ -11,4 +11,6 @@
     <color name="youtube_linkblock_background_color">#b31217</color>
     <color name="spotify_linkblock_background_color">#2ebd59</color>
     <color name="googlemaps_linkblock_background_color">#0f9d58</color>
+    <color name="ebook_contentblock_color">#058b8c</color>
+    <color name="white">#FFFFFF</color>
 </resources>

@@ -1,5 +1,6 @@
 package com.xamoom.android.xamoomcontentblocks;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -72,7 +73,7 @@ public class XamoomContentFragment extends Fragment {
                 result.getContent().getContentBlocks().add(1, cb3);
 
                 //DISPLAY DATA
-                mRecyclerView.setAdapter(new ContentBlockAdapter(getActivity(), result.getContent().getContentBlocks(), mYoutubeApiKey));
+                mRecyclerView.setAdapter(new ContentBlockAdapter(getActivity(), result.getContent().getContentBlocks(), mYoutubeApiKey, mListener));
             }
         });
     }
@@ -123,13 +124,6 @@ public class XamoomContentFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
     }
 
-    /*
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed() {
-        if (mListener != null) {
-            //mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -148,7 +142,6 @@ public class XamoomContentFragment extends Fragment {
         mListener = null;
     }
 
-    */
 
     /**
      * This interface must be implemented by activities that contain this
@@ -162,7 +155,7 @@ public class XamoomContentFragment extends Fragment {
      */
     public interface OnXamoomContentBlocksFragmentInteractionListener {
         // TODO: Update argument type and name
-
+        public void onClickContentBlock(String contentId);
     }
 
 }

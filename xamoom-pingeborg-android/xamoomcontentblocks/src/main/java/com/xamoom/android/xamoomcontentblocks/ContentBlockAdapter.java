@@ -1,6 +1,7 @@
 package com.xamoom.android.xamoomcontentblocks;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -17,21 +18,28 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
 import com.google.android.youtube.player.YouTubeThumbnailView;
+import com.xamoom.android.APICallback;
+import com.xamoom.android.XamoomEndUserApi;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType1;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType2;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType4;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType5;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType6;
+import com.xamoom.android.mapping.ContentById;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,9 +51,11 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private Activity mParentActivity;
     private List<ContentBlock> mContentBlocks;
     private String mYoutubeApiKey;
+    private XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener mListener;
 
-    public ContentBlockAdapter(Activity context, List<ContentBlock> contentBlocks, String youtubeApiKey) {
+    public ContentBlockAdapter(Activity context, List<ContentBlock> contentBlocks, String youtubeApiKey, XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener listener) {
         mParentActivity = context;
+        mListener = listener;
         mContentBlocks = contentBlocks;
         mYoutubeApiKey = youtubeApiKey;
     }
@@ -87,12 +97,12 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 return new ContentBlock4ViewHolder(view4, mParentActivity);
             case 5:
                 View view5 = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.test_layout, parent, false);
-                return new ContentBlock5ViewHolder(view5);
+                        .inflate(R.layout.content_block_5_layout, parent, false);
+                return new ContentBlock5ViewHolder(view5, mParentActivity);
             case 6:
                 View view6 = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.test_layout, parent, false);
-                return new ContentBlock6ViewHolder(view6);
+                        .inflate(R.layout.content_block_6_layout, parent, false);
+                return new ContentBlock6ViewHolder(view6, mParentActivity, mListener);
             case 7:
                 View view7 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
@@ -141,10 +151,14 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 newHolder4.setupContentBlock(cb4);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock5ViewHolder":
-                Log.v("pingeborg", "Hellyeah");
+                ContentBlockType5 cb5 = (ContentBlockType5) cb;
+                ContentBlock5ViewHolder newHolder5 = (ContentBlock5ViewHolder) holder;
+                newHolder5.setupContentBlock(cb5);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock6ViewHolder":
-                Log.v("pingeborg", "Hellyeah");
+                ContentBlockType6 cb6 = (ContentBlockType6) cb;
+                ContentBlock6ViewHolder newHolder6 = (ContentBlock6ViewHolder) holder;
+                newHolder6.setupContentBlock(cb6);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock7ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
@@ -491,12 +505,39 @@ class ContentBlock4ViewHolder extends RecyclerView.ViewHolder {
  */
 class ContentBlock5ViewHolder extends RecyclerView.ViewHolder {
 
-    public ContentBlock5ViewHolder(View itemView) {
+    private Activity mActivity;
+    private LinearLayout mRootLayout;
+    private TextView mTitleTextView;
+    private TextView mContentTextView;
+    private ImageView mIcon;
+
+    public ContentBlock5ViewHolder(View itemView, Activity activity) {
         super(itemView);
+        mActivity = activity;
+        mRootLayout = (LinearLayout) itemView.findViewById(R.id.linkBlockLinearLayout);
+        mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+        mContentTextView = (TextView) itemView.findViewById(R.id.contentTextView);
+        mIcon = (ImageView) itemView.findViewById(R.id.iconImageView);
+    }
 
-        TextView tv = (TextView) itemView.findViewById(R.id.OMG);
+    public void setupContentBlock(final ContentBlockType5 cb5) {
+        if(cb5.getTitle() != null)
+            mTitleTextView.setText(cb5.getTitle());
+        else
+            mTitleTextView.setText(null);
 
-        tv.setText("ContentBlock 5");
+        if(cb5.getArtist() != null)
+            mContentTextView.setText(cb5.getArtist());
+        else
+            mContentTextView.setText(null);
+
+        mRootLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(cb5.getFileId()));
+                mActivity.startActivity(i);
+            }
+        });
     }
 }
 
@@ -504,13 +545,46 @@ class ContentBlock5ViewHolder extends RecyclerView.ViewHolder {
  * ContentBlock
  */
 class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
+    private Activity mActivity;
+    private TextView mTitleTextView;
+    private LinearLayout mRootLayout;
+    private ImageView mContentThumbnailImageView;
+    private XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener mListener;
 
-    public ContentBlock6ViewHolder(View itemView) {
+    public ContentBlock6ViewHolder(View itemView, Activity activity, XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener listener) {
         super(itemView);
+        mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+        mRootLayout = (LinearLayout) itemView.findViewById(R.id.contentBlockLinearLayout);
+        mContentThumbnailImageView = (ImageView) itemView.findViewById(R.id.contentThumbnailImageView);
+        mActivity = activity;
+        mListener = listener;
+    }
 
-        TextView tv = (TextView) itemView.findViewById(R.id.OMG);
+    public void setupContentBlock(final ContentBlockType6 cb6) {
+        if(cb6.getTitle() != null)
+            mTitleTextView.setText(cb6.getTitle());
+        else
+            mTitleTextView.setText(null);
 
-        tv.setText("ContentBlock 6");
+        XamoomEndUserApi.getInstance().getContentById(cb6.getContentId(), false, false, null, new APICallback<ContentById>() {
+            @Override
+            public void finished(ContentById result) {
+                mTitleTextView.setText(result.getContent().getTitle());
+
+                Glide.with(mActivity)
+                        .load(result.getContent().getImagePublicUrl())
+                        .crossFade()
+                        .centerCrop()
+                        .into(mContentThumbnailImageView);
+            }
+        });
+
+        mRootLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onClickContentBlock(cb6.getContentId());
+            }
+        });
     }
 }
 

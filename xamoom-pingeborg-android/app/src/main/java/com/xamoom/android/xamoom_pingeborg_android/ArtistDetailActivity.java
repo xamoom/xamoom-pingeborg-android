@@ -1,5 +1,6 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -67,4 +68,12 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onClickContentBlock(String contentId) {
+        Context context = this.getApplicationContext();
+        Intent intent = new Intent(context, ArtistDetailActivity.class);
+        intent.putExtra(ArtistDetailActivity.XAMOOM_CONTENT_ID,contentId);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
 }

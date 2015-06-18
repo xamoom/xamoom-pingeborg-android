@@ -61,6 +61,7 @@ public class ArtistActivity extends ActionBarActivity implements ArtistListFragm
     @Override
     public void onArtistSelected(String contentId) {
         Log.v("pingeborg", "ContentId selected: " + contentId);
+
     }
 
     private void setupDrawerContent(NavigationView navigationView) {

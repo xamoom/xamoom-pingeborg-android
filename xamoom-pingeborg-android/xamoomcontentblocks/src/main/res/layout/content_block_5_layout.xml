@@ -5,7 +5,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="70dp"
-    android:background="@color/default_linkblock_background_color"
+    android:background="@color/ebook_contentblock_color"
     android:layout_marginBottom="@dimen/contentblock_to_contentblock_margin">
 
     <ImageView
@@ -13,7 +13,7 @@
         android:layout_width="70dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:src="@drawable/ic_web"/>
+        android:src="@drawable/ic_book" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,6 +28,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textStyle="bold"
+            android:textColor="@color/white"
             />
 
         <TextView
@@ -36,6 +37,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:ellipsize="end"
+            android:textColor="@color/white"
             />
 
     </LinearLayout>
