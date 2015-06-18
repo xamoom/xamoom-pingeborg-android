@@ -39,6 +39,7 @@ import com.xamoom.android.mapping.ContentBlocks.ContentBlockType4;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType5;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType6;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType7;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType8;
 import com.xamoom.android.mapping.ContentById;
 
 import java.io.IOException;
@@ -113,8 +114,8 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 return new ContentBlock7ViewHolder(view7);
             case 8:
                 View view8 = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.test_layout, parent, false);
-                return new ContentBlock8ViewHolder(view8);
+                        .inflate(R.layout.content_block_8_layout, parent, false);
+                return new ContentBlock8ViewHolder(view8, mParentActivity);
             case 9:
                 View view9 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.test_layout, parent, false);
@@ -170,7 +171,9 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 newHolder7.setupContentBlock(cb7);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock8ViewHolder":
-                Log.v("pingeborg", "Hellyeah");
+                ContentBlockType8 cb8 = (ContentBlockType8) cb;
+                ContentBlock8ViewHolder newHolder8 = (ContentBlock8ViewHolder) holder;
+                newHolder8.setupContentBlock(cb8);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock9ViewHolder":
                 Log.v("pingeborg", "Hellyeah");
@@ -631,13 +634,60 @@ class ContentBlock7ViewHolder extends RecyclerView.ViewHolder {
  * DownloadBlock
  */
 class ContentBlock8ViewHolder extends RecyclerView.ViewHolder {
+    private Activity mActivity;
+    private TextView mTitleTextView;
+    private TextView mContentTextView;
+    private ImageView mIconImageView;
+    private LinearLayout mRootLayout;
 
-    public ContentBlock8ViewHolder(View itemView) {
+    public ContentBlock8ViewHolder(View itemView, Activity activity) {
         super(itemView);
+        mRootLayout = (LinearLayout) itemView.findViewById(R.id.downloadBlockLinearLayout);
+        mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+        mContentTextView = (TextView) itemView.findViewById(R.id.contentTextView);
+        mIconImageView = (ImageView) itemView.findViewById(R.id.iconImageView);
+        mActivity = activity;
+    }
 
-        TextView tv = (TextView) itemView.findViewById(R.id.OMG);
+    public void setupContentBlock(final ContentBlockType8 cb8) {
+        if(cb8.getTitle() != null)
+            mTitleTextView.setText(cb8.getTitle());
+        else
+            mTitleTextView.setText(null);
 
-        tv.setText("ContentBlock 8");
+        if(cb8.getText() != null)
+            mContentTextView.setText(cb8.getText());
+        else
+            mContentTextView.setText(null);
+
+        mRootLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_VIEW,Uri.parse(cb8.getFileId()));
+                mActivity.startActivity(i);
+            }
+        });
+
+        switch (cb8.getDownloadType()) {
+            case 0:
+                mRootLayout.setBackgroundResource(R.color.vcf_downloadBlock_background_color);
+                mIconImageView.setImageResource(R.drawable.ic_account_plus);
+                mTitleTextView.setTextColor(Color.WHITE);
+                mContentTextView.setTextColor(Color.WHITE);
+                break;
+            case 1:
+                mRootLayout.setBackgroundResource(R.color.ical_downloadBlock_background_color);
+                mIconImageView.setImageResource(R.drawable.ic_calendar);
+                mTitleTextView.setTextColor(Color.WHITE);
+                mContentTextView.setTextColor(Color.WHITE);
+                break;
+            default:
+                mRootLayout.setBackgroundResource(R.color.default_linkblock_background_color);
+                mIconImageView.setImageResource(R.drawable.ic_web);
+                mTitleTextView.setTextColor(Color.parseColor("#333333"));
+                mContentTextView.setTextColor(Color.parseColor("#333333"));
+                break;
+        }
     }
 }
 
