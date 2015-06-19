@@ -48,6 +48,7 @@ import com.xamoom.android.mapping.ContentBlocks.ContentBlockType5;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType6;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType7;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType8;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType9;
 import com.xamoom.android.mapping.ContentById;
 
 import java.io.IOException;
@@ -128,7 +129,7 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 return new ContentBlock8ViewHolder(view8, mParentActivity);
             case 9:
                 View view9 = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.test_layout, parent, false);
+                        .inflate(R.layout.content_block_9_layout, parent, false);
                 return new ContentBlock9ViewHolder(view9);
             default:
                 return null;
@@ -186,7 +187,9 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 newHolder8.setupContentBlock(cb8);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock9ViewHolder":
-                Log.v("pingeborg", "Hellyeah");
+                ContentBlockType9 cb9 = (ContentBlockType9) cb;
+                ContentBlock9ViewHolder newHolder9 = (ContentBlock9ViewHolder) holder;
+                newHolder9.setupContentBlock(cb9);
                 break;
         }
     }
@@ -409,8 +412,6 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
         }
     }
 }
-
-
 
 /**
  * LinkBlock
@@ -739,11 +740,19 @@ class ContentBlock8ViewHolder extends RecyclerView.ViewHolder {
  */
 class ContentBlock9ViewHolder extends RecyclerView.ViewHolder {
 
+    private TextView mTitleTextView;
+
     public ContentBlock9ViewHolder(View itemView) {
         super(itemView);
+        mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+    }
 
-        TextView tv = (TextView) itemView.findViewById(R.id.OMG);
+    public void setupContentBlock(ContentBlockType9 cb9) {
+        if (cb9.getTitle() != null)
+            mTitleTextView.setText(cb9.getTitle());
+        else
+            mTitleTextView.setText(null);
 
-        tv.setText("ContentBlock 9");
+
     }
 }
