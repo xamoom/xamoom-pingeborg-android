@@ -4,26 +4,34 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.PictureDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.StrictMode;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.TranslateAnimation;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.bumptech.glide.GenericRequestBuilder;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.model.StreamEncoder;
+import com.bumptech.glide.load.resource.file.FileToStreamDecoder;
+import com.caverock.androidsvg.SVG;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
@@ -43,8 +51,10 @@ import com.xamoom.android.mapping.ContentBlocks.ContentBlockType8;
 import com.xamoom.android.mapping.ContentById;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
-import java.util.NavigableSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -345,12 +355,26 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
     private Activity mActivity;
     public TextView mTitleTextView;
     public ImageView mImageView;
+    private GenericRequestBuilder<Uri, InputStream, SVG, PictureDrawable> requestBuilder;
 
     public ContentBlock3ViewHolder(View itemView, Activity activity) {
         super(itemView);
         mActivity = activity;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mImageView = (ImageView) itemView.findViewById(R.id.imageImageView);
+
+        requestBuilder = Glide.with(mActivity)
+        .using(Glide.buildStreamModelLoader(Uri.class, mActivity), InputStream.class)
+                .from(Uri.class)
+                .as(SVG.class)
+                .transcode(new SvgDrawableTranscoder(), PictureDrawable.class)
+                .sourceEncoder(new StreamEncoder())
+                .cacheDecoder(new FileToStreamDecoder<SVG>(new SvgDecoder()))
+                .decoder(new SvgDecoder())
+                        .placeholder(R.drawable.ic_facebook)
+                        .error(R.drawable.ic_web)
+                .animate(android.R.anim.fade_in)
+                .listener(new SvgSoftwareLayerSetter<Uri>());
     }
 
     public void setupContentBlock(ContentBlockType3 cb3) {
@@ -360,14 +384,33 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
             mTitleTextView.setText(null);
 
         if(cb3.getFileId() != null) {
-            Glide.with(mActivity)
-                    .load(cb3.getFileId())
-                    .crossFade()
-                    .fitCenter()
-                    .into(mImageView);
+            if (cb3.getFileId().contains(".svg")) {
+                Uri uri = Uri.parse(cb3.getFileId());
+                requestBuilder
+                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                // SVG cannot be serialized so it's not worth to cache it
+                        .load(uri)
+                        .into(mImageView);
+
+                mImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.v("pingeborg","You clicked the svg");
+                    }
+                });
+
+            } else {
+                Glide.with(mActivity)
+                        .load(cb3.getFileId())
+                        .crossFade()
+                        .fitCenter()
+                        .into(mImageView);
+            }
         }
     }
 }
+
+
 
 /**
  * LinkBlock
