@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 import com.xamoom.android.XamoomEndUserApi;
 
 
@@ -26,6 +28,9 @@ public class ArtistActivity extends ActionBarActivity implements ArtistListFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist);
+
+        Analytics.getInstance(this).setScreenName("Artist List");
+        Analytics.getInstance(this).sendEvent("App", "Start", "User startet the app");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

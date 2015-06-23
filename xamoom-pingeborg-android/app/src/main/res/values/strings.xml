@@ -8,8 +8,6 @@
     <string name="menu_item_settings_name">Einstellungen</string>
     <string name="pingeborg_system_name">pingeb.org Kärnten</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_artist_detail">ArtistDetailActivity</string>
 
     <string name="hello_world">Hello world!</string>
