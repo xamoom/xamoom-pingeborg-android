@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,6 @@ import java.io.IOException;
  * create an instance of this fragment.
  */
 public class XamoomContentFragment extends Fragment {
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String CONTENT_ID = "contentIdParam";
     private static final String LOCATION_IDENTIFIER = "locationIdentifierParam";
     private static final String YOUTUBE_API_KEY = "youtubeApiKeyParam";
@@ -60,7 +60,7 @@ public class XamoomContentFragment extends Fragment {
         return fragment;
     }
 
-    private void loadFromContentId(String contentId) {
+    private void loadFromContentId(String contentId, final Fragment fragment) {
         XamoomEndUserApi.getInstance().getContentById(contentId, false, false, null, new APICallback<ContentById>() {
             @Override
             public void finished(ContentById result) {
@@ -73,12 +73,12 @@ public class XamoomContentFragment extends Fragment {
                 result.getContent().getContentBlocks().add(1, cb3);
 
                 //DISPLAY DATA
-                mRecyclerView.setAdapter(new ContentBlockAdapter(getActivity(), result.getContent().getContentBlocks(), mYoutubeApiKey, mListener));
+                mRecyclerView.setAdapter(new ContentBlockAdapter(fragment, result.getContent().getContentBlocks(), mYoutubeApiKey, mListener));
             }
         });
     }
 
-    private void loadFromLocationIdentifier(String locationIdentifier) {
+    private void loadFromLocationIdentifier(String locationIdentifier, final Fragment fragment) {
         XamoomEndUserApi.getInstance().getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
             @Override
             public void finished(ContentByLocationIdentifier result) {
@@ -99,9 +99,9 @@ public class XamoomContentFragment extends Fragment {
             mYoutubeApiKey = getArguments().getString(YOUTUBE_API_KEY);
 
             if(mContentId != null)
-                loadFromContentId(mContentId);
+                loadFromContentId(mContentId, this);
             else if (mLocationIdentifier != null)
-                loadFromLocationIdentifier(mLocationIdentifier);
+                loadFromLocationIdentifier(mLocationIdentifier, this);
             else
                 try {
                     throw new IOException("No identifier");

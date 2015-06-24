@@ -6,14 +6,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Picture;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
 import android.media.AudioManager;
-import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Base64;
@@ -21,7 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.TranslateAnimation;
+import android.webkit.MimeTypeMap;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -32,16 +31,16 @@ import android.widget.TextView;
 import com.bumptech.glide.GenericRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.model.StreamEncoder;
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.caverock.androidsvg.SVG;
-import com.caverock.androidsvg.SVGImageView;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -73,13 +72,8 @@ import com.xamoom.android.mapping.SpotMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
-import java.text.BreakIterator;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -88,13 +82,13 @@ import java.util.regex.Pattern;
  */
 public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private Activity mParentActivity;
+    private Fragment mFragment;
     private List<ContentBlock> mContentBlocks;
     private String mYoutubeApiKey;
     private XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener mListener;
 
-    public ContentBlockAdapter(Activity context, List<ContentBlock> contentBlocks, String youtubeApiKey, XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener listener) {
-        mParentActivity = context;
+    public ContentBlockAdapter(Fragment context, List<ContentBlock> contentBlocks, String youtubeApiKey, XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener listener) {
+        mFragment = context;
         mListener = listener;
         mContentBlocks = contentBlocks;
         mYoutubeApiKey = youtubeApiKey;
@@ -122,27 +116,27 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 1:
                 View view1 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_1_layout, parent, false);
-                return new ContentBlock1ViewHolder(view1, mParentActivity);
+                return new ContentBlock1ViewHolder(view1, mFragment);
             case 2:
                 View view2 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_2_layout, parent, false);
-                return new ContentBlock2ViewHolder(view2, mParentActivity, mYoutubeApiKey);
+                return new ContentBlock2ViewHolder(view2, mFragment, mYoutubeApiKey);
             case 3:
                 View view3 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_3_layout, parent, false);
-                return new ContentBlock3ViewHolder(view3, mParentActivity);
+                return new ContentBlock3ViewHolder(view3, mFragment);
             case 4:
                 View view4 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_4_layout, parent, false);
-                return new ContentBlock4ViewHolder(view4, mParentActivity);
+                return new ContentBlock4ViewHolder(view4, mFragment);
             case 5:
                 View view5 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_5_layout, parent, false);
-                return new ContentBlock5ViewHolder(view5, mParentActivity);
+                return new ContentBlock5ViewHolder(view5, mFragment);
             case 6:
                 View view6 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_6_layout, parent, false);
-                return new ContentBlock6ViewHolder(view6, mParentActivity, mListener);
+                return new ContentBlock6ViewHolder(view6, mFragment, mListener);
             case 7:
                 View view7 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_7_layout, parent, false);
@@ -150,11 +144,11 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 8:
                 View view8 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_8_layout, parent, false);
-                return new ContentBlock8ViewHolder(view8, mParentActivity);
+                return new ContentBlock8ViewHolder(view8, mFragment);
             case 9:
                 View view9 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_9_layout, parent, false);
-                return new ContentBlock9ViewHolder(view9, mParentActivity);
+                return new ContentBlock9ViewHolder(view9, mFragment);
             default:
                 return null;
         }
@@ -251,15 +245,15 @@ class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
  */
 class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
 
-    private Activity mParentActivity;
+    private Fragment mFragment;
     public TextView mTitleTextView;
     public TextView mArtistTextView;
     public Button mPlayPauseButton;
     public MediaPlayer mMediaPlayer;
 
-    public ContentBlock1ViewHolder(View itemView, Activity activity) {
+    public ContentBlock1ViewHolder(View itemView, Fragment activity) {
         super(itemView);
-        mParentActivity = activity;
+        mFragment = activity;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mArtistTextView = (TextView) itemView.findViewById(R.id.artistTextView);
         mPlayPauseButton = (Button) itemView.findViewById(R.id.playPauseButton);
@@ -280,7 +274,7 @@ class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             try {
-                mMediaPlayer.setDataSource(mParentActivity, Uri.parse(cb1.getFileId()));
+                mMediaPlayer.setDataSource(mFragment.getActivity(), Uri.parse(cb1.getFileId()));
                 mMediaPlayer.prepare();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -307,15 +301,15 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder implements YouTube
 
     final static String reg = "(?:youtube(?:-nocookie)?\\.com\\/(?:[^\\/\\n\\s]+\\/\\S+\\/|(?:v|e(?:mbed)?)\\/|\\S*?[?&]v=)|youtu\\.be\\/)([a-zA-Z0-9_-]{11})";
 
-    private Activity mParentActivity;
+    private Fragment mFragment;
     public TextView mTitleTextView;
     public YouTubeThumbnailView mYoutubeThumbnail;
     public String mYoutubeVideoCode;
     public String mYoutubeApiKey;
 
-    public ContentBlock2ViewHolder(View itemView, Activity activity, String youtubeApiKey) {
+    public ContentBlock2ViewHolder(View itemView, Fragment activity, String youtubeApiKey) {
         super(itemView);
-        mParentActivity = activity;
+        mFragment = activity;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mYoutubeThumbnail = (YouTubeThumbnailView) itemView.findViewById(R.id.youtubeThumbnailView);
         mYoutubeApiKey = youtubeApiKey;
@@ -355,8 +349,8 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder implements YouTube
                     @Override
                     public void onClick(View v) {
                         //open video in YoutubeStandalonePlayer
-                        Intent intent = YouTubeStandalonePlayer.createVideoIntent(mParentActivity, mYoutubeApiKey, mYoutubeVideoCode);
-                        mParentActivity.startActivity(intent);
+                        Intent intent = YouTubeStandalonePlayer.createVideoIntent(mFragment.getActivity(), mYoutubeApiKey, mYoutubeVideoCode);
+                        mFragment.startActivity(intent);
                     }
                 });
             }
@@ -379,19 +373,19 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder implements YouTube
  */
 class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
 
-    private Activity mActivity;
+    private Fragment mFragment;
     public TextView mTitleTextView;
     public ImageView mImageView;
     private GenericRequestBuilder<Uri, InputStream, SVG, PictureDrawable> requestBuilder;
 
-    public ContentBlock3ViewHolder(View itemView, Activity activity) {
+    public ContentBlock3ViewHolder(View itemView, Fragment activity) {
         super(itemView);
-        mActivity = activity;
+        mFragment = activity;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mImageView = (ImageView) itemView.findViewById(R.id.imageImageView);
 
-        requestBuilder = Glide.with(mActivity)
-        .using(Glide.buildStreamModelLoader(Uri.class, mActivity), InputStream.class)
+        requestBuilder = Glide.with(mFragment)
+        .using(Glide.buildStreamModelLoader(Uri.class, mFragment.getActivity()), InputStream.class)
                 .from(Uri.class)
                 .as(SVG.class)
                 .transcode(new SvgDrawableTranscoder(), PictureDrawable.class)
@@ -418,12 +412,23 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                                 // SVG cannot be serialized so it's not worth to cache it
                         .load(uri)
                         .into(mImageView);
-            } else {
-                Glide.with(mActivity)
+            } else if (cb3.getFileId().contains(".gif")) {
+                Glide.with(mFragment)
                         .load(cb3.getFileId())
-                        .crossFade()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .fitCenter()
                         .into(mImageView);
+            } else {
+                int deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
+                float margin = mFragment.getResources().getDimension(R.dimen.fragment_margin);
+
+                Glide.with(mFragment)
+                        .load(cb3.getFileId())
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .fitCenter()
+                        .override(deviceWidth-(int)(margin*2),2500)
+                        .into(mImageView);
+
             }
         }
     }
@@ -434,15 +439,15 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
  */
 class ContentBlock4ViewHolder extends RecyclerView.ViewHolder {
 
-    private Activity mActivity;
+    private Fragment mFragment;
     private LinearLayout mRootLayout;
     private TextView mTitleTextView;
     private TextView mContentTextView;
     private ImageView mIcon;
 
-    public ContentBlock4ViewHolder(View itemView, Activity activity) {
+    public ContentBlock4ViewHolder(View itemView, Fragment activity) {
         super(itemView);
-        mActivity = activity;
+        mFragment = activity;
         mRootLayout = (LinearLayout) itemView.findViewById(R.id.linkBlockLinearLayout);
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mContentTextView = (TextView) itemView.findViewById(R.id.contentTextView);
@@ -464,7 +469,7 @@ class ContentBlock4ViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_VIEW,Uri.parse(cb4.getLinkUrl()));
-                mActivity.startActivity(i);
+                mFragment.startActivity(i);
             }
         });
 
@@ -574,14 +579,14 @@ class ContentBlock4ViewHolder extends RecyclerView.ViewHolder {
  */
 class ContentBlock5ViewHolder extends RecyclerView.ViewHolder {
 
-    private Activity mActivity;
+    private Fragment mFragment;
     private LinearLayout mRootLayout;
     private TextView mTitleTextView;
     private TextView mContentTextView;
 
-    public ContentBlock5ViewHolder(View itemView, Activity activity) {
+    public ContentBlock5ViewHolder(View itemView, Fragment activity) {
         super(itemView);
-        mActivity = activity;
+        mFragment = activity;
         mRootLayout = (LinearLayout) itemView.findViewById(R.id.linkBlockLinearLayout);
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mContentTextView = (TextView) itemView.findViewById(R.id.contentTextView);
@@ -602,7 +607,7 @@ class ContentBlock5ViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(cb5.getFileId()));
-                mActivity.startActivity(i);
+                mFragment.startActivity(i);
             }
         });
     }
@@ -612,18 +617,18 @@ class ContentBlock5ViewHolder extends RecyclerView.ViewHolder {
  * ContentBlock
  */
 class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
-    private Activity mActivity;
+    private Fragment mFragment;
     private TextView mTitleTextView;
     private LinearLayout mRootLayout;
     private ImageView mContentThumbnailImageView;
     private XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener mListener;
 
-    public ContentBlock6ViewHolder(View itemView, Activity activity, XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener listener) {
+    public ContentBlock6ViewHolder(View itemView, Fragment activity, XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener listener) {
         super(itemView);
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mRootLayout = (LinearLayout) itemView.findViewById(R.id.contentBlockLinearLayout);
         mContentThumbnailImageView = (ImageView) itemView.findViewById(R.id.contentThumbnailImageView);
-        mActivity = activity;
+        mFragment = activity;
         mListener = listener;
     }
 
@@ -638,7 +643,7 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
             public void finished(ContentById result) {
                 mTitleTextView.setText(result.getContent().getTitle());
 
-                Glide.with(mActivity)
+                Glide.with(mFragment)
                         .load(result.getContent().getImagePublicUrl())
                         .crossFade()
                         .centerCrop()
@@ -694,19 +699,19 @@ class ContentBlock7ViewHolder extends RecyclerView.ViewHolder {
  * DownloadBlock
  */
 class ContentBlock8ViewHolder extends RecyclerView.ViewHolder {
-    private Activity mActivity;
+    private Fragment mFragment;
     private TextView mTitleTextView;
     private TextView mContentTextView;
     private ImageView mIconImageView;
     private LinearLayout mRootLayout;
 
-    public ContentBlock8ViewHolder(View itemView, Activity activity) {
+    public ContentBlock8ViewHolder(View itemView, Fragment activity) {
         super(itemView);
         mRootLayout = (LinearLayout) itemView.findViewById(R.id.downloadBlockLinearLayout);
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mContentTextView = (TextView) itemView.findViewById(R.id.contentTextView);
         mIconImageView = (ImageView) itemView.findViewById(R.id.iconImageView);
-        mActivity = activity;
+        mFragment = activity;
     }
 
     public void setupContentBlock(final ContentBlockType8 cb8) {
@@ -724,7 +729,7 @@ class ContentBlock8ViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_VIEW,Uri.parse(cb8.getFileId()));
-                mActivity.startActivity(i);
+                mFragment.startActivity(i);
             }
         });
 
@@ -755,17 +760,17 @@ class ContentBlock8ViewHolder extends RecyclerView.ViewHolder {
  * SpotMapBlock
  */
 class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
-    private Activity mActivity;
+    private Fragment mFragment;
     private TextView mTitleTextView;
     private MapFragment mMapFragment;
     private ContentBlockType9 mContentBlock;
     private ImageView mCustomMarkerImageView;
 
-    public ContentBlock9ViewHolder(View itemView, Activity activity) {
+    public ContentBlock9ViewHolder(View itemView, Fragment fragment) {
         super(itemView);
-        mActivity = activity;
+        mFragment = fragment;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
-        mMapFragment = (MapFragment) activity.getFragmentManager().findFragmentById(R.id.map);
+        mMapFragment = (MapFragment) fragment.getActivity().getFragmentManager().findFragmentById(R.id.map);
         mMapFragment.getMapAsync(this);
     }
 
@@ -791,7 +796,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                     String iconString = result.getStyle().getCustomMarker();
                     icon = getIconFromBase64(iconString);
                 } else {
-                    icon = BitmapFactory.decodeResource(mActivity.getResources(), R.drawable.ic_default_map_marker);
+                    icon = BitmapFactory.decodeResource(mFragment.getResources(), R.drawable.ic_default_map_marker);
                     float imageRatio = (float)icon.getWidth() / (float)icon.getHeight();
                     icon = Bitmap.createScaledBitmap(icon, 70, (int)(70/imageRatio), false);
                 }
@@ -873,7 +878,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                 //resize the icon
                 double imageRatio = (double) icon.getWidth() / (double) icon.getHeight();
                 double newHeight = 70.0 / imageRatio;
-                icon = Bitmap.createScaledBitmap(icon, 70, (int) newHeight, false);
+                icon = Bitmap.createScaledBitmap(icon, 100, (int) newHeight, false);
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
