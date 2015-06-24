@@ -1,24 +1,27 @@
 package com.xamoom.android.xamoomcontentblocks;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+import android.graphics.Paint;
+import android.graphics.Picture;
 import android.graphics.drawable.PictureDrawable;
 import android.media.AudioManager;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -29,9 +32,23 @@ import android.widget.TextView;
 import com.bumptech.glide.GenericRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.model.StreamEncoder;
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder;
 import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVGParseException;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.google.android.youtube.player.YouTubeThumbnailLoader;
@@ -50,12 +67,19 @@ import com.xamoom.android.mapping.ContentBlocks.ContentBlockType7;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType8;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType9;
 import com.xamoom.android.mapping.ContentById;
+import com.xamoom.android.mapping.Spot;
+import com.xamoom.android.mapping.SpotMap;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
+import java.text.BreakIterator;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -130,7 +154,7 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 9:
                 View view9 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_9_layout, parent, false);
-                return new ContentBlock9ViewHolder(view9);
+                return new ContentBlock9ViewHolder(view9, mParentActivity);
             default:
                 return null;
         }
@@ -394,14 +418,6 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                                 // SVG cannot be serialized so it's not worth to cache it
                         .load(uri)
                         .into(mImageView);
-
-                mImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.v("pingeborg","You clicked the svg");
-                    }
-                });
-
             } else {
                 Glide.with(mActivity)
                         .load(cb3.getFileId())
@@ -738,13 +754,19 @@ class ContentBlock8ViewHolder extends RecyclerView.ViewHolder {
 /**
  * SpotMapBlock
  */
-class ContentBlock9ViewHolder extends RecyclerView.ViewHolder {
-
+class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
+    private Activity mActivity;
     private TextView mTitleTextView;
+    private MapFragment mMapFragment;
+    private ContentBlockType9 mContentBlock;
+    private ImageView mCustomMarkerImageView;
 
-    public ContentBlock9ViewHolder(View itemView) {
+    public ContentBlock9ViewHolder(View itemView, Activity activity) {
         super(itemView);
+        mActivity = activity;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+        mMapFragment = (MapFragment) activity.getFragmentManager().findFragmentById(R.id.map);
+        mMapFragment.getMapAsync(this);
     }
 
     public void setupContentBlock(ContentBlockType9 cb9) {
@@ -753,6 +775,112 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder {
         else
             mTitleTextView.setText(null);
 
+        mContentBlock = cb9;
+    }
 
+    @Override
+    public void onMapReady(final GoogleMap googleMap) {
+
+        final ArrayList<Marker> mMarkerArray = new ArrayList<Marker>();
+
+        XamoomEndUserApi.getInstance().getSpotMap(null, mContentBlock.getSpotMapTag().split(","), null, new APICallback<SpotMap>() {
+            @Override
+            public void finished(SpotMap result) {
+                Bitmap icon;
+                if (result.getStyle().getCustomMarker() != null) {
+                    String iconString = result.getStyle().getCustomMarker();
+                    icon = getIconFromBase64(iconString);
+                } else {
+                    icon = BitmapFactory.decodeResource(mActivity.getResources(), R.drawable.ic_default_map_marker);
+                    float imageRatio = (float)icon.getWidth() / (float)icon.getHeight();
+                    icon = Bitmap.createScaledBitmap(icon, 70, (int)(70/imageRatio), false);
+                }
+
+                //show all markers
+                for (Spot s : result.getItems()) {
+                    Marker marker = googleMap.addMarker(new MarkerOptions()
+                            .icon(BitmapDescriptorFactory.fromBitmap(icon))
+                            .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
+                            .title(s.getDisplayName())
+                            .position(new LatLng(s.getLocation().getLat(), s.getLocation().getLon())));
+
+                    mMarkerArray.add(marker);
+                }
+
+                //zoom to display all markers
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                for (Marker marker : mMarkerArray) {
+                    builder.include(marker.getPosition());
+                }
+                LatLngBounds bounds = builder.build();
+                //TODO: set padding to markersize
+                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 70);
+                googleMap.moveCamera(cu);
+            }
+        });
+    }
+
+    /**
+     * Decodes a base64 string to an icon for mapMarkers.
+     * Can handle normal image formats and also svgs.
+     * The icon will be resized to width: 70, height will be resized to maintain imageRatio.
+     *
+     * @param base64String Base64 string that will be resized. Must start with "data:image/"
+     * @return icon as BitMap, or null if there was a problem
+     */
+    public Bitmap getIconFromBase64(String base64String) {
+        Bitmap icon = null;
+        byte[] data1;
+        byte[] data2 = "".getBytes();
+        String decodedString1 = "";
+        String decodedString2 = "";
+
+        if (base64String == null)
+            return null;
+
+        try {
+            //encode 2 times
+            data1 = Base64.decode(base64String, Base64.DEFAULT);
+            decodedString1 = new String(data1, "UTF-8");
+
+            //get rid of image/xxxx base64,
+            int index = decodedString1.indexOf("base64,");
+            String decodedString1WithoutPrefix = decodedString1.substring(index + 7);
+
+            data2 = Base64.decode(decodedString1WithoutPrefix, Base64.DEFAULT);
+            decodedString2 = new String(data2, "UTF-8");
+
+            if (decodedString1.contains("data:image/svg+xml")) {
+                //svg stuff
+                SVG svg = null;
+                svg = SVG.getFromString(decodedString2);
+
+                if (svg != null) {
+                    Log.v("pingeborg", "HELLYEAH SVG: " + svg);
+
+                    //resize svg
+                    float imageRatio = svg.getDocumentWidth() / svg.getDocumentHeight();
+                    svg.setDocumentWidth(70.0f);
+                    svg.setDocumentHeight(70 / imageRatio);
+
+                    icon = Bitmap.createBitmap((int) svg.getDocumentWidth(), (int) svg.getDocumentHeight(), Bitmap.Config.ARGB_8888);
+                    Canvas canvas1 = new Canvas(icon);
+                    svg.renderToCanvas(canvas1);
+                }
+            } else if (decodedString1.contains("data:image/")) {
+                //normal image stuff
+                icon = BitmapFactory.decodeByteArray(data2, 0, data2.length);
+                //resize the icon
+                double imageRatio = (double) icon.getWidth() / (double) icon.getHeight();
+                double newHeight = 70.0 / imageRatio;
+                icon = Bitmap.createScaledBitmap(icon, 70, (int) newHeight, false);
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (SVGParseException e ) {
+            e.printStackTrace();
+        }
+
+        return icon;
     }
 }

@@ -1,1 +1,2 @@
 include ':app', ':xamoomcontentblocks', ':xamoom-android-sdk'
+project(':xamoom-android-sdk').projectDir=new File('/Users/raphaelseher/dev/xamoom-android-sdk/xamoom-android-sdk-app/xamoom-android-sdk')
