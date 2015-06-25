@@ -11,21 +11,23 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/contentblock_title_size"/>
 
+
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/contentblock_children_margin">
 
-        <com.google.android.youtube.player.YouTubeThumbnailView
-            android:id="@+id/youtubeThumbnailView"
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/youtubeImageView"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"/>
+
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_youtube_play"/>
+            android:src="@drawable/ic_youtube_play" />
 
     </RelativeLayout>
 

@@ -1,5 +1,6 @@
 package com.xamoom.android.xamoomcontentblocks;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,10 +10,12 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
+import android.graphics.drawable.RotateDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Base64;
@@ -297,13 +300,13 @@ class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
 /**
  * YoutubeBlock
  */
-class ContentBlock2ViewHolder extends RecyclerView.ViewHolder implements YouTubeThumbnailView.OnInitializedListener {
+class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
 
     final static String reg = "(?:youtube(?:-nocookie)?\\.com\\/(?:[^\\/\\n\\s]+\\/\\S+\\/|(?:v|e(?:mbed)?)\\/|\\S*?[?&]v=)|youtu\\.be\\/)([a-zA-Z0-9_-]{11})";
 
     private Fragment mFragment;
     public TextView mTitleTextView;
-    public YouTubeThumbnailView mYoutubeThumbnail;
+    private ImageView mImageView;
     public String mYoutubeVideoCode;
     public String mYoutubeApiKey;
 
@@ -311,7 +314,7 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder implements YouTube
         super(itemView);
         mFragment = activity;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
-        mYoutubeThumbnail = (YouTubeThumbnailView) itemView.findViewById(R.id.youtubeThumbnailView);
+        mImageView = (ImageView) itemView.findViewById(R.id.youtubeImageView);
         mYoutubeApiKey = youtubeApiKey;
     }
 
@@ -323,8 +326,25 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder implements YouTube
         else
             mTitleTextView.setText(null);
 
-        if(mYoutubeThumbnail != null)
-            mYoutubeThumbnail.initialize(mYoutubeApiKey, this);
+        int deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
+        float margin = mFragment.getResources().getDimension(R.dimen.fragment_margin);
+        deviceWidth = deviceWidth - (int)(margin*2);
+
+        Glide.with(mFragment)
+                .load("http://img.youtube.com/vi/" + mYoutubeVideoCode + "/maxresdefault.jpg")
+                .placeholder(R.drawable.ic_default_map_marker)
+                .fitCenter()
+                .override(deviceWidth, (int)(deviceWidth/1.77))
+                .into(mImageView);
+
+        mImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //open video in YoutubeStandalonePlayer
+                Intent intent = YouTubeStandalonePlayer.createVideoIntent(mFragment.getActivity(), mYoutubeApiKey, mYoutubeVideoCode);
+                mFragment.getActivity().startActivity(intent);
+            }
+        });
     }
 
     public static String getVideoId(String videoUrl) {
@@ -339,33 +359,6 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder implements YouTube
         return null;
     }
 
-    @Override
-    public void onInitializationSuccess(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader youTubeThumbnailLoader) {
-        youTubeThumbnailLoader.setVideo(mYoutubeVideoCode);
-        youTubeThumbnailLoader.setOnThumbnailLoadedListener(new YouTubeThumbnailLoader.OnThumbnailLoadedListener() {
-            @Override
-            public void onThumbnailLoaded(YouTubeThumbnailView youTubeThumbnailView, String s) {
-                youTubeThumbnailView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //open video in YoutubeStandalonePlayer
-                        Intent intent = YouTubeStandalonePlayer.createVideoIntent(mFragment.getActivity(), mYoutubeApiKey, mYoutubeVideoCode);
-                        mFragment.startActivity(intent);
-                    }
-                });
-            }
-
-            @Override
-            public void onThumbnailError(YouTubeThumbnailView youTubeThumbnailView, YouTubeThumbnailLoader.ErrorReason errorReason) {
-                //TODO: Notify user
-            }
-        });
-    }
-
-    @Override
-    public void onInitializationFailure(YouTubeThumbnailView youTubeThumbnailView, YouTubeInitializationResult youTubeInitializationResult) {
-        //TODO: Notify user
-    }
 }
 
 /**
@@ -392,13 +385,12 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                 .sourceEncoder(new StreamEncoder())
                 .cacheDecoder(new FileToStreamDecoder<SVG>(new SvgDecoder()))
                 .decoder(new SvgDecoder())
-                        .placeholder(R.drawable.ic_facebook)
-                        .error(R.drawable.ic_web)
                 .animate(android.R.anim.fade_in)
                 .listener(new SvgSoftwareLayerSetter<Uri>());
     }
 
     public void setupContentBlock(ContentBlockType3 cb3) {
+
         if(cb3.getTitle() != null)
             mTitleTextView.setText(cb3.getTitle());
         else
@@ -410,13 +402,8 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                 requestBuilder
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                 // SVG cannot be serialized so it's not worth to cache it
+                        .placeholder(R.drawable.ic_default_map_marker)
                         .load(uri)
-                        .into(mImageView);
-            } else if (cb3.getFileId().contains(".gif")) {
-                Glide.with(mFragment)
-                        .load(cb3.getFileId())
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .fitCenter()
                         .into(mImageView);
             } else {
                 int deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
@@ -425,9 +412,12 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                 Glide.with(mFragment)
                         .load(cb3.getFileId())
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .placeholder(R.drawable.ic_default_map_marker)
                         .fitCenter()
                         .override(deviceWidth-(int)(margin*2),2500)
                         .into(mImageView);
+
+
 
             }
         }
