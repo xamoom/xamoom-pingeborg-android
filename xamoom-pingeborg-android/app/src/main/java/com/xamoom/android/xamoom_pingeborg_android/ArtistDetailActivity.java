@@ -14,17 +14,12 @@ import com.xamoom.android.XamoomEndUserApi;
 import com.xamoom.android.mapping.Content;
 import com.xamoom.android.mapping.ContentById;
 import com.xamoom.android.mapping.ContentByLocationIdentifier;
-import com.xamoom.android.xamoomcontentblocks.XamoomContentBlocks;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 import java.io.IOException;
 
 
-public class ArtistDetailActivity extends ActionBarActivity implements XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener {
-
-    public static String XAMOOM_CONTENT_ID = "xamoomContentId";
-    public static String XAMOOM_LOCATION_IDENTIFIER = "xamoomLocationIdentifier";
-
+public class ArtistDetailActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +28,8 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
 
         Intent myIntent = getIntent(); // gets the previously created intent
 
-        String contentId = myIntent.getStringExtra(XAMOOM_CONTENT_ID); // will return "FirstKeyValue"
-        String locationIdentifier= myIntent.getStringExtra(XAMOOM_LOCATION_IDENTIFIER); // will return "SecondKeyValue"
+        String contentId = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_CONTENT_ID);
+        String locationIdentifier= myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
 
         setupXamoomContentFrameLayout(contentId, locationIdentifier);
     }
@@ -66,14 +61,5 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onClickContentBlock(String contentId) {
-        Context context = this.getApplicationContext();
-        Intent intent = new Intent(context, ArtistDetailActivity.class);
-        intent.putExtra(ArtistDetailActivity.XAMOOM_CONTENT_ID,contentId);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
     }
 }

@@ -21,6 +21,7 @@ import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
 import com.xamoom.android.mapping.Content;
 import com.xamoom.android.mapping.ContentList;
+import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 import java.util.List;
 
@@ -188,7 +189,7 @@ public class ArtistListFragment extends Fragment {
                 public void onClick(View v) {
                     Context context = v.getContext();
                     Intent intent = new Intent(context, ArtistDetailActivity.class);
-                    intent.putExtra(ArtistDetailActivity.XAMOOM_CONTENT_ID, holder.mBoundContent.getContentId());
+                    intent.putExtra(XamoomContentFragment.XAMOOM_CONTENT_ID, holder.mBoundContent.getContentId());
 
                     context.startActivity(intent);
                 }

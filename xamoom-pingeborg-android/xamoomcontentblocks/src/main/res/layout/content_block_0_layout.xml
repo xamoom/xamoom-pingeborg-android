@@ -6,10 +6,11 @@
     android:layout_marginBottom="@dimen/contentblock_to_contentblock_margin">
 
     <TextView
-    android:id="@+id/titleTextView"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textSize="@dimen/contentblock_title_size"
+        android:id="@+id/titleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/contentblock_title_size"
+        android:background="#ffee00"
     />
 
     <TextView
@@ -17,6 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/contentblock_children_margin"
+        android:background="#ee00ff"
         />
 
 </LinearLayout>

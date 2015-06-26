@@ -1,21 +1,16 @@
 package com.xamoom.android.xamoomcontentblocks;
 
-import android.app.ActionBar;
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
-import android.graphics.drawable.RotateDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Base64;
@@ -23,7 +18,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -36,9 +30,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.model.StreamEncoder;
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder;
-import com.bumptech.glide.load.resource.gif.GifDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.android.gms.maps.CameraUpdate;
@@ -51,10 +42,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
-import com.google.android.youtube.player.YouTubeThumbnailLoader;
-import com.google.android.youtube.player.YouTubeThumbnailView;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
@@ -81,18 +69,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by raphaelseher on 16.06.15.
+ * ContentBlockAdapter will display all the contentBlocks you get from the xamoom cloud
+ * like we think it is good.
+ *
+ * Create
+ *
+ * @author Raphael Seher
  */
 public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Fragment mFragment;
     private List<ContentBlock> mContentBlocks;
     private String mYoutubeApiKey;
-    private XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener mListener;
 
-    public ContentBlockAdapter(Fragment context, List<ContentBlock> contentBlocks, String youtubeApiKey, XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener listener) {
+    public ContentBlockAdapter(Fragment context, List<ContentBlock> contentBlocks, String youtubeApiKey) {
         mFragment = context;
-        mListener = listener;
         mContentBlocks = contentBlocks;
         mYoutubeApiKey = youtubeApiKey;
     }
@@ -139,7 +130,7 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 6:
                 View view6 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_6_layout, parent, false);
-                return new ContentBlock6ViewHolder(view6, mFragment, mListener);
+                return new ContentBlock6ViewHolder(view6, mFragment);
             case 7:
                 View view7 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_7_layout, parent, false);
@@ -402,7 +393,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                 requestBuilder
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                 // SVG cannot be serialized so it's not worth to cache it
-                        .placeholder(R.drawable.ic_default_map_marker)
+                        //.placeholder(R.drawable.x)
                         .load(uri)
                         .into(mImageView);
             } else {
@@ -412,13 +403,10 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                 Glide.with(mFragment)
                         .load(cb3.getFileId())
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .placeholder(R.drawable.ic_default_map_marker)
+                        //.placeholder(R.drawable.x)
                         .fitCenter()
                         .override(deviceWidth-(int)(margin*2),2500)
                         .into(mImageView);
-
-
-
             }
         }
     }
@@ -611,15 +599,13 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
     private TextView mTitleTextView;
     private LinearLayout mRootLayout;
     private ImageView mContentThumbnailImageView;
-    private XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener mListener;
 
-    public ContentBlock6ViewHolder(View itemView, Fragment activity, XamoomContentFragment.OnXamoomContentBlocksFragmentInteractionListener listener) {
+    public ContentBlock6ViewHolder(View itemView, Fragment activity) {
         super(itemView);
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mRootLayout = (LinearLayout) itemView.findViewById(R.id.contentBlockLinearLayout);
         mContentThumbnailImageView = (ImageView) itemView.findViewById(R.id.contentThumbnailImageView);
         mFragment = activity;
-        mListener = listener;
     }
 
     public void setupContentBlock(final ContentBlockType6 cb6) {
@@ -644,7 +630,8 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
         mRootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onClickContentBlock(cb6.getContentId());
+                XamoomContentFragment xamoomContentFragment = (XamoomContentFragment)mFragment;
+                xamoomContentFragment.contentBlockClick(cb6.getContentId());
             }
         });
     }
