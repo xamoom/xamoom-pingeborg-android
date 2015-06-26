@@ -23,6 +23,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.GenericRequestBuilder;
@@ -224,13 +225,18 @@ class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
     public void setupContentBlock(ContentBlockType0 cb0){
         if(cb0.getTitle() != null)
             mTitleTextView.setText(cb0.getTitle());
-        else
-            mTitleTextView.setText(null);
+        else {
+            mTitleTextView.setVisibility(View.GONE);
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mContentTextView.getLayoutParams();
+            params.setMargins(0,0,0,0);
+            mContentTextView.setLayoutParams(params);
+        }
 
         if(cb0.getText() != null)
             mContentTextView.setText(Html.fromHtml(cb0.getText()));
-        else
-            mContentTextView.setText(null);
+        else {
+            mContentTextView.setVisibility(View.GONE);
+        }
     }
 }
 
@@ -256,13 +262,21 @@ class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
     public void setupContentBlock(ContentBlockType1 cb1) {
         if(cb1.getTitle() != null)
             mTitleTextView.setText(cb1.getTitle());
-        else
-            mTitleTextView.setText(null);
+        else {
+            mTitleTextView.setVisibility(View.GONE);
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mArtistTextView.getLayoutParams();
+            params.setMargins(0,0,0,0);
+            mArtistTextView.setLayoutParams(params);
+        }
 
         if(cb1.getArtist() != null)
             mArtistTextView.setText(cb1.getArtist());
-        else
-            mArtistTextView.setText(null);
+        else {
+            mArtistTextView.setVisibility(View.GONE);
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mPlayPauseButton.getLayoutParams();
+            params.setMargins(0,0,0,0);
+            mPlayPauseButton.setLayoutParams(params);
+        }
 
         if(cb1.getFileId() != null) {
             mMediaPlayer = new MediaPlayer();
@@ -300,6 +314,7 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
     private ImageView mImageView;
     public String mYoutubeVideoCode;
     public String mYoutubeApiKey;
+    private RelativeLayout mYoutubeLayout;
 
     public ContentBlock2ViewHolder(View itemView, Fragment activity, String youtubeApiKey) {
         super(itemView);
@@ -307,6 +322,7 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mImageView = (ImageView) itemView.findViewById(R.id.youtubeImageView);
         mYoutubeApiKey = youtubeApiKey;
+        mYoutubeLayout = (RelativeLayout) itemView.findViewById(R.id.youtubeRelativLayout);
     }
 
     public void setupContentBlock(ContentBlockType2 cb2) {
@@ -314,8 +330,12 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
 
         if(cb2.getTitle() != null)
             mTitleTextView.setText(cb2.getTitle());
-        else
-            mTitleTextView.setText(null);
+        else {
+            mTitleTextView.setVisibility(View.GONE);
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mYoutubeLayout.getLayoutParams();
+            params.setMargins(0,0,0,0);
+            mYoutubeLayout.setLayoutParams(params);
+        }
 
         int deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
         float margin = mFragment.getResources().getDimension(R.dimen.fragment_margin);
@@ -384,8 +404,12 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
 
         if(cb3.getTitle() != null)
             mTitleTextView.setText(cb3.getTitle());
-        else
-            mTitleTextView.setText(null);
+        else {
+            mTitleTextView.setVisibility(View.GONE);
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mImageView.getLayoutParams();
+            params.setMargins(0,0,0,0);
+            mImageView.setLayoutParams(params);
+        }
 
         if(cb3.getFileId() != null) {
             if (cb3.getFileId().contains(".svg")) {
@@ -664,8 +688,12 @@ class ContentBlock7ViewHolder extends RecyclerView.ViewHolder {
     public void setupContentBlock(ContentBlockType7 cb7) {
         if(cb7.getTitle() != null)
             mTitleTextView.setText(cb7.getTitle());
-        else
-            mTitleTextView.setText(null);
+        else {
+            mTitleTextView.setVisibility(View.GONE);
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mSoundCloudWebview.getLayoutParams();
+            params.setMargins(0,0,0,0);
+            mSoundCloudWebview.setLayoutParams(params);
+        }
 
         String test =  String.format(mSoundCloudHTML, cb7.getSoundcloudUrl());
         mSoundCloudWebview.loadData(test, "text/html", "utf-8");
@@ -748,16 +776,16 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
         mFragment = fragment;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mMapFragment = (MapFragment) fragment.getActivity().getFragmentManager().findFragmentById(R.id.map);
-        mMapFragment.getMapAsync(this);
     }
 
     public void setupContentBlock(ContentBlockType9 cb9) {
         if (cb9.getTitle() != null)
             mTitleTextView.setText(cb9.getTitle());
         else
-            mTitleTextView.setText(null);
+            mTitleTextView.setVisibility(View.GONE);
 
         mContentBlock = cb9;
+        mMapFragment.getMapAsync(this);
     }
 
     @Override
