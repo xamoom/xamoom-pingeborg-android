@@ -24,4 +24,13 @@
         android:layout_height="wrap_content"
         android:text="Play/Pause"
         android:layout_marginTop="@dimen/contentblock_children_margin"/>
+
+    <ProgressBar
+        android:id="@+id/songProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="44"
+        style="@style/customSongProgressBar"/>
+
 </LinearLayout>

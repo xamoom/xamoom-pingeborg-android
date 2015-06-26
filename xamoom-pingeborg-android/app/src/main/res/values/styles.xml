@@ -1,17 +1,17 @@
 <resources>
 
     <!-- Base application theme. -->
-        <style name="Theme.Pingeborg" parent="Theme.AppCompat.Light.NoActionBar">
+<style name="Theme.Pingeborg" parent="Theme.AppCompat.Light.NoActionBar">
 
-            <!-- colorPrimary is used for the default action bar background -->
-            <item name="colorPrimary">@color/pingeborg_yellow</item>
+<!-- colorPrimary is used for the default action bar background -->
+<item name="colorPrimary">@color/pingeborg_yellow</item>
 
-            <!-- colorPrimaryDark is used for the status bar -->
-            <item name="colorPrimaryDark">@color/pingeborg_dark_yellow</item>
+<!-- colorPrimaryDark is used for the status bar -->
+<item name="colorPrimaryDark">@color/pingeborg_dark_yellow</item>
 
-            <!-- colorAccent is used as the default value for colorControlActivated
-                 which is used to tint widgets -->
-            <item name="colorAccent">@color/pingeborg_green</item>
-        </style>
+<!-- colorAccent is used as the default value for colorControlActivated
+     which is used to tint widgets -->
+<item name="colorAccent">@color/pingeborg_green</item>
+</style>
 
-</resources>
+    </resources>
