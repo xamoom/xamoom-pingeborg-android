@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +36,8 @@ import java.util.List;
 public class ArtistListFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
+    private RecyclerView mRecyclerView;
+    private LinearLayoutManager mLayoutManager;
 
     /**
      *
@@ -61,18 +62,62 @@ public class ArtistListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         //Log.v("pingeborg", "Hellyeah: " + inflater.inflate(R.layout.fragment_artist_list, container, false).toString());
-        RecyclerView rv = (RecyclerView)inflater.inflate(R.layout.fragment_artist_list, container, false);
-        setupRecyclerView(rv);
-        return rv;
+        mRecyclerView = (RecyclerView)inflater.inflate(R.layout.fragment_artist_list, container, false);
+        setupRecyclerView(mRecyclerView);
+        return mRecyclerView;
     }
 
     private void setupRecyclerView(final RecyclerView recyclerView) {
-        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        mLayoutManager = new LinearLayoutManager(recyclerView.getContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+
+        final String[] mCursor = new String[1];
+        final boolean[] isLoading = {false};
 
         XamoomEndUserApi.getInstance().getContentList(null, 7, null, new String[]{"artists"}, new APICallback<ContentList>() {
             @Override
-            public void finished(ContentList result) {
+            public void finished(final ContentList result) {
                 recyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(getActivity(), result.getItems()));
+
+                mCursor[0] = result.getCursor();
+
+                //load more on scrolling
+                recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                        super.onScrollStateChanged(recyclerView, newState);
+                    }
+
+                    @Override
+                    public void onScrolled(final RecyclerView recyclerView, int dx, int dy) {
+                        super.onScrolled(recyclerView, dx, dy);
+                        int pastVisiblesItems, visibleItemCount, totalItemCount;
+
+                        visibleItemCount = mLayoutManager.getChildCount();
+                        totalItemCount = mLayoutManager.getItemCount();
+                        pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition();
+
+                        //true when there are only 2 items until end
+                        if ( (visibleItemCount+pastVisiblesItems) >= totalItemCount-1) {
+                            Log.v("pingeborg", "Hellyeah, Nachladen!");
+
+                            if (!isLoading[0]) {
+                                isLoading[0] = true;
+                                XamoomEndUserApi.getInstance().getContentList(null, 7, mCursor[0], new String[]{"artists"}, new APICallback<ContentList>() {
+                                    @Override
+                                    public void finished(ContentList resultReload) {
+                                        mCursor[0] = resultReload.getCursor();
+                                        Log.v("pingeborg", "NACHGELADEN!");
+                                        result.getItems().addAll(resultReload.getItems());
+                                        recyclerView.getAdapter().notifyDataSetChanged();
+                                        isLoading[0] = false;
+                                    }
+                                });
+                            }
+
+                        }
+                    }
+                });
             }
         });
     }
