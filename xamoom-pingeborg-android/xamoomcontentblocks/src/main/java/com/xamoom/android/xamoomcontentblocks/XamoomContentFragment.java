@@ -40,6 +40,7 @@ public class XamoomContentFragment extends Fragment {
     private static final String YOUTUBE_API_KEY = "youtubeApiKeyParam";
 
     private RecyclerView mRecyclerView;
+    private ContentBlockAdapter mContentBlockAdapter;
 
     private String mContentId;
     private String mLocationIdentifier;
@@ -75,7 +76,8 @@ public class XamoomContentFragment extends Fragment {
                 result.getContent().getContentBlocks().add(1, cb3);
 
                 //DISPLAY DATA
-                mRecyclerView.setAdapter(new ContentBlockAdapter(fragment, result.getContent().getContentBlocks(), mYoutubeApiKey));
+                mContentBlockAdapter = new ContentBlockAdapter(fragment, result.getContent().getContentBlocks(), mYoutubeApiKey);
+                mRecyclerView.setAdapter(mContentBlockAdapter);
             }
         });
     }
@@ -119,6 +121,13 @@ public class XamoomContentFragment extends Fragment {
                     e.printStackTrace();
                 }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mContentBlockAdapter = null;
+        mRecyclerView.setAdapter(null);
     }
 
     @Override
