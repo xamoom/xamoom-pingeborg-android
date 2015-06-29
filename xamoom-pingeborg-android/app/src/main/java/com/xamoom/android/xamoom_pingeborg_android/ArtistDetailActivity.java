@@ -26,10 +26,18 @@ public class ArtistDetailActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_detail);
 
+        Analytics.getInstance(this).setScreenName("Artist Activity");
+
         Intent myIntent = getIntent(); // gets the previously created intent
 
         String contentId = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_CONTENT_ID);
         String locationIdentifier= myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
+
+        if (!contentId.equals("")) {
+            Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with contentId: " + contentId);
+        } else {
+            Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with locationIdentifier: " + locationIdentifier);
+        }
 
         setupXamoomContentFrameLayout(contentId, locationIdentifier);
     }

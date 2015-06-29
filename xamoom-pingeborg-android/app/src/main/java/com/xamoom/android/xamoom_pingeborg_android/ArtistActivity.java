@@ -87,6 +87,7 @@ public class ArtistActivity extends ActionBarActivity implements ArtistListFragm
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                Analytics.getInstance(this).sendEvent("UX", "Open Drawer", "User opens the navigation drawer");
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
         }
