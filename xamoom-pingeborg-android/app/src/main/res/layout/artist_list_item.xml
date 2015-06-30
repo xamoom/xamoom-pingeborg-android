@@ -29,6 +29,12 @@
             android:src="@drawable/placeholder"
             android:contentDescription="Pingeborg Cover Image"/>
 
+        <ImageView
+            android:id="@+id/artistListItemOverlayImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#88FFFFFF"/>
+
         <TextView
             android:id="@+id/artistListItemTextView"
             android:layout_width="fill_parent"

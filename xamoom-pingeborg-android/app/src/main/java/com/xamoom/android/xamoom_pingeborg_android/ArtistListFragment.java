@@ -1,26 +1,22 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
 import com.xamoom.android.mapping.Content;
@@ -28,6 +24,8 @@ import com.xamoom.android.mapping.ContentList;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 import java.util.List;
+
+import jp.wasabeef.glide.transformations.GrayscaleTransformation;
 
 
 /**
@@ -86,6 +84,15 @@ public class ArtistListFragment extends Fragment {
                 //stop the progress indicator on activity
                 mListener.stopArtistListProgress();
 
+                //save 3 artists as present for the user
+                if (Global.getInstance().getSavedArtists() == null) {
+                    String newArtists = "";
+                    for (int i = 1; i < 4; i++) {
+                        Content c = result.getItems().get(i);
+                        Global.getInstance().saveArtist(c.getContentId());
+                    }
+                }
+
                 recyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(getActivity(), result.getItems()));
 
                 mCursor[0] = result.getCursor();
@@ -108,8 +115,7 @@ public class ArtistListFragment extends Fragment {
                         pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition();
 
                         //true when there are only 2 items until end
-                        if ( (visibleItemCount+pastVisiblesItems) >= totalItemCount-1) {
-                            Log.v("pingeborg", "Hellyeah, Nachladen! More: " + isMore[0]);
+                        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount - 1) {
 
                             if (!isLoading[0] && isMore[0]) {
                                 isLoading[0] = true;
@@ -128,7 +134,7 @@ public class ArtistListFragment extends Fragment {
                                         result.getItems().remove(result.getItems().size() - 1);
                                         recyclerView.getAdapter().notifyItemInserted(result.getItems().size());
 
-                                        Log.v("pingeborg", "NACHGELADEN!");
+                                        //add items to get displayed
                                         result.getItems().addAll(resultReload.getItems());
                                         recyclerView.getAdapter().notifyDataSetChanged();
                                         isLoading[0] = false;
@@ -201,6 +207,7 @@ public class ArtistListFragment extends Fragment {
 
             public final View mView;
             public final ImageView mImageView;
+            public final ImageView mOverlayImageView;
             public final TextView mTextView;
 
             public ViewHolder(View view) {
@@ -208,6 +215,7 @@ public class ArtistListFragment extends Fragment {
                 mView = view;
                 mImageView = (ImageView) view.findViewById(R.id.artistListItemImageView);
                 mTextView = (TextView) view.findViewById(R.id.artistListItemTextView);
+                mOverlayImageView = (ImageView) view.findViewById(R.id.artistListItemOverlayImageView);
             }
 
             @Override
@@ -262,11 +270,33 @@ public class ArtistListFragment extends Fragment {
                 //set text
                 holder.mTextView.setText(holder.mBoundContent.getTitle());
 
-                //download and set image via picasso
-                Glide.with(mContext)
-                        .load(holder.mBoundContent.getImagePublicUrl())
-                        .crossFade()
-                        .into(holder.mImageView);
+                BitmapPool pool = Glide.get(mContext).getBitmapPool();
+                //download and set image via Glide
+                if(Global.getInstance().getSavedArtists().contains(holder.mBoundContent.getContentId())) {
+                    Glide.with(mContext)
+                            .load(holder.mBoundContent.getImagePublicUrl())
+                            .crossFade()
+                            .into(holder.mImageView);
+
+                    holder.mOverlayImageView.setVisibility(View.GONE);
+
+                } else {
+                    Glide.with(mContext)
+                            .load(holder.mBoundContent.getImagePublicUrl())
+                            .crossFade()
+                            .bitmapTransform(new GrayscaleTransformation(pool))
+                            .into(holder.mImageView);
+
+                    holder.mOverlayImageView.setVisibility(View.VISIBLE);
+
+                    holder.mOverlayImageView.setImageResource(android.R.color.transparent);
+                    if (position == 0) {
+                        Glide.with(mContext)
+                                .load(R.drawable.discoverable)
+                                .dontTransform() //or the alpha will be ignored
+                                .into(holder.mOverlayImageView);
+                    }
+                }
 
                 holder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override

@@ -54,6 +54,12 @@ public class ArtistActivity extends ActionBarActivity implements ArtistListFragm
             }
         });
 
+        //first start?
+        Global.getInstance().setActivity(this);
+        if (Global.getInstance().isFirstStart()) {
+            Log.v("pingeborg", "First time starting the app");
+        }
+
         //setup artistListFragment
         setupArtistListFragment();
     }
