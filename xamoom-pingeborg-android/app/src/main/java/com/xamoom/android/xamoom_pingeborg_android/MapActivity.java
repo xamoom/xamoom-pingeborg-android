@@ -1,32 +1,30 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 
 
-public class MainActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener {
+public class MapActivity extends ActionBarActivity {
 
     private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_map);
 
-        Analytics.getInstance(this).sendEvent("App", "Start", "User startet the app");
+        Analytics.getInstance(this).setScreenName("Map Screen - Map");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -57,11 +55,34 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         }
 
         //setup artistListFragment
-        setupArtistListFragment();
+        setupMapFragment();
     }
 
-    private void setupArtistListFragment() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.artistFrameLayout, ArtistListFragment.newInstance()).commit();
+    private void setupMapFragment() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.mapFrameLayout, MapActivityFragment.newInstance()).commit();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_map, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -93,27 +114,5 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                         return true;
                     }
                 });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Analytics.getInstance(this).sendEvent("UX", "Drawer opened", "User opened the navigation drawer");
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                return true;
-            case R.id.action_settings:
-                Analytics.getInstance(this).sendEvent("UX", "Artists reloaded", "User called reload in artists action-bar menu");
-                getSupportFragmentManager().beginTransaction().replace(R.id.artistFrameLayout, ArtistListFragment.newInstance()).commit();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_artist, menu);
-        return true;
     }
 }

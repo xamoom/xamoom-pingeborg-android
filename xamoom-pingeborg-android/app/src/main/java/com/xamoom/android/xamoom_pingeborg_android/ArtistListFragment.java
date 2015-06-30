@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -42,8 +43,7 @@ public class ArtistListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
-    private static ArtistListFragment mInstance;
-    boolean isFirst = true;
+    private ProgressBar mProgressBar;
 
     /**
      *
@@ -53,13 +53,6 @@ public class ArtistListFragment extends Fragment {
         return fragment;
     }
 
-    public static ArtistListFragment getInstance() {
-        if (mInstance == null) {
-            mInstance = new ArtistListFragment();
-        }
-        return mInstance;
-    }
-
     public ArtistListFragment() {
         // Required empty public constructor
     }
@@ -67,19 +60,19 @@ public class ArtistListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mListener.stopArtistListProgress();
+
+        Analytics.getInstance(getActivity()).setScreenName("Artist List");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        /*
-        mRecyclerView = (RecyclerView)inflater.inflate(R.layout.fragment_artist_list, container, false);
-        setupRecyclerView(mRecyclerView);
-        return mRecyclerView;*/
+
         View view = inflater.inflate(R.layout.fragment_artist_list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.artistListRecyclerView);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.loadingArtistsProgressBar);
+        mProgressBar.setVisibility(View.VISIBLE);
         setupRecyclerView(mRecyclerView);
         return view;
     }
@@ -96,7 +89,7 @@ public class ArtistListFragment extends Fragment {
             @Override
             public void finished(final ContentList result) {
                 //stop the progress indicator on activity
-                mListener.stopArtistListProgress();
+                mProgressBar.setVisibility(View.GONE);
 
                 //save 3 artists as present for the user
                 if (Global.getInstance().getSavedArtists() == null) {
@@ -165,7 +158,6 @@ public class ArtistListFragment extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String contentId) {
         if (mListener != null) {
-            mListener.stopArtistListProgress();
         }
     }
 
@@ -197,7 +189,6 @@ public class ArtistListFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        public void stopArtistListProgress();
     }
 
     /**

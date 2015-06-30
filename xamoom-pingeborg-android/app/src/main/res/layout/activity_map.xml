@@ -30,7 +30,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/artistFrameLayout"
+            android:id="@+id/mapFrameLayout"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
         <android.support.design.widget.FloatingActionButton
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_action_qrcode"
+            android:src="@drawable/ic_my_location_black_24dp"
             />
 
     </android.support.design.widget.CoordinatorLayout>
