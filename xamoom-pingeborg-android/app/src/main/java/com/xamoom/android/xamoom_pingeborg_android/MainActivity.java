@@ -1,6 +1,5 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -17,7 +16,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 
-public class ArtistActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener {
+public class MainActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener {
 
     private DrawerLayout mDrawerLayout;
     private ProgressBar mProgressBar;
@@ -25,7 +24,7 @@ public class ArtistActivity extends ActionBarActivity implements ArtistListFragm
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_artist);
+        setContentView(R.layout.activity_main);
 
         Analytics.getInstance(this).setScreenName("Artist List");
         Analytics.getInstance(this).sendEvent("App", "Start", "User startet the app");
@@ -65,7 +64,7 @@ public class ArtistActivity extends ActionBarActivity implements ArtistListFragm
     }
 
     private void setupArtistListFragment() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.artistFrameLayout, ArtistListFragment.newInstance()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.artistFrameLayout, ArtistListFragment.getInstance()).commit();
     }
 
     @Override
@@ -79,7 +78,24 @@ public class ArtistActivity extends ActionBarActivity implements ArtistListFragm
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         menuItem.setChecked(true);
+                        mProgressBar.setVisibility(View.GONE);
+
+                        switch (menuItem.getItemId()) {
+                            case R.id.nav_home:
+                                mProgressBar.setVisibility(View.VISIBLE);
+                                getSupportFragmentManager().beginTransaction().replace(R.id.artistFrameLayout, ArtistListFragment.getInstance()).commit();
+                                break;
+                            case R.id.nav_map:
+                                getSupportFragmentManager().beginTransaction().replace(R.id.artistFrameLayout, new MapActivityFragment()).commit();
+                                break;
+                            case R.id.nav_about:
+                                break;
+                            case R.id.nav_settings:
+                                break;
+                        }
+
                         mDrawerLayout.closeDrawers();
+
                         return true;
                     }
                 });

@@ -27,7 +27,10 @@ public class Analytics {
 
     public static void setupAnalytics(Context context) {
         mAnalytics = GoogleAnalytics.getInstance(context);
-        mTracker = mAnalytics.newTracker(R.xml.global_tracker_config);
+        mTracker = mAnalytics.newTracker("UA-57427460-3");
+        mTracker.enableExceptionReporting(true);
+        mTracker.enableAdvertisingIdCollection(true);
+        mTracker.enableAutoActivityTracking(true);
     }
 
     /**

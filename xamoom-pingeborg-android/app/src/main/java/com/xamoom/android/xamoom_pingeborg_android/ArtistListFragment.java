@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -41,6 +42,8 @@ public class ArtistListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
+    private static ArtistListFragment mInstance;
+    boolean isFirst = true;
 
     /**
      *
@@ -50,6 +53,13 @@ public class ArtistListFragment extends Fragment {
         return fragment;
     }
 
+    public static ArtistListFragment getInstance() {
+        if (mInstance == null) {
+            mInstance = new ArtistListFragment();
+        }
+        return mInstance;
+    }
+
     public ArtistListFragment() {
         // Required empty public constructor
     }
@@ -57,17 +67,21 @@ public class ArtistListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mListener.stopArtistListProgress();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        //Log.v("pingeborg", "Hellyeah: " + inflater.inflate(R.layout.fragment_artist_list, container, false).toString());
+        /*
         mRecyclerView = (RecyclerView)inflater.inflate(R.layout.fragment_artist_list, container, false);
         setupRecyclerView(mRecyclerView);
-        return mRecyclerView;
+        return mRecyclerView;*/
+        View view = inflater.inflate(R.layout.fragment_artist_list, container, false);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.artistListRecyclerView);
+        setupRecyclerView(mRecyclerView);
+        return view;
     }
 
     private void setupRecyclerView(final RecyclerView recyclerView) {
@@ -86,7 +100,6 @@ public class ArtistListFragment extends Fragment {
 
                 //save 3 artists as present for the user
                 if (Global.getInstance().getSavedArtists() == null) {
-                    String newArtists = "";
                     for (int i = 1; i < 4; i++) {
                         Content c = result.getItems().get(i);
                         Global.getInstance().saveArtist(c.getContentId());
