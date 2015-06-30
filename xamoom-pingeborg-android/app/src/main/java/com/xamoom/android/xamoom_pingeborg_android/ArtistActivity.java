@@ -1,5 +1,6 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -13,11 +14,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 
 public class ArtistActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener {
 
     private DrawerLayout mDrawerLayout;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,7 @@ public class ArtistActivity extends ActionBarActivity implements ArtistListFragm
         ab.setDisplayHomeAsUpEnabled(true);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mProgressBar = (ProgressBar) findViewById(R.id.loadingArtistsProgressBar);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -59,9 +63,8 @@ public class ArtistActivity extends ActionBarActivity implements ArtistListFragm
     }
 
     @Override
-    public void onArtistSelected(String contentId) {
-        Log.v("pingeborg", "ContentId selected: " + contentId);
-
+    public void stopArtistListProgress() {
+        mProgressBar.setVisibility(View.GONE);
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -82,6 +85,11 @@ public class ArtistActivity extends ActionBarActivity implements ArtistListFragm
             case android.R.id.home:
                 Analytics.getInstance(this).sendEvent("UX", "Open Drawer", "User opens the navigation drawer");
                 mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+            case R.id.action_settings:
+                Analytics.getInstance(this).sendEvent("UX", "Artists reloaded", "User called reload in artists action-bar menu");
+                mProgressBar.setVisibility(View.VISIBLE);
+                getSupportFragmentManager().beginTransaction().replace(R.id.artistFrameLayout, ArtistListFragment.newInstance()).commit();
                 return true;
         }
         return super.onOptionsItemSelected(item);
