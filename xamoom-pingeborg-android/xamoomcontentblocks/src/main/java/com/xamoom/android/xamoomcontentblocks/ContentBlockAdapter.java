@@ -239,9 +239,12 @@ class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setupContentBlock(ContentBlockType0 cb0){
-        if(cb0.getTitle() != null)
+        mTitleTextView.setVisibility(View.VISIBLE);
+        mContentTextView.setVisibility(View.VISIBLE);
+
+        if(cb0.getTitle() != null) {
             mTitleTextView.setText(cb0.getTitle());
-        else {
+        } else {
             mTitleTextView.setVisibility(View.GONE);
             LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mContentTextView.getLayoutParams();
             params.setMargins(0,0,0,0);
@@ -282,6 +285,7 @@ class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setupContentBlock(ContentBlockType1 cb1) {
+
         if(cb1.getTitle() != null)
             mTitleTextView.setText(cb1.getTitle());
         else {
@@ -418,6 +422,7 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
     public void setupContentBlock(ContentBlockType2 cb2) {
         mYoutubeVideoCode = getVideoId(cb2.getYoutubeUrl());
 
+        mTitleTextView.setVisibility(View.VISIBLE);
         if(cb2.getTitle() != null)
             mTitleTextView.setText(cb2.getTitle());
         else {
@@ -491,7 +496,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setupContentBlock(ContentBlockType3 cb3) {
-
+        mTitleTextView.setVisibility(View.VISIBLE);
         if(cb3.getTitle() != null)
             mTitleTextView.setText(cb3.getTitle());
         else {
@@ -776,6 +781,8 @@ class ContentBlock7ViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setupContentBlock(ContentBlockType7 cb7) {
+        mTitleTextView.setVisibility(View.VISIBLE);
+
         if(cb7.getTitle() != null)
             mTitleTextView.setText(cb7.getTitle());
         else {
@@ -869,6 +876,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
     }
 
     public void setupContentBlock(ContentBlockType9 cb9) {
+        mTitleTextView.setVisibility(View.VISIBLE);
         if (cb9.getTitle() != null)
             mTitleTextView.setText(cb9.getTitle());
         else
