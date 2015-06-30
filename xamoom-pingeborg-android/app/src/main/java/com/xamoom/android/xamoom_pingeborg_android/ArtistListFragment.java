@@ -60,8 +60,6 @@ public class ArtistListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Analytics.getInstance(getActivity()).setScreenName("Artist List");
     }
 
     @Override

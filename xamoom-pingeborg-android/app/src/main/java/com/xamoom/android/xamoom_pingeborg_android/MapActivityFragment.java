@@ -51,8 +51,6 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Analytics.getInstance(getActivity()).setScreenName("Map Screen - Map");
-
     }
 
     @Override
@@ -65,9 +63,13 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     }
 
     @Override
-    public void onMapReady(final GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap) {
         Log.v("pingeborg", "Mapready");
 
+        addMarkersToMap(googleMap);
+    }
+
+    private void addMarkersToMap(final GoogleMap googleMap) {
         final ArrayList<Marker> mMarkerArray = new ArrayList<Marker>();
 
         XamoomEndUserApi.getInstance().getSpotMap(null, new String[]{"showAllTheSpots"}, null, new APICallback<SpotMap>() {

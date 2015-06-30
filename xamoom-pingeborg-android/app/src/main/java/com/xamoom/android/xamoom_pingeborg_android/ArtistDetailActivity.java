@@ -28,9 +28,6 @@ public class ArtistDetailActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_detail);
 
-        //analytics
-        Analytics.getInstance(this).setScreenName("Artist Activity");
-
         //toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
