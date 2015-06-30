@@ -9,7 +9,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.xamoom.android.APICallback;
+import com.xamoom.android.XamoomEndUserApi;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
+import com.xamoom.android.mapping.ContentById;
+import com.xamoom.android.mapping.ContentByLocationIdentifier;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
+
+import java.util.List;
 
 
 public class ArtistDetailActivity extends ActionBarActivity {
@@ -36,19 +45,50 @@ public class ArtistDetailActivity extends ActionBarActivity {
         String contentId = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_CONTENT_ID);
         String locationIdentifier= myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
 
+        //load data
         if (!contentId.equals("")) {
             Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with contentId: " + contentId);
+            XamoomEndUserApi.getInstance().getContentById(contentId, false, false, null, new APICallback<ContentById>() {
+                @Override
+                public void finished(ContentById result) {
+                    //create contentBlock1
+                    ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
+                    result.getContent().getContentBlocks().add(0, cb0);
+
+                    //create contentBlock3
+                    ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
+                    result.getContent().getContentBlocks().add(1, cb3);
+
+                    setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
+                }
+            });
         } else {
             Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with locationIdentifier: " + locationIdentifier);
+            XamoomEndUserApi.getInstance().getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
+                @Override
+                public void finished(ContentByLocationIdentifier result) {
+                    //create contentBlock1
+                    ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
+                    result.getContent().getContentBlocks().add(0, cb0);
+
+                    //create contentBlock3
+                    ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
+                    result.getContent().getContentBlocks().add(1, cb3);
+
+                    setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
+                }
+            });
         }
 
-        setupXamoomContentFrameLayout(contentId, locationIdentifier);
     }
 
-    private void setupXamoomContentFrameLayout(String contentId, String locationIdentifier) {
+    private void setupXamoomContentFrameLayout(List<ContentBlock> contentBlocks) {
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(null, Config.YOUTUBE_API_KEY);
+        fragment.setContentBlocks(contentBlocks);
+
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.XamoomContentFrameLayout, XamoomContentFragment.newInstance(contentId, locationIdentifier, Config.YOUTUBE_API_KEY))
+                .replace(R.id.XamoomContentFrameLayout, fragment)
                 .commit();
     }
 

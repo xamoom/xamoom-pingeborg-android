@@ -15,12 +15,14 @@ import android.view.ViewGroup;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
 import com.xamoom.android.mapping.ContentById;
 import com.xamoom.android.mapping.ContentByLocationIdentifier;
 
 import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -35,13 +37,12 @@ public class XamoomContentFragment extends Fragment {
     public static String XAMOOM_CONTENT_ID = "xamoomContentId";
     public static String XAMOOM_LOCATION_IDENTIFIER = "xamoomLocationIdentifier";
 
-    private static final String CONTENT_ID = "contentIdParam";
-    private static final String LOCATION_IDENTIFIER = "locationIdentifierParam";
     private static final String YOUTUBE_API_KEY = "youtubeApiKeyParam";
 
     private RecyclerView mRecyclerView;
     private ContentBlockAdapter mContentBlockAdapter;
 
+    private List<ContentBlock> mContentBlocks;
     private String mContentId;
     private String mLocationIdentifier;
     private String mYoutubeApiKey;
@@ -49,45 +50,16 @@ public class XamoomContentFragment extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
+     * //TODO: comment
      * @param contentId contentId.
      * @return A new instance of fragment XamoomContentFragment.
      */
-    public static XamoomContentFragment newInstance(String contentId, String locationIdentifier, String youtubeApiKey) {
+    public static XamoomContentFragment newInstance(List<ContentBlock> contentBlocks, String youtubeApiKey) {
         XamoomContentFragment fragment = new XamoomContentFragment();
         Bundle args = new Bundle();
-        args.putString(CONTENT_ID, contentId);
-        args.putString(LOCATION_IDENTIFIER, locationIdentifier);
         args.putString(YOUTUBE_API_KEY, youtubeApiKey);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    private void loadFromContentId(String contentId, final Fragment fragment) {
-        XamoomEndUserApi.getInstance().getContentById(contentId, false, false, null, new APICallback<ContentById>() {
-            @Override
-            public void finished(ContentById result) {
-                //create contentBlock1
-                ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
-                result.getContent().getContentBlocks().add(0, cb0);
-
-                //create contentBlock3
-                ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
-                result.getContent().getContentBlocks().add(1, cb3);
-
-                //DISPLAY DATA
-                mContentBlockAdapter = new ContentBlockAdapter(fragment, result.getContent().getContentBlocks(), mYoutubeApiKey);
-                mRecyclerView.setAdapter(mContentBlockAdapter);
-            }
-        });
-    }
-
-    private void loadFromLocationIdentifier(String locationIdentifier, final Fragment fragment) {
-        XamoomEndUserApi.getInstance().getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
-            @Override
-            public void finished(ContentByLocationIdentifier result) {
-            }
-        });
     }
 
     public void contentBlockClick(String contentId) {
@@ -102,24 +74,15 @@ public class XamoomContentFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public void setContentBlocks(List<ContentBlock> contentBlocks) {
+        this.mContentBlocks = contentBlocks;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mContentId = getArguments().getString(CONTENT_ID);
-            mLocationIdentifier = getArguments().getString(LOCATION_IDENTIFIER);
             mYoutubeApiKey = getArguments().getString(YOUTUBE_API_KEY);
-
-            if(mContentId != null)
-                loadFromContentId(mContentId, this);
-            else if (mLocationIdentifier != null)
-                loadFromLocationIdentifier(mLocationIdentifier, this);
-            else
-                try {
-                    throw new IOException("No identifier");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
         }
     }
 
@@ -136,11 +99,15 @@ public class XamoomContentFragment extends Fragment {
         // Inflate the layout for this fragment
         mRecyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_xamoom_content, container, false);
         setupRecyclerView(mRecyclerView);
+
         return mRecyclerView;
     }
 
     private void setupRecyclerView(RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        //DISPLAY DATA
+        mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mYoutubeApiKey);
+        mRecyclerView.setAdapter(mContentBlockAdapter);
     }
 
 }
