@@ -2,7 +2,10 @@ package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -16,10 +19,20 @@ public class ArtistDetailActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_detail);
 
+        //analytics
         Analytics.getInstance(this).setScreenName("Artist Activity");
 
-        Intent myIntent = getIntent(); // gets the previously created intent
+        //toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
+        //actionbar
+        final ActionBar ab = getSupportActionBar();
+        ab.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
+        ab.setDisplayHomeAsUpEnabled(true);
+
+        //get contentId or locationIdentifier from intent
+        Intent myIntent = getIntent(); // gets the previously created intent
         String contentId = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_CONTENT_ID);
         String locationIdentifier= myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
 
@@ -55,6 +68,9 @@ public class ArtistDetailActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        } else if (id == android.R.id.home) {
+            finish();
             return true;
         }
 
