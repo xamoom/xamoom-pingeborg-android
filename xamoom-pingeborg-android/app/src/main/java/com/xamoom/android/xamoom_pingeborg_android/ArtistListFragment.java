@@ -133,6 +133,7 @@ public class ArtistListFragment extends Fragment {
                                 XamoomEndUserApi.getInstance().getContentList(null, 7, mCursor[0], new String[]{"artists"}, new APICallback<ContentList>() {
                                     @Override
                                     public void finished(ContentList resultReload) {
+                                        Analytics.getInstance(getActivity()).sendEvent("UX","Loaded more artists","The user loaded more artists");
                                         mCursor[0] = resultReload.getCursor();
                                         isMore[0] = resultReload.isMore();
 

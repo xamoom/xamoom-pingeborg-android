@@ -61,7 +61,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
     }
 
     private void setupArtistListFragment() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.artistFrameLayout, ArtistListFragment.newInstance()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, ArtistListFragment.newInstance()).commit();
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -74,14 +74,12 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                         Intent intent;
                         switch (menuItem.getItemId()) {
                             case R.id.nav_home:
-                                mDrawerLayout.closeDrawers();
-                                intent = new Intent(getApplicationContext(), MainActivity.class);
-                                startActivity(intent);
+                                Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to artist list activity", "User navigated to the artist list activity");
+                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, ArtistListFragment.newInstance()).commit();
                                 break;
                             case R.id.nav_map:
-                                mDrawerLayout.closeDrawers();
-                                intent = new Intent(getApplicationContext(), MapActivity.class);
-                                startActivity(intent);
+                                Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to map activity", "User navigated to the map activity");
+                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, MapActivityFragment.newInstance()).commit();
                                 break;
                             case R.id.nav_about:
                                 break;
@@ -104,7 +102,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                 return true;
             case R.id.action_settings:
                 Analytics.getInstance(this).sendEvent("UX", "Artists reloaded", "User called reload in artists action-bar menu");
-                getSupportFragmentManager().beginTransaction().replace(R.id.artistFrameLayout, ArtistListFragment.newInstance()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, ArtistListFragment.newInstance()).commit();
                 return true;
         }
         return super.onOptionsItemSelected(item);

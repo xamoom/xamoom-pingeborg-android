@@ -49,6 +49,13 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Analytics.getInstance(getActivity()).setScreenName("Map Screen - Map");
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
