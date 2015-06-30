@@ -67,6 +67,7 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
         Log.v("pingeborg", "Mapready");
 
         addMarkersToMap(googleMap);
+        googleMap.setMyLocationEnabled(true);
     }
 
     private void addMarkersToMap(final GoogleMap googleMap) {
