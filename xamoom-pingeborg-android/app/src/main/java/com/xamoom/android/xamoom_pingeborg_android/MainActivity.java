@@ -71,7 +71,6 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         menuItem.setChecked(true);
 
-                        Intent intent;
                         switch (menuItem.getItemId()) {
                             case R.id.nav_home:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to artist list activity", "User navigated to the artist list activity");
