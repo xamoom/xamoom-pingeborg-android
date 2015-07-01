@@ -23,10 +23,14 @@ import java.util.List;
 
 public class ArtistDetailActivity extends ActionBarActivity {
 
+    boolean isAlive;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_detail);
+
+        isAlive = true;
 
         //toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -83,10 +87,17 @@ public class ArtistDetailActivity extends ActionBarActivity {
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(null, Config.YOUTUBE_API_KEY);
         fragment.setContentBlocks(contentBlocks);
 
-        getSupportFragmentManager()
+        if (isAlive)
+            getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.XamoomContentFrameLayout, fragment)
                 .commit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        isAlive = false;
     }
 
     @Override

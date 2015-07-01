@@ -16,10 +16,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+
 
 public class MainActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener {
 
     private DrawerLayout mDrawerLayout;
+    private FloatingActionButton mQRScannerFAB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +45,8 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
             setupDrawerContent(navigationView);
         }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        mQRScannerFAB = (FloatingActionButton) findViewById(R.id.fab);
+        mQRScannerFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
@@ -74,10 +78,12 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                         switch (menuItem.getItemId()) {
                             case R.id.nav_home:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to artist list activity", "User navigated to the artist list activity");
+                                mQRScannerFAB.setVisibility(View.VISIBLE);
                                 getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, ArtistListFragment.newInstance()).commit();
                                 break;
                             case R.id.nav_map:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to map activity", "User navigated to the map activity");
+                                mQRScannerFAB.setVisibility(View.GONE);
                                 getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, MapActivityFragment.newInstance()).commit();
                                 break;
                             case R.id.nav_about:

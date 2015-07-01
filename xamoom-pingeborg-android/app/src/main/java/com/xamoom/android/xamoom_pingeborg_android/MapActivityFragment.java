@@ -3,15 +3,29 @@ package com.xamoom.android.xamoom_pingeborg_android;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.ImageFormat;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
+import com.bumptech.glide.request.Request;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.SizeReadyCallback;
+import com.bumptech.glide.request.target.Target;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.android.gms.maps.CameraUpdate;
@@ -19,6 +33,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -31,6 +46,7 @@ import com.xamoom.android.mapping.SpotMap;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -38,7 +54,7 @@ import java.util.ArrayList;
  */
 public class MapActivityFragment extends Fragment implements OnMapReadyCallback {
 
-    private MapFragment mMapFragment;
+    private SupportMapFragment mSupportMapFragment;
 
     public static MapActivityFragment newInstance() {
         MapActivityFragment mapActivityFragment = new MapActivityFragment();
@@ -54,25 +70,48 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_map, container, false);
-        mMapFragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.pingeborgMap);
-        mMapFragment.getMapAsync(this);
-        return view;
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_map, container, false);
+        setupMapFragment();
+        return view;
+    }
+
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
+    public void setupMapFragment() {
+        if (mSupportMapFragment == null) {
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            mSupportMapFragment = SupportMapFragment.newInstance();
+            fragmentTransaction.replace(R.id.pingeborgMap, mSupportMapFragment).commit();
+            mSupportMapFragment.getMapAsync(this);
+        }
+    }
+
     public void onMapReady(GoogleMap googleMap) {
         Log.v("pingeborg", "Mapready");
 
-        addMarkersToMap(googleMap);
+        final HashMap<Marker, Spot> markerMap = new HashMap<Marker, Spot>();
+        final HashMap<Marker, Drawable> imageMap = new HashMap<Marker, Drawable>();
+
+        addMarkersToMap(googleMap,imageMap, markerMap);
+        setupInfoWindow(googleMap, imageMap, markerMap);
         googleMap.setMyLocationEnabled(true);
     }
 
-    private void addMarkersToMap(final GoogleMap googleMap) {
-        final ArrayList<Marker> mMarkerArray = new ArrayList<Marker>();
+    private void setupInfoWindow(GoogleMap googleMap, HashMap<Marker, Drawable> imageMap, HashMap<Marker, Spot> markerMap) {
+        googleMap.setInfoWindowAdapter(new MapPopoverWindowAdapter(getActivity().getApplicationContext(), markerMap, imageMap));
+    }
 
+    private void addMarkersToMap(final GoogleMap googleMap, final HashMap<Marker, Drawable> imageMap, final HashMap<Marker, Spot> markerMap) {
         XamoomEndUserApi.getInstance().getSpotMap(null, new String[]{"showAllTheSpots"}, null, new APICallback<SpotMap>() {
             @Override
             public void finished(SpotMap result) {
@@ -88,22 +127,32 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
 
                 //show all markers
                 for (Spot s : result.getItems()) {
-                    Marker marker = googleMap.addMarker(new MarkerOptions()
+                    final Marker marker = googleMap.addMarker(new MarkerOptions()
                             .icon(BitmapDescriptorFactory.fromBitmap(icon))
                             .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
                             .title(s.getDisplayName())
                             .position(new LatLng(s.getLocation().getLat(), s.getLocation().getLon())));
 
-                    mMarkerArray.add(marker);
+                    Glide.with(getActivity())
+                            .load(s.getImage())
+                            .into(new SimpleTarget<GlideDrawable>() {
+                                @Override
+                                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                                    imageMap.put(marker, resource);
+                                }
+                            });
+
+                    markerMap.put(marker, s);
+
                 }
 
                 //zoom to display all markers
                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                for (Marker marker : mMarkerArray) {
+                for (Marker marker : markerMap.keySet()) {
                     builder.include(marker.getPosition());
                 }
                 LatLngBounds bounds = builder.build();
-                //TODO: set padding to markersize
+
                 CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 70);
                 googleMap.moveCamera(cu);
             }
@@ -163,7 +212,7 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
                 //resize the icon
                 double imageRatio = (double) icon.getWidth() / (double) icon.getHeight();
                 double newHeight = 70.0 / imageRatio;
-                icon = Bitmap.createScaledBitmap(icon, 100, (int) newHeight, false);
+                icon = Bitmap.createScaledBitmap(icon, 70, (int) newHeight, false);
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

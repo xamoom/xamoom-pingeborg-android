@@ -982,7 +982,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                 //resize the icon
                 double imageRatio = (double) icon.getWidth() / (double) icon.getHeight();
                 double newHeight = 70.0 / imageRatio;
-                icon = Bitmap.createScaledBitmap(icon, 100, (int) newHeight, false);
+                icon = Bitmap.createScaledBitmap(icon, 70, (int) newHeight, false);
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
