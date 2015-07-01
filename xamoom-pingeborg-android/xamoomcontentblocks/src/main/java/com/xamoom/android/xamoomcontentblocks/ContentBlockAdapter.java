@@ -41,6 +41,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -864,7 +865,7 @@ class ContentBlock8ViewHolder extends RecyclerView.ViewHolder {
 class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
     private Fragment mFragment;
     private TextView mTitleTextView;
-    private MapFragment mMapFragment;
+    private SupportMapFragment mMapFragment;
     private ContentBlockType9 mContentBlock;
     private ImageView mCustomMarkerImageView;
 
@@ -872,7 +873,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
         super(itemView);
         mFragment = fragment;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
-        mMapFragment = (MapFragment) fragment.getActivity().getFragmentManager().findFragmentById(R.id.map);
+        mMapFragment = (SupportMapFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
     }
 
     public void setupContentBlock(ContentBlockType9 cb9) {
