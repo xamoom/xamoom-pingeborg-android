@@ -5,17 +5,23 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.ImageFormat;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.os.StrictMode;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -45,9 +51,7 @@ import com.xamoom.android.mapping.Spot;
 import com.xamoom.android.mapping.SpotMap;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
-
 
 /**
  * A placeholder fragment containing a simple view.
@@ -55,6 +59,10 @@ import java.util.HashMap;
 public class MapActivityFragment extends Fragment implements OnMapReadyCallback {
 
     private SupportMapFragment mSupportMapFragment;
+    private GoogleMap mGoogleMap;
+    private final HashMap<Marker, Spot> markerMap = new HashMap<Marker, Spot>();
+    private MapAdditionFragment mMapAdditionFragment;
+    private Marker mActiveMarker;
 
     public static MapActivityFragment newInstance() {
         MapActivityFragment mapActivityFragment = new MapActivityFragment();
@@ -79,7 +87,52 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         setupMapFragment();
+        setupLocation();
         return view;
+    }
+
+    static int counter = 1;
+
+    private void setupLocation() {
+        //init Provider
+        final BestLocationProvider mBestLocationProvider = new BestLocationProvider(getActivity(), true, true, 1000, 1000, 2, 40);
+
+        BestLocationListener mBestLocationListener = new BestLocationListener() {
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                //Log.i("pingeborg", "onStatusChanged PROVIDER:" + provider + " STATUS:" + String.valueOf(status));
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+                 //Log.i("pingeborg", "onProviderEnabled PROVIDER:" + provider);
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+                //Log.i("pingeborg", "onProviderDisabled PROVIDER:" + provider);
+            }
+
+            @Override
+            public void onLocationUpdateTimeoutExceeded(BestLocationProvider.LocationType type) {
+                //Log.w("pingeborg", "onLocationUpdateTimeoutExceeded PROVIDER:" + type);
+            }
+
+            @Override
+            public void onLocationUpdate(Location location, BestLocationProvider.LocationType type,
+                                         boolean isFresh) {
+                if(isFresh) {
+                    Log.i("pingeborg", "onLocationUpdate TYPE:" + type + " Location:" + mBestLocationProvider.locationToString(location));
+                }
+            }
+        };
+
+        //start Location Updates
+        mBestLocationProvider.startLocationUpdatesWithListener(mBestLocationListener);
+
+        //stop Location Updates
+        //mBestLocationProvider.stopLocationUpdates();
     }
 
     public void onDestroyView() {
@@ -98,20 +151,57 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
 
     public void onMapReady(GoogleMap googleMap) {
         Log.v("pingeborg", "Mapready");
+        mGoogleMap = googleMap;
 
-        final HashMap<Marker, Spot> markerMap = new HashMap<Marker, Spot>();
-        final HashMap<Marker, Drawable> imageMap = new HashMap<Marker, Drawable>();
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if(marker != mActiveMarker) {
+                    mActiveMarker = marker;
+                    Spot spot = markerMap.get(marker);
 
-        addMarkersToMap(googleMap,imageMap, markerMap);
-        setupInfoWindow(googleMap, imageMap, markerMap);
+                    FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    if(mMapAdditionFragment == null)
+                        fragmentTransaction.setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom);
+
+                    mMapAdditionFragment = MapAdditionFragment.newInstance(spot.getDisplayName(), spot.getDescription(), spot.getImage(), spot.getLocation());
+                    fragmentTransaction.replace(R.id.mapAdditionFrameLayout, mMapAdditionFragment).commit();
+                } else
+                    return true;
+
+                return false;
+            }
+        });
+
+        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                closeMapAdditionFragment();
+            }
+        });
+
+        addMarkersToMap(googleMap, markerMap);
+        //setupInfoWindow(googleMap, imageMap, markerMap);
         googleMap.setMyLocationEnabled(true);
     }
 
-    private void setupInfoWindow(GoogleMap googleMap, HashMap<Marker, Drawable> imageMap, HashMap<Marker, Spot> markerMap) {
-        googleMap.setInfoWindowAdapter(new MapPopoverWindowAdapter(getActivity().getApplicationContext(), markerMap, imageMap));
+    private void closeMapAdditionFragment() {
+        if(mMapAdditionFragment != null) {
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom)
+                    .remove(mMapAdditionFragment)
+                    .commit();
+
+            mMapAdditionFragment = null;
+        }
     }
 
-    private void addMarkersToMap(final GoogleMap googleMap, final HashMap<Marker, Drawable> imageMap, final HashMap<Marker, Spot> markerMap) {
+    private void setupInfoWindow(GoogleMap googleMap, HashMap<Marker, Drawable> imageMap, HashMap<Marker, Spot> markerMap) {
+        //googleMap.setInfoWindowAdapter(new MapPopoverWindowAdapter(getActivity().getApplicationContext(), markerMap, imageMap));
+    }
+
+    private void addMarkersToMap(final GoogleMap googleMap, final HashMap<Marker, Spot> markerMap) {
         XamoomEndUserApi.getInstance().getSpotMap(null, new String[]{"showAllTheSpots"}, null, new APICallback<SpotMap>() {
             @Override
             public void finished(SpotMap result) {
@@ -133,17 +223,7 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
                             .title(s.getDisplayName())
                             .position(new LatLng(s.getLocation().getLat(), s.getLocation().getLon())));
 
-                    Glide.with(getActivity())
-                            .load(s.getImage())
-                            .into(new SimpleTarget<GlideDrawable>() {
-                                @Override
-                                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                                    imageMap.put(marker, resource);
-                                }
-                            });
-
                     markerMap.put(marker, s);
-
                 }
 
                 //zoom to display all markers

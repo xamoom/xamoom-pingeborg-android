@@ -148,6 +148,7 @@
     <orderEntry type="library" exported="" name="glide-transformations-1.0.6" level="project" />
     <orderEntry type="library" exported="" name="play-services-ads-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-location-7.5.0" level="project" />
+    <orderEntry type="module" module-name="xamoom-android-sdk" exported="" />
     <orderEntry type="module" module-name="xamoomcontentblocks" exported="" />
   </component>
 </module>

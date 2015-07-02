@@ -1,35 +1,16 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.PictureDrawable;
-import android.media.Image;
-import android.net.Uri;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.GenericRequestBuilder;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
-import com.bumptech.glide.load.model.StreamEncoder;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.load.resource.file.FileToStreamDecoder;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.caverock.androidsvg.SVG;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.xamoom.android.mapping.Spot;
-import com.xamoom.android.xamoomcontentblocks.SvgDecoder;
-import com.xamoom.android.xamoomcontentblocks.SvgDrawableTranscoder;
-import com.xamoom.android.xamoomcontentblocks.SvgSoftwareLayerSetter;
 
-import java.io.InputStream;
 import java.util.HashMap;
 
 /**

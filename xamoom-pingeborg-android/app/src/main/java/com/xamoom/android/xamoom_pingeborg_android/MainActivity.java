@@ -2,9 +2,11 @@ package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -24,11 +26,17 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
 
     private DrawerLayout mDrawerLayout;
     private FloatingActionButton mQRScannerFAB;
+    private Fragment mainFragment;
+    private Fragment bottomFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Strict Policy
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
+
 
         Analytics.getInstance(this).sendEvent("App", "Start", "User startet the app");
 
