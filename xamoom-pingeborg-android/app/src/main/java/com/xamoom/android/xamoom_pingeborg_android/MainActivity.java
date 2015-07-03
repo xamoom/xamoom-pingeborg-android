@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 
 public class MainActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener {
@@ -85,16 +86,19 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
 
                         switch (menuItem.getItemId()) {
                             case R.id.nav_home:
-                                Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to artist list activity", "User navigated to the artist list activity");
+                                Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to artist list fragment", "User navigated to the artist list fragment");
                                 mQRScannerFAB.setVisibility(View.VISIBLE);
                                 getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, ArtistListFragment.newInstance()).commit();
                                 break;
                             case R.id.nav_map:
-                                Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to map activity", "User navigated to the map activity");
+                                Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to map fragment", "User navigated to the map fragment");
                                 mQRScannerFAB.setVisibility(View.GONE);
                                 getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, MapActivityFragment.newInstance()).commit();
                                 break;
                             case R.id.nav_about:
+                                Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to about fragment", "User navigated to the about fragment");
+                                mQRScannerFAB.setVisibility(View.GONE);
+                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, AboutFragment.newInstance()).commit();
                                 break;
                             case R.id.nav_settings:
                                 break;
