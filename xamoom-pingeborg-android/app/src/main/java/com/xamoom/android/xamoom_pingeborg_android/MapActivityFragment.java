@@ -184,7 +184,7 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
 
         mGeofenceFragment = GeofenceFragment.newInstance(content.getContentName(), content.getImagePublicUrl());
         mGeofenceFragment.setSavedGeofence(content);
-        //fragmentTransaction.replace(R.id.geofenceFrameLayout, mGeofenceFragment).commit();
+        fragmentTransaction.replace(R.id.geofenceFrameLayout, mGeofenceFragment).commit();
     }
 
     public void onMapReady(GoogleMap googleMap) {

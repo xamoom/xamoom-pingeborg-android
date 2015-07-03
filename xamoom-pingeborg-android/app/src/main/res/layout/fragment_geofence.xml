@@ -1,9 +1,78 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.xamoom.android.xamoom_pingeborg_android.GeofenceFragment">
+<?xml version="1.0" encoding="utf-8"?>
 
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/halfFrameLayoutPadding"
+    android:paddingRight="@dimen/halfFrameLayoutPadding"
+    android:paddingTop="@dimen/halfFrameLayoutPadding">
 
-</FrameLayout>
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardElevation="2sp"
+        card_view:cardCornerRadius="2dp"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardPreventCornerOverlap="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:gravity="center|start"
+                android:text="pingeb.org entdeckt!"
+                />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/geofenceImage"
+                    android:layout_width="fill_parent"
+                    android:layout_height="134dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/placeholder"
+                    android:contentDescription="Pingeborg Cover Image"/>
+
+
+                <ImageView
+                    android:id="@+id/geofenceOverlayImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="134dp"
+                    android:background="#88FFFFFF"/>
+
+                <TextView
+                    android:id="@+id/geofenceTextView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="30dp"
+                    android:layout_gravity="bottom"
+                    android:gravity="center|start"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:paddingLeft="@dimen/artist_list_text_padding"
+                    android:textSize="18sp"
+                    android:textColor="@color/artist_list_text"
+                    android:background="@color/artist_list_text_background"/>
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+
+
+
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>
