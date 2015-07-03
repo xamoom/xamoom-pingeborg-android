@@ -25,6 +25,7 @@ import com.xamoom.android.mapping.Content;
 import com.xamoom.android.mapping.ContentList;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import jp.wasabeef.glide.transformations.GrayscaleTransformation;
@@ -78,6 +79,8 @@ public class ArtistListFragment extends Fragment {
     private void setupRecyclerView(final RecyclerView recyclerView) {
         mLayoutManager = new LinearLayoutManager(recyclerView.getContext());
         recyclerView.setLayoutManager(mLayoutManager);
+        final List<Content> mContentList = new LinkedList<Content>();
+        recyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(getActivity(), mContentList));
 
         final String[] mCursor = new String[1];
         final boolean[] isLoading = {false};
@@ -97,7 +100,9 @@ public class ArtistListFragment extends Fragment {
                     }
                 }
 
-                recyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(getActivity(), result.getItems()));
+                //recyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(getActivity(), result.getItems()));
+                mContentList.addAll(result.getItems());
+                recyclerView.getAdapter().notifyDataSetChanged();
 
                 mCursor[0] = result.getCursor();
                 isMore[0] = result.isMore();
@@ -125,7 +130,7 @@ public class ArtistListFragment extends Fragment {
                                 isLoading[0] = true;
 
                                 //add loading indicator
-                                result.getItems().add(null);
+                                mContentList.add(null);
                                 recyclerView.getAdapter().notifyItemInserted(result.getItems().size() - 1);
 
                                 XamoomEndUserApi.getInstance().getContentList(null, 7, mCursor[0], new String[]{"artists"}, new APICallback<ContentList>() {
@@ -136,11 +141,11 @@ public class ArtistListFragment extends Fragment {
                                         isMore[0] = resultReload.isMore();
 
                                         //remove loading indicator
-                                        result.getItems().remove(result.getItems().size() - 1);
-                                        recyclerView.getAdapter().notifyItemInserted(result.getItems().size());
+                                        mContentList.remove(mContentList.size() - 1);
+                                        recyclerView.getAdapter().notifyItemInserted(mContentList.size());
 
                                         //add items to get displayed
-                                        result.getItems().addAll(resultReload.getItems());
+                                        mContentList.addAll(resultReload.getItems());
                                         recyclerView.getAdapter().notifyDataSetChanged();
                                         isLoading[0] = false;
                                     }

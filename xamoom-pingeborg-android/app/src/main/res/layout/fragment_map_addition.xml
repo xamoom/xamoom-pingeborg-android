@@ -1,24 +1,9 @@
-<!--FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.xamoom.android.xamoom_pingeborg_android.MapAdditionFragment"
-    android:background="@color/white">
-
-    <TextView
-        android:id="@+id/spotNameTextView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment"
-        android:background="@color/white"/>
-
-
-</FrameLayout-->
-
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="bottom"
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
@@ -26,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:gravity="bottom">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
@@ -35,7 +21,8 @@
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginStart="16dp"
-            app:expandedTitleMarginEnd="16dp">
+            app:expandedTitleMarginEnd="16dp"
+            android:layout_gravity="bottom">
 
             <ImageView
                 android:id="@+id/backdrop"

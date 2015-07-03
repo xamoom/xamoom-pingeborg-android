@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ProgressBar
+        android:id="@+id/loadingSpotsProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/spotListRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.xamoom.android.xamoom_pingeborg_android.SpotListFragment">
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>

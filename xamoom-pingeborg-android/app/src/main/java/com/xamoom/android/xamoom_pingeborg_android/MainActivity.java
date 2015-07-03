@@ -26,8 +26,9 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
 
     private DrawerLayout mDrawerLayout;
     private FloatingActionButton mQRScannerFAB;
-    private Fragment mainFragment;
-    private Fragment bottomFragment;
+    private Fragment mMainFragment;
+    private Fragment mBottomFragment;
+    private Fragment mGeofenceFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +36,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         setContentView(R.layout.activity_main);
 
         //Strict Policy
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
-
+        //StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
 
         Analytics.getInstance(this).sendEvent("App", "Start", "User startet the app");
 

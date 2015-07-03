@@ -3,41 +3,26 @@ package com.xamoom.android.xamoom_pingeborg_android;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.ImageFormat;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.os.StrictMode;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.load.resource.gif.GifDrawable;
-import com.bumptech.glide.request.Request;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.SizeReadyCallback;
-import com.bumptech.glide.request.target.Target;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -47,11 +32,17 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
+import com.xamoom.android.mapping.ContentByLocation;
+import com.xamoom.android.mapping.ContentByLocationItem;
 import com.xamoom.android.mapping.Spot;
 import com.xamoom.android.mapping.SpotMap;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -62,7 +53,10 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     private GoogleMap mGoogleMap;
     private final HashMap<Marker, Spot> markerMap = new HashMap<Marker, Spot>();
     private MapAdditionFragment mMapAdditionFragment;
+    private GeofenceFragment mGeofenceFragment;
     private Marker mActiveMarker;
+    private BestLocationProvider mBestLocationProvider;
+    private ViewPager mViewPager;
 
     public static MapActivityFragment newInstance() {
         MapActivityFragment mapActivityFragment = new MapActivityFragment();
@@ -86,16 +80,21 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
-        setupMapFragment();
+
+        mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        if (mViewPager != null) {
+            setupViewPager(mViewPager);
+            TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabs);
+            tabLayout.setupWithViewPager(mViewPager);
+        }
+        //setupMapFragment();
         setupLocation();
+
         return view;
     }
 
-    static int counter = 1;
-
     private void setupLocation() {
-        //init Provider
-        final BestLocationProvider mBestLocationProvider = new BestLocationProvider(getActivity(), true, true, 1000, 1000, 2, 40);
+        mBestLocationProvider = new BestLocationProvider(getActivity(), true, true, 10000, 10000, 10, 40);
 
         BestLocationListener mBestLocationListener = new BestLocationListener() {
 
@@ -120,33 +119,72 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
             }
 
             @Override
-            public void onLocationUpdate(Location location, BestLocationProvider.LocationType type,
-                                         boolean isFresh) {
+            public void onLocationUpdate(Location location, BestLocationProvider.LocationType type, boolean isFresh) {
                 if(isFresh) {
                     Log.i("pingeborg", "onLocationUpdate TYPE:" + type + " Location:" + mBestLocationProvider.locationToString(location));
+                    setupGeofencing(location);
                 }
             }
         };
 
         //start Location Updates
         mBestLocationProvider.startLocationUpdatesWithListener(mBestLocationListener);
-
-        //stop Location Updates
-        //mBestLocationProvider.stopLocationUpdates();
     }
 
     public void onDestroyView() {
         super.onDestroyView();
     }
 
-    public void setupMapFragment() {
-        if (mSupportMapFragment == null) {
-            FragmentManager fragmentManager = getFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            mSupportMapFragment = SupportMapFragment.newInstance();
-            fragmentTransaction.replace(R.id.pingeborgMap, mSupportMapFragment).commit();
-            mSupportMapFragment.getMapAsync(this);
-        }
+    private void setupViewPager(ViewPager viewPager) {
+        mSupportMapFragment = SupportMapFragment.newInstance();
+
+        FragmentManager fragmentManager = getChildFragmentManager();
+        Adapter adapter = new Adapter(fragmentManager);
+        adapter.addFragment(mSupportMapFragment, "Map");
+        adapter.addFragment(SpotListFragment.newInstance(), "List");
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position != 0) {
+                    closeMapAdditionFragment();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        mSupportMapFragment.getMapAsync(this);
+    }
+
+    public void setupGeofencing(Location location) {
+        XamoomEndUserApi.getInstance().getContentByLocation(location.getLatitude(), location.getLongitude(), null, new APICallback<ContentByLocation>() {
+            @Override
+            public void finished(ContentByLocation result) {
+                mBestLocationProvider.stopLocationUpdates();
+                if (result.getItems().size() > 0) {
+                    Log.v("pingeborg","Hellyeah, got a geofence: " + result.getItems().get(0).getContentName());
+                    openGeofenceFragment(result.getItems().get(0));
+                }
+            }
+        });
+    }
+
+    public void openGeofenceFragment(ContentByLocationItem content) {
+        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+        if(mGeofenceFragment == null)
+            fragmentTransaction.setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom);
+
+        mGeofenceFragment = GeofenceFragment.newInstance(content.getContentName(), content.getImagePublicUrl());
+        mGeofenceFragment.setSavedGeofence(content);
+        //fragmentTransaction.replace(R.id.geofenceFrameLayout, mGeofenceFragment).commit();
     }
 
     public void onMapReady(GoogleMap googleMap) {
@@ -156,18 +194,11 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if(marker != mActiveMarker) {
-                    mActiveMarker = marker;
-                    Spot spot = markerMap.get(marker);
-
-                    FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    if(mMapAdditionFragment == null)
-                        fragmentTransaction.setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom);
-
-                    mMapAdditionFragment = MapAdditionFragment.newInstance(spot.getDisplayName(), spot.getDescription(), spot.getImage(), spot.getLocation());
-                    fragmentTransaction.replace(R.id.mapAdditionFrameLayout, mMapAdditionFragment).commit();
-                } else
+                if(marker == mActiveMarker)
                     return true;
+
+                mActiveMarker = marker;
+                openMapAdditionFragment(markerMap.get(marker));
 
                 return false;
             }
@@ -181,8 +212,16 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
         });
 
         addMarkersToMap(googleMap, markerMap);
-        //setupInfoWindow(googleMap, imageMap, markerMap);
         googleMap.setMyLocationEnabled(true);
+    }
+
+    private void openMapAdditionFragment(Spot spot) {
+        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+        if(mMapAdditionFragment == null)
+            fragmentTransaction.setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom);
+
+        mMapAdditionFragment = MapAdditionFragment.newInstance(spot.getDisplayName(), spot.getDescription(), spot.getImage(), spot.getLocation());
+        fragmentTransaction.replace(R.id.mapAdditionFrameLayout, mMapAdditionFragment).commit();
     }
 
     private void closeMapAdditionFragment() {
@@ -195,10 +234,6 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
 
             mMapAdditionFragment = null;
         }
-    }
-
-    private void setupInfoWindow(GoogleMap googleMap, HashMap<Marker, Drawable> imageMap, HashMap<Marker, Spot> markerMap) {
-        //googleMap.setInfoWindowAdapter(new MapPopoverWindowAdapter(getActivity().getApplicationContext(), markerMap, imageMap));
     }
 
     private void addMarkersToMap(final GoogleMap googleMap, final HashMap<Marker, Spot> markerMap) {
@@ -301,5 +336,34 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
         }
 
         return icon;
+    }
+
+    static class Adapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragments = new ArrayList<>();
+        private final List<String> mFragmentTitles = new ArrayList<>();
+
+        public Adapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragments.add(fragment);
+            mFragmentTitles.add(title);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragments.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragments.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitles.get(position);
+        }
     }
 }
