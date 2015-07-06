@@ -49,16 +49,20 @@ import java.util.Set;
  */
 public class MapActivityFragment extends Fragment implements OnMapReadyCallback {
 
+    private final HashMap<Marker, Spot> markerMap = new HashMap<Marker, Spot>();
+
     private SupportMapFragment mSupportMapFragment;
     private GoogleMap mGoogleMap;
-    private final HashMap<Marker, Spot> markerMap = new HashMap<Marker, Spot>();
+    private ViewPager mViewPager;
     private MapAdditionFragment mMapAdditionFragment;
     private GeofenceFragment mGeofenceFragment;
     private Marker mActiveMarker;
     private BestLocationProvider mBestLocationProvider;
     private BestLocationListener mBestLocationListener;
-    private ViewPager mViewPager;
 
+    /**
+     * TODO
+     */
     public static MapActivityFragment newInstance() {
         MapActivityFragment mapActivityFragment = new MapActivityFragment();
         return mapActivityFragment;
@@ -88,7 +92,7 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
             TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabs);
             tabLayout.setupWithViewPager(mViewPager);
         }
-        //setupMapFragment();
+
         setupLocation();
 
         return view;
@@ -99,22 +103,18 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
         mBestLocationListener = new BestLocationListener() {
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-                //Log.i("pingeborg", "onStatusChanged PROVIDER:" + provider + " STATUS:" + String.valueOf(status));
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-                 //Log.i("pingeborg", "onProviderEnabled PROVIDER:" + provider);
             }
 
             @Override
             public void onProviderDisabled(String provider) {
-                //Log.i("pingeborg", "onProviderDisabled PROVIDER:" + provider);
             }
 
             @Override
             public void onLocationUpdateTimeoutExceeded(BestLocationProvider.LocationType type) {
-                //Log.w("pingeborg", "onLocationUpdateTimeoutExceeded PROVIDER:" + type);
             }
 
             @Override
@@ -131,17 +131,21 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     }
 
     public void onDestroyView() {
+        mBestLocationProvider.stopLocationUpdates();
         super.onDestroyView();
     }
 
     private void setupViewPager(ViewPager viewPager) {
         mSupportMapFragment = SupportMapFragment.newInstance();
 
+        //add fragments to viewPager
         FragmentManager fragmentManager = getChildFragmentManager();
         Adapter adapter = new Adapter(fragmentManager);
         adapter.addFragment(mSupportMapFragment, "Map");
         adapter.addFragment(SpotListFragment.newInstance(), "List");
         viewPager.setAdapter(adapter);
+
+        //hide mapAddition when changing tabs
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -172,6 +176,7 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
             @Override
             public void finished(ContentByLocation result) {
                 mBestLocationProvider.stopLocationUpdates();
+                //open geofence when there is at least on item (you can only get one geofence at a time - the nearest)
                 if (result.getItems().size() > 0) {
                     openGeofenceFragment(result.getItems().get(0));
                 }
@@ -180,13 +185,17 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     }
 
     public void openGeofenceFragment(ContentByLocationItem content) {
-        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-        if(mGeofenceFragment == null)
-            fragmentTransaction.setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom);
+        try {
+            FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+            if(mGeofenceFragment == null)
+                fragmentTransaction.setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom);
 
-        mGeofenceFragment = GeofenceFragment.newInstance(content.getContentName(), content.getImagePublicUrl(), content.getContentId());
-        mGeofenceFragment.setSavedGeofence(content);
-        fragmentTransaction.replace(R.id.geofenceFrameLayout, mGeofenceFragment).commit();
+            mGeofenceFragment = GeofenceFragment.newInstance(content.getContentName(), content.getImagePublicUrl(), content.getContentId());
+            mGeofenceFragment.setSavedGeofence(content);
+            fragmentTransaction.replace(R.id.geofenceFrameLayout, mGeofenceFragment).commit();
+        } catch (NullPointerException e) {
+            Log.v(Global.DEBUG_TAG, "Exception: Geofencefragment is null.");
+        }
     }
 
     public void closeGeofenceFragment() {
@@ -194,7 +203,6 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     }
 
     public void onMapReady(GoogleMap googleMap) {
-        Log.v("pingeborg", "Mapready");
         mGoogleMap = googleMap;
 
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -247,6 +255,8 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
             @Override
             public void finished(SpotMap result) {
                 Bitmap icon;
+
+                //get the icon for the mapMarker (drawable image (eg. png) or SVG
                 if (result.getStyle().getCustomMarker() != null) {
                     String iconString = result.getStyle().getCustomMarker();
                     icon = getIconFromBase64(iconString);
@@ -274,6 +284,7 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
                 }
                 LatLngBounds bounds = builder.build();
 
+                //move camera to calulated point
                 CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 70);
                 googleMap.moveCamera(cu);
             }
@@ -337,8 +348,10 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            return BitmapFactory.decodeResource(getActivity().getResources(), com.xamoom.android.xamoomcontentblocks.R.drawable.ic_default_map_marker);
         } catch (SVGParseException e ) {
             e.printStackTrace();
+            BitmapFactory.decodeResource(getActivity().getResources(), com.xamoom.android.xamoomcontentblocks.R.drawable.ic_default_map_marker);
         }
 
         return icon;

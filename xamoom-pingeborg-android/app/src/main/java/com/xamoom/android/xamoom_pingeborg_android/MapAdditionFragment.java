@@ -26,23 +26,25 @@ import com.xamoom.android.request.Location;
  * create an instance of this fragment.
  */
 public class MapAdditionFragment extends android.support.v4.app.Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "spotNameParam";
     private static final String ARG_PARAM2 = "spotDescriptionParam";
     private static final String ARG_PARAM3 = "spotImageUrlParam";
     private static final String ARG_PARAM4 = "spotLocationLatitudeParam";
     private static final String ARG_PARAM5 = "spotLocationLongitudeParam";
 
-    // TODO: Rename and change types of parameters
     private String mSpotName;
     private String mSpotDescription;
     private String mSpotImageUrl;
     private Location mSpotLocation;
 
-    //private OnFragmentInteractionListener mListener;
-
-
+    /**
+     * TODO
+     * @param name
+     * @param description
+     * @param imageUrl
+     * @param location
+     * @return
+     */
     public static MapAdditionFragment newInstance(String name, String description, String imageUrl, Location location) {
         MapAdditionFragment fragment = new MapAdditionFragment();
         Bundle args = new Bundle();
@@ -93,6 +95,7 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
                 .placeholder(R.drawable.placeholder)
                 .into(imageView);
 
+        //fab to navigate
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.navigationFAB);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,46 +108,4 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
         return view;
     }
 
-    /*
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-    */
-    /*
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-    */
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     *//*
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
-    */
 }

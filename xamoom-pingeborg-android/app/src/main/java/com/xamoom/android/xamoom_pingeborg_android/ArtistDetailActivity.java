@@ -1,6 +1,7 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -23,14 +24,10 @@ import java.util.List;
 
 public class ArtistDetailActivity extends ActionBarActivity {
 
-    boolean isAlive;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_detail);
-
-        isAlive = true;
 
         //toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -40,23 +37,36 @@ public class ArtistDetailActivity extends ActionBarActivity {
         final ActionBar ab = getSupportActionBar();
         ab.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
         ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle(Global.getInstance().getCurrentSystemName());
 
         //get contentId or locationIdentifier from intent
-        Intent myIntent = getIntent(); // gets the previously created intent
+        Intent myIntent = getIntent();
         String contentId = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_CONTENT_ID);
         String locationIdentifier= myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
 
         //load data
         if (!contentId.equals("")) {
             Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with contentId: " + contentId);
-            XamoomEndUserApi.getInstance().getContentbyIdFull(contentId, false, false, null, true, new APICallback<ContentById>() { //TODO: Check if full or not
+            XamoomEndUserApi.getInstance().getContentbyIdFull(contentId, false, false, null, true, new APICallback<ContentById>() { //TODO: Check if full o
                 @Override
                 public void finished(ContentById result) {
-                    //create contentBlock1
+                    //create title and titleImage from content & add them to contentBlocks
                     ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
                     result.getContent().getContentBlocks().add(0, cb0);
+                    ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
+                    result.getContent().getContentBlocks().add(1, cb3);
 
-                    //create contentBlock3
+                    setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
+                }
+            });
+        } else if (!locationIdentifier.equals("")){
+            Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with locationIdentifier: " + locationIdentifier);
+            XamoomEndUserApi.getInstance().getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
+                @Override
+                public void finished(ContentByLocationIdentifier result) {
+                    //create title and titleImage from content & add them to contentBlocks
+                    ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
+                    result.getContent().getContentBlocks().add(0, cb0);
                     ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
                     result.getContent().getContentBlocks().add(1, cb3);
 
@@ -64,30 +74,15 @@ public class ArtistDetailActivity extends ActionBarActivity {
                 }
             });
         } else {
-            Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with locationIdentifier: " + locationIdentifier);
-            XamoomEndUserApi.getInstance().getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
-                @Override
-                public void finished(ContentByLocationIdentifier result) {
-                    //create contentBlock1
-                    ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
-                    result.getContent().getContentBlocks().add(0, cb0);
-
-                    //create contentBlock3
-                    ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
-                    result.getContent().getContentBlocks().add(1, cb3);
-
-                    setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
-                }
-            });
+            Log.w(Global.DEBUG_TAG, "There is no contentId or locationIdentifier");
         }
-
     }
 
     private void setupXamoomContentFrameLayout(List<ContentBlock> contentBlocks) {
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(null, Config.YOUTUBE_API_KEY);
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(null, Global.YOUTUBE_API_KEY);
         fragment.setContentBlocks(contentBlocks);
 
-        if (isAlive)
+        if (!this.isDestroyed())
             getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.XamoomContentFrameLayout, fragment)
@@ -97,7 +92,6 @@ public class ArtistDetailActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        isAlive = false;
     }
 
     @Override
@@ -115,9 +109,7 @@ public class ArtistDetailActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == android.R.id.home) {
+        if (id == android.R.id.home) {
             finish();
             return true;
         }

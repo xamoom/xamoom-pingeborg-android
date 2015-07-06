@@ -11,6 +11,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
+import android.provider.Settings;
 import android.provider.Telephony;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -568,7 +569,7 @@ class ContentBlock4ViewHolder extends RecyclerView.ViewHolder {
         mRootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_VIEW,Uri.parse(cb4.getLinkUrl()));
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(cb4.getLinkUrl()));
                 mFragment.startActivity(i);
             }
         });
@@ -743,12 +744,14 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
                 mTitleTextView.setText(result.getContent().getTitle());
                 mDescriptionTextView.setText(result.getContent().getDescriptionOfContent());
 
-                Glide.with(mFragment)
-                        .load(result.getContent().getImagePublicUrl())
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .crossFade()
-                        .centerCrop()
-                        .into(mContentThumbnailImageView);
+                if (mFragment.isAdded()) {
+                    Glide.with(mFragment)
+                            .load(result.getContent().getImagePublicUrl())
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .crossFade()
+                            .centerCrop()
+                            .into(mContentThumbnailImageView);
+                }
             }
         });
 
@@ -901,36 +904,38 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
         XamoomEndUserApi.getInstance().getSpotMap(null, mContentBlock.getSpotMapTag().split(","), null, new APICallback<SpotMap>() {
             @Override
             public void finished(SpotMap result) {
-                Bitmap icon;
-                if (result.getStyle().getCustomMarker() != null) {
-                    String iconString = result.getStyle().getCustomMarker();
-                    icon = getIconFromBase64(iconString);
-                } else {
-                    icon = BitmapFactory.decodeResource(mFragment.getResources(), R.drawable.ic_default_map_marker);
-                    float imageRatio = (float)icon.getWidth() / (float)icon.getHeight();
-                    icon = Bitmap.createScaledBitmap(icon, 70, (int)(70/imageRatio), false);
-                }
+                if (mMapFragment.isAdded()) {
+                    Bitmap icon;
+                    if (result.getStyle().getCustomMarker() != null) {
+                        String iconString = result.getStyle().getCustomMarker();
+                        icon = getIconFromBase64(iconString);
+                    } else {
+                        icon = BitmapFactory.decodeResource(mFragment.getResources(), R.drawable.ic_default_map_marker);
+                        float imageRatio = (float) icon.getWidth() / (float) icon.getHeight();
+                        icon = Bitmap.createScaledBitmap(icon, 70, (int) (70 / imageRatio), false);
+                    }
 
-                //show all markers
-                for (Spot s : result.getItems()) {
-                    Marker marker = googleMap.addMarker(new MarkerOptions()
-                            .icon(BitmapDescriptorFactory.fromBitmap(icon))
-                            .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
-                            .title(s.getDisplayName())
-                            .position(new LatLng(s.getLocation().getLat(), s.getLocation().getLon())));
+                    //show all markers
+                    for (Spot s : result.getItems()) {
+                        Marker marker = googleMap.addMarker(new MarkerOptions()
+                                .icon(BitmapDescriptorFactory.fromBitmap(icon))
+                                .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
+                                .title(s.getDisplayName())
+                                .position(new LatLng(s.getLocation().getLat(), s.getLocation().getLon())));
 
-                    mMarkerArray.add(marker);
-                }
+                        mMarkerArray.add(marker);
+                    }
 
-                //zoom to display all markers
-                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                for (Marker marker : mMarkerArray) {
-                    builder.include(marker.getPosition());
+                    //zoom to display all markers
+                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                    for (Marker marker : mMarkerArray) {
+                        builder.include(marker.getPosition());
+                    }
+                    LatLngBounds bounds = builder.build();
+
+                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 70);
+                    googleMap.moveCamera(cu);
                 }
-                LatLngBounds bounds = builder.build();
-                //TODO: set padding to markersize
-                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 70);
-                googleMap.moveCamera(cu);
             }
         });
     }

@@ -27,12 +27,7 @@ import java.util.List;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SpotListFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link SpotListFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * TODO
  */
 public class SpotListFragment extends android.support.v4.app.Fragment {
 
@@ -44,21 +39,14 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
     private MapAdditionFragment mMapAdditionFragment;
     static Location mUserLocation = null;
 
-    //private OnFragmentInteractionListener mListener;
-
     /**
      * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * this fragment.
      *
      * @return A new instance of fragment SpotListFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static SpotListFragment newInstance() {
         SpotListFragment fragment = new SpotListFragment();
-        Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -113,7 +101,7 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
             public void onLocationUpdate(Location location, BestLocationProvider.LocationType type, boolean isFresh) {
                 if(isFresh) {
                     mUserLocation = location;
-                    Log.i("pingeborg", "onLocationUpdate TYPE:" + type + " Location:" + mBestLocationProvider.locationToString(location));
+                    Log.i(Global.DEBUG_TAG, "onLocationUpdate TYPE:" + type + " Location:" + mBestLocationProvider.locationToString(location));
                     getClosesSpots(location);
                 }
             }
@@ -140,67 +128,6 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
         mLayoutManager = new LinearLayoutManager(recyclerView.getContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(new SpotListRecyclerViewAdapter(getActivity(), mSpotList));
-    }
-
-    private void openMapAdditionFragment(Spot spot) {
-        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-        if(mMapAdditionFragment == null)
-            fragmentTransaction.setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom);
-
-        mMapAdditionFragment = MapAdditionFragment.newInstance(spot.getDisplayName(), spot.getDescription(), spot.getImage(), spot.getLocation());
-        fragmentTransaction.replace(R.id.mapAdditionFrameLayout, mMapAdditionFragment).commit();
-    }
-
-    private void closeMapAdditionFragment() {
-        if(mMapAdditionFragment != null) {
-            getActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom)
-                    .remove(mMapAdditionFragment)
-                    .commit();
-
-            mMapAdditionFragment = null;
-        }
-    }
-    /*
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-    */
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        //public void onFragmentInteraction(Uri uri);
     }
 
     /**
@@ -279,13 +206,6 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
                 spotLocation.setLongitude(holder.mBoundContent.getLocation().getLon());
                 float distance = mUserLocation.distanceTo(spotLocation);
                 holder.mDistanceTextView.setText(String.valueOf(Math.round(distance)) + " Meter");
-
-                holder.mView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Snackbar.make(v, "Hello", Snackbar.LENGTH_SHORT).show();
-                    }
-                });
             }
         }
 

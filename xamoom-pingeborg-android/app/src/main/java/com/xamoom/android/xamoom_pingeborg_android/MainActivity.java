@@ -37,21 +37,33 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         //Strict Policy
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
 
+        //analytics
         Analytics.getInstance(this).sendEvent("App", "Start", "User startet the app");
 
+        //check if this is the first start of the app
+        Global.getInstance().setActivity(this);
+        Global.getInstance().setCurrentSystem(0);
+        if (Global.getInstance().isFirstStart()) {
+            Log.v(Global.DEBUG_TAG, "First time starting the app");
+        }
+
+        //setup toolbar/actionbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         final ActionBar ab = getSupportActionBar();
         ab.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
         ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle(Global.getInstance().getCurrentSystemName());
 
+        //setup navigation drawer
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
             setupDrawerContent(navigationView);
         }
 
+        //setup FAB Button
         mQRScannerFAB = (FloatingActionButton) findViewById(R.id.fab);
         mQRScannerFAB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,12 +72,6 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                         .setAction("Action", null).show();
             }
         });
-
-        //first start?
-        Global.getInstance().setActivity(this);
-        if (Global.getInstance().isFirstStart()) {
-            Log.v("pingeborg", "First time starting the app");
-        }
 
         //setup artistListFragment
         setupArtistListFragment();
@@ -118,10 +124,6 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                 Analytics.getInstance(this).sendEvent("UX", "Drawer opened", "User opened the navigation drawer");
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
-            case R.id.action_settings:
-                Analytics.getInstance(this).sendEvent("UX", "Artists reloaded", "User called reload in artists action-bar menu");
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, ArtistListFragment.newInstance()).commit();
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -136,7 +138,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
     @Override
     public void closeGeofenceFragment() {
         if(mMainFragment.getClass().equals(MapActivityFragment.class)) {
-            Log.v("pingeborg","MainFragment: " + mMainFragment);
+            Log.v("pingeborg", "MainFragment: " + mMainFragment);
             MapActivityFragment mapActivityFragment = (MapActivityFragment) mMainFragment;
             mapActivityFragment.closeGeofenceFragment();
         }

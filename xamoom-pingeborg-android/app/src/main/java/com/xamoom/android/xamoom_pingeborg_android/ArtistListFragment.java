@@ -32,12 +32,7 @@ import jp.wasabeef.glide.transformations.GrayscaleTransformation;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ArtistListFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ArtistListFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * TODO
  */
 public class ArtistListFragment extends Fragment {
 
@@ -47,7 +42,10 @@ public class ArtistListFragment extends Fragment {
     private ProgressBar mProgressBar;
 
     /**
+     * Use this factory method to create a new instance of
+     * this fragment.
      *
+     * @return A new instance of fragment ArtistListFragment.
      */
     public static ArtistListFragment newInstance() {
         ArtistListFragment fragment = new ArtistListFragment();
@@ -67,7 +65,6 @@ public class ArtistListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         View view = inflater.inflate(R.layout.fragment_artist_list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.artistListRecyclerView);
         mProgressBar = (ProgressBar) view.findViewById(R.id.loadingArtistsProgressBar);
@@ -79,13 +76,16 @@ public class ArtistListFragment extends Fragment {
     private void setupRecyclerView(final RecyclerView recyclerView) {
         mLayoutManager = new LinearLayoutManager(recyclerView.getContext());
         recyclerView.setLayoutManager(mLayoutManager);
+
         final List<Content> mContentList = new LinkedList<Content>();
         recyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(getActivity(), mContentList));
 
+        //TODO
         final String[] mCursor = new String[1];
         final boolean[] isLoading = {false};
         final boolean[] isMore = new boolean[1];
 
+        //get contentList and display via SimpleStringRecyclerView
         XamoomEndUserApi.getInstance().getContentList(null, 7, null, new String[]{"artists"}, new APICallback<ContentList>() {
             @Override
             public void finished(final ContentList result) {
@@ -100,61 +100,60 @@ public class ArtistListFragment extends Fragment {
                     }
                 }
 
-                //recyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(getActivity(), result.getItems()));
                 mContentList.addAll(result.getItems());
                 recyclerView.getAdapter().notifyDataSetChanged();
 
                 mCursor[0] = result.getCursor();
                 isMore[0] = result.isMore();
+            }
+        });
 
-                //load more on scrolling
-                recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                    @Override
-                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                        super.onScrollStateChanged(recyclerView, newState);
-                    }
+        //load more on scrolling
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
 
-                    @Override
-                    public void onScrolled(final RecyclerView recyclerView, int dx, int dy) {
-                        super.onScrolled(recyclerView, dx, dy);
-                        int pastVisiblesItems, visibleItemCount, totalItemCount;
+            @Override
+            public void onScrolled(final RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int pastVisiblesItems, visibleItemCount, totalItemCount;
 
-                        visibleItemCount = mLayoutManager.getChildCount();
-                        totalItemCount = mLayoutManager.getItemCount();
-                        pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition();
+                visibleItemCount = mLayoutManager.getChildCount();
+                totalItemCount = mLayoutManager.getItemCount();
+                pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition();
 
-                        //true when there are only 2 items until end
-                        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount - 1) {
+                //true when there are only 2 items until end
+                if ((visibleItemCount + pastVisiblesItems) >= totalItemCount - 1) {
 
-                            if (!isLoading[0] && isMore[0]) {
-                                isLoading[0] = true;
+                    if (!isLoading[0] && isMore[0]) {
+                        isLoading[0] = true;
 
-                                //add loading indicator
-                                mContentList.add(null);
-                                recyclerView.getAdapter().notifyItemInserted(result.getItems().size() - 1);
+                        //add loading indicator
+                        mContentList.add(null);
+                        recyclerView.getAdapter().notifyItemInserted(mContentList.size() - 1);
 
-                                XamoomEndUserApi.getInstance().getContentList(null, 7, mCursor[0], new String[]{"artists"}, new APICallback<ContentList>() {
-                                    @Override
-                                    public void finished(ContentList resultReload) {
-                                        Analytics.getInstance(getActivity()).sendEvent("UX","Loaded more artists","The user loaded more artists");
-                                        mCursor[0] = resultReload.getCursor();
-                                        isMore[0] = resultReload.isMore();
+                        XamoomEndUserApi.getInstance().getContentList(null, 7, mCursor[0], new String[]{"artists"}, new APICallback<ContentList>() {
+                            @Override
+                            public void finished(ContentList resultReload) {
+                                Analytics.getInstance(getActivity()).sendEvent("UX", "Loaded more artists", "The user loaded more artists");
+                                mCursor[0] = resultReload.getCursor();
+                                isMore[0] = resultReload.isMore();
 
-                                        //remove loading indicator
-                                        mContentList.remove(mContentList.size() - 1);
-                                        recyclerView.getAdapter().notifyItemInserted(mContentList.size());
+                                //remove loading indicator
+                                mContentList.remove(mContentList.size() - 1);
+                                recyclerView.getAdapter().notifyItemInserted(mContentList.size());
 
-                                        //add items to get displayed
-                                        mContentList.addAll(resultReload.getItems());
-                                        recyclerView.getAdapter().notifyDataSetChanged();
-                                        isLoading[0] = false;
-                                    }
-                                });
+                                //add items to get displayed
+                                mContentList.addAll(resultReload.getItems());
+                                recyclerView.getAdapter().notifyDataSetChanged();
+                                isLoading[0] = false;
                             }
-
-                        }
+                        });
                     }
-                });
+
+                }
             }
         });
     }

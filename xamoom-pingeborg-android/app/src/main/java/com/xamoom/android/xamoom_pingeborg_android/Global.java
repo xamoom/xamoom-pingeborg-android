@@ -3,17 +3,32 @@ package com.xamoom.android.xamoom_pingeborg_android;
 import android.app.Activity;
 import android.content.SharedPreferences;
 
+import java.util.ResourceBundle;
+
 /**
- * Created by raphaelseher on 30.06.15.
+ * Global is used for everything that is used globally.
  */
 public class Global {
+    public static String DEBUG_TAG = "pingeborg.android.xamoom.at";
+    public static String YOUTUBE_API_KEY = "AIzaSyD5PVVHQ8QIDAqPuk47mN90WBPuQdxGnUU";
+
+    private static String SAVED_ARTISTS_KEY = "savedArtists.android.xamoom.at";
+    private static String IS_FIRST_START_KEY = "isFirstStart.android.xamoom.at";
 
     private static Global mInstance;
     private static SharedPreferences mSharedPreferences;
+    private static String mAboutPage;
+    private static int mCurrentSystem;
+    private static Activity mContext;
 
     public Global () {
     }
 
+    /**
+     * TODO
+     *
+     * @return Global
+     */
     public static Global getInstance() {
         if (mInstance == null) {
             mInstance = new Global();
@@ -21,45 +36,94 @@ public class Global {
         return mInstance;
     }
 
+    /**
+     * TODO
+     */
     public void setActivity(Activity activity) {
+        mContext = activity;
         mSharedPreferences = activity.getPreferences(activity.getApplicationContext().MODE_PRIVATE);
     }
 
+    /**
+     * TODO
+     */
     public void saveStringToSharedPref (String key, String value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString(key, value);
-        editor. commit();
+        editor.commit();
     }
 
+    /**
+     * TODO
+     */
     public String getStringFromSharedPref (String key) {
        return mSharedPreferences.getString(key, null);
     }
 
+    /**
+     * TODO
+     */
     public void saveArtist(String contentId) {
-        String savedArtists = getStringFromSharedPref("savedArtists");
+        String savedArtists = getStringFromSharedPref(SAVED_ARTISTS_KEY);
         if (savedArtists != null) {
             if (!savedArtists.contains(contentId))
                 savedArtists = savedArtists.concat(","+contentId);
         } else {
             savedArtists = contentId;
         }
-        saveStringToSharedPref("savedArtists", savedArtists);
+        saveStringToSharedPref(SAVED_ARTISTS_KEY, savedArtists);
     }
 
+    /**
+     * TODO
+     */
     public String getSavedArtists() {
-        return getStringFromSharedPref("savedArtists");
+        return getStringFromSharedPref(SAVED_ARTISTS_KEY);
     }
 
+    /**
+     * TODO
+     */
     public boolean isFirstStart () {
-        if(mSharedPreferences.getBoolean("isFirstStart", false)) {
+        if(mSharedPreferences.getBoolean(IS_FIRST_START_KEY, false)) {
             return false;
         } else {
             SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putBoolean("isFirstStart", true);
+            editor.putBoolean(IS_FIRST_START_KEY, true);
             editor.commit();
 
             return true;
         }
     }
 
+    public String getAboutPage() {
+        return mAboutPage;
+    }
+
+    /**
+     * TODO
+     */
+    public void setCurrentSystem(int id) {
+        switch (id) {
+            case 0:
+                mAboutPage = mContext.getString(R.string.pingeborg_carinthia_about_page_id);
+                break;
+            default:
+                mAboutPage = mContext.getString(R.string.pingeborg_carinthia_about_page_id);
+                break;
+        }
+        mCurrentSystem = id;
+    }
+
+    /**
+     * TODO
+     */
+    public String getCurrentSystemName() {
+        switch (mCurrentSystem) {
+            case 0:
+                return mContext.getString(R.string.pingeborg_carinthia_system_name);
+            default:
+                return mContext.getString(R.string.pingeborg_carinthia_system_name);
+        }
+    }
 }
