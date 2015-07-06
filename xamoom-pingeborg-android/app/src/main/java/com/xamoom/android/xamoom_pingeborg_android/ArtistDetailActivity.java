@@ -49,7 +49,7 @@ public class ArtistDetailActivity extends ActionBarActivity {
         //load data
         if (!contentId.equals("")) {
             Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with contentId: " + contentId);
-            XamoomEndUserApi.getInstance().getContentById(contentId, false, false, null, new APICallback<ContentById>() {
+            XamoomEndUserApi.getInstance().getContentbyIdFull(contentId, false, false, null, true, new APICallback<ContentById>() { //TODO: Check if full or not
                 @Override
                 public void finished(ContentById result) {
                     //create contentBlock1

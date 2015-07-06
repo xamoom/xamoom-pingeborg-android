@@ -76,7 +76,7 @@ public class AboutFragment extends android.support.v4.app.Fragment {
     }
 
     public void setupXamoomContentFragment () {
-        XamoomEndUserApi.getInstance().getContentById("f0da3d3d28d3418e9ccc4a6e9b3493c0", false, false, null, new APICallback<ContentById>() {
+        XamoomEndUserApi.getInstance().getContentbyIdFull("f0da3d3d28d3418e9ccc4a6e9b3493c0", false, false, null, true, new APICallback<ContentById>() {
             @Override
             public void finished(ContentById result) {
 

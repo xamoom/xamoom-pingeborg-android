@@ -441,7 +441,7 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
 
         Glide.with(mFragment)
                 .load("http://img.youtube.com/vi/" + mYoutubeVideoCode + "/maxresdefault.jpg")
-                .placeholder(R.drawable.ic_default_map_marker)
+                .placeholder(R.drawable.placeholder)
                 .fitCenter()
                 .override(deviceWidth, (int)(deviceWidth/1.77))
                 .into(mImageView);
@@ -515,7 +515,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                 requestBuilder
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                 // SVG cannot be serialized so it's not worth to cache it
-                        //.placeholder(R.drawable.x)
+                        .placeholder(R.drawable.placeholder)
                         .load(uri)
                         .into(mImageView);
             } else {
@@ -525,7 +525,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                 Glide.with(mFragment)
                         .load(cb3.getFileId())
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        //.placeholder(R.drawable.x)
+                        //.placeholder(R.drawable.placeholder)
                         .fitCenter()
                         .override(deviceWidth-(int)(margin*2),2500)
                         .into(mImageView);
@@ -719,30 +719,33 @@ class ContentBlock5ViewHolder extends RecyclerView.ViewHolder {
 class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
     private Fragment mFragment;
     private TextView mTitleTextView;
+    private TextView mDescriptionTextView;
     private LinearLayout mRootLayout;
     private ImageView mContentThumbnailImageView;
 
     public ContentBlock6ViewHolder(View itemView, Fragment activity) {
         super(itemView);
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+        mDescriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         mRootLayout = (LinearLayout) itemView.findViewById(R.id.contentBlockLinearLayout);
         mContentThumbnailImageView = (ImageView) itemView.findViewById(R.id.contentThumbnailImageView);
         mFragment = activity;
     }
 
     public void setupContentBlock(final ContentBlockType6 cb6) {
-        if(cb6.getTitle() != null)
-            mTitleTextView.setText(cb6.getTitle());
-        else
-            mTitleTextView.setText(null);
+        mContentThumbnailImageView.setImageDrawable(null);
+        mTitleTextView.setText(null);
+        mDescriptionTextView.setText(null);
 
-        XamoomEndUserApi.getInstance().getContentById(cb6.getContentId(), false, false, null, new APICallback<ContentById>() {
+        XamoomEndUserApi.getInstance().getContentbyIdFull(cb6.getContentId(), false, false, null, false, new APICallback<ContentById>() {
             @Override
             public void finished(ContentById result) {
                 mTitleTextView.setText(result.getContent().getTitle());
+                mDescriptionTextView.setText(result.getContent().getDescriptionOfContent());
 
                 Glide.with(mFragment)
                         .load(result.getContent().getImagePublicUrl())
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .crossFade()
                         .centerCrop()
                         .into(mContentThumbnailImageView);
