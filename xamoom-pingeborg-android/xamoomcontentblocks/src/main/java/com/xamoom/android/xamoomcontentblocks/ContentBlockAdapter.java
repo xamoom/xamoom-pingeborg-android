@@ -264,13 +264,12 @@ class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
  * AudioBlock
  */
 class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
-
     private Fragment mFragment;
     private TextView mTitleTextView;
     private TextView mArtistTextView;
     private TextView mRemainingSongTimeTextView;
     private Button mPlayPauseButton;
-    private static MediaPlayer mMediaPlayer;
+    private MediaPlayer mMediaPlayer;
     private ProgressBar mSongProgressBar;
     private final Handler mHandler = new Handler();
     private Runnable mRunnable;
@@ -286,64 +285,67 @@ class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setupContentBlock(ContentBlockType1 cb1) {
-
-        if(cb1.getTitle() != null)
+        if (cb1.getTitle() != null)
             mTitleTextView.setText(cb1.getTitle());
         else {
             mTitleTextView.setText(null);
         }
 
-        if(cb1.getArtist() != null)
+        if (cb1.getArtist() != null)
             mArtistTextView.setText(cb1.getArtist());
         else {
             mArtistTextView.setText(null);
         }
 
-
-        if(cb1.getFileId() != null && mMediaPlayer == null) {
+        if (cb1.getFileId() != null) {
             setupMusicPlayer(cb1);
-        } else if (mMediaPlayer != null) {
-            if (!mMediaPlayer.isPlaying())
-                setupMusicPlayer(cb1);
         }
     }
 
     private void setupMusicPlayer(final ContentBlockType1 cb1) {
-        mMediaPlayer = null;
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        try {
-            mMediaPlayer.setDataSource(mFragment.getActivity(), Uri.parse(cb1.getFileId()));
-            mMediaPlayer.prepare();
-            mSongProgressBar.setMax(mMediaPlayer.getDuration());
-            mRemainingSongTimeTextView.setText(getTimeString(mMediaPlayer.getDuration()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        if(mMediaPlayer == null) {
+            mMediaPlayer = new MediaPlayer();
 
-        mPlayPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mMediaPlayer.isPlaying()) {
-                    mMediaPlayer.pause();
-                    mPlayPauseButton.setBackgroundResource(R.drawable.ic_play);
-                } else {
-                    mMediaPlayer.start();
-                    mPlayPauseButton.setBackgroundResource(R.drawable.ic_pause);
-                    startUpdatingProgress();
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            try {
+                mMediaPlayer.setDataSource(mFragment.getActivity(), Uri.parse(cb1.getFileId()));
+                mMediaPlayer.prepareAsync();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mSongProgressBar.setMax(mMediaPlayer.getDuration());
+                    mRemainingSongTimeTextView.setText(getTimeString(mMediaPlayer.getDuration()));
+
+                    mPlayPauseButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (mMediaPlayer.isPlaying()) {
+                                mMediaPlayer.pause();
+                                mPlayPauseButton.setBackgroundResource(R.drawable.ic_play);
+                            } else {
+                                mMediaPlayer.start();
+                                mPlayPauseButton.setBackgroundResource(R.drawable.ic_pause);
+                                startUpdatingProgress();
+                            }
+                        }
+                    });
+
+                    mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            stopUpdatingProgress();
+                            if (mFragment.getActivity() != null) {
+                                setupMusicPlayer(cb1);
+                            }
+                        }
+                    });
                 }
-            }
-        });
-
-        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                    stopUpdatingProgress();
-                    if (mFragment.getActivity() != null) {
-                        setupMusicPlayer(cb1);
-                    }
-            }
-        });
+            });
+        }
     }
 
     private String getTimeString(int milliseconds) {

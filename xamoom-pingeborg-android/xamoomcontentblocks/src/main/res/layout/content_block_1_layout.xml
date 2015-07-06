@@ -67,7 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:max="100"
-        android:progress="44"
+        android:progress="0"
         style="@style/customSongProgressBar"/>
 
 </LinearLayout>
