@@ -199,7 +199,11 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     }
 
     public void closeGeofenceFragment() {
-        getActivity().getSupportFragmentManager().beginTransaction().remove(mGeofenceFragment).commit();
+        try {
+            getActivity().getSupportFragmentManager().beginTransaction().remove(mGeofenceFragment).commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void onMapReady(GoogleMap googleMap) {

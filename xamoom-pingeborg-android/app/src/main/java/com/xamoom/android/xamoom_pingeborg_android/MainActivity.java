@@ -2,6 +2,7 @@ package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -28,6 +29,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
     private DrawerLayout mDrawerLayout;
     private FloatingActionButton mQRScannerFAB;
     private Fragment mMainFragment;
+    private Fragment mMapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,19 +95,16 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to artist list fragment", "User navigated to the artist list fragment");
                                 mQRScannerFAB.setVisibility(View.VISIBLE);
                                 mMainFragment =  ArtistListFragment.newInstance();
-                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
                                 break;
                             case R.id.nav_map:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to map fragment", "User navigated to the map fragment");
                                 mQRScannerFAB.setVisibility(View.GONE);
                                 mMainFragment = MapActivityFragment.newInstance();
-                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
                                 break;
                             case R.id.nav_about:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to about fragment", "User navigated to the about fragment");
                                 mQRScannerFAB.setVisibility(View.GONE);
                                 mMainFragment = AboutFragment.newInstance();
-                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
                                 break;
                             case R.id.nav_settings:
                                 break;
@@ -115,7 +114,30 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                         return true;
                     }
                 });
+
+        mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
