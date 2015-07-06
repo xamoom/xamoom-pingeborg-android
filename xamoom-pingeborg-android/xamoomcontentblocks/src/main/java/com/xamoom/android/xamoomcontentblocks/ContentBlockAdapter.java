@@ -873,7 +873,9 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
         super(itemView);
         mFragment = fragment;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
-        mMapFragment = (SupportMapFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
+        //mMapFragment = (SupportMapFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
+        mMapFragment = new SupportMapFragment().newInstance();
+        mFragment.getFragmentManager().beginTransaction().replace(R.id.map, mMapFragment).commit();
     }
 
     public void setupContentBlock(ContentBlockType9 cb9) {
@@ -891,7 +893,6 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
     public void onMapReady(final GoogleMap googleMap) {
 
         final ArrayList<Marker> mMarkerArray = new ArrayList<Marker>();
-
         XamoomEndUserApi.getInstance().getSpotMap(null, mContentBlock.getSpotMapTag().split(","), null, new APICallback<SpotMap>() {
             @Override
             public void finished(SpotMap result) {

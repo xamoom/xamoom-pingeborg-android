@@ -12,11 +12,9 @@
         android:textSize="@dimen/contentblock_title_size"
         />
 
-    <fragment
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:id="@+id/map"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_marginTop="@dimen/contentblock_children_margin" />
+        android:id="@+id/map" />
 
 </LinearLayout>
