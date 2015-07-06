@@ -38,7 +38,8 @@ public class Global {
     public void saveArtist(String contentId) {
         String savedArtists = getStringFromSharedPref("savedArtists");
         if (savedArtists != null) {
-            savedArtists = savedArtists.concat(","+contentId);
+            if (!savedArtists.contains(contentId))
+                savedArtists = savedArtists.concat(","+contentId);
         } else {
             savedArtists = contentId;
         }

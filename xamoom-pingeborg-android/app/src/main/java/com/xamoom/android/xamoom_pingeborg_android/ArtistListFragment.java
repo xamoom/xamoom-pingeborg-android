@@ -312,7 +312,6 @@ public class ArtistListFragment extends Fragment {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ArtistDetailActivity.class);
                         intent.putExtra(XamoomContentFragment.XAMOOM_CONTENT_ID, holder.mBoundContent.getContentId());
-
                         context.startActivity(intent);
                     }
                 });

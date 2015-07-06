@@ -56,6 +56,7 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     private GeofenceFragment mGeofenceFragment;
     private Marker mActiveMarker;
     private BestLocationProvider mBestLocationProvider;
+    private BestLocationListener mBestLocationListener;
     private ViewPager mViewPager;
 
     public static MapActivityFragment newInstance() {
@@ -95,9 +96,7 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
 
     private void setupLocation() {
         mBestLocationProvider = new BestLocationProvider(getActivity(), true, true, 10000, 10000, 10, 40);
-
-        BestLocationListener mBestLocationListener = new BestLocationListener() {
-
+        mBestLocationListener = new BestLocationListener() {
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
                 //Log.i("pingeborg", "onStatusChanged PROVIDER:" + provider + " STATUS:" + String.valueOf(status));
@@ -128,7 +127,7 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
         };
 
         //start Location Updates
-        mBestLocationProvider.startLocationUpdatesWithListener(mBestLocationListener);
+        startLocationUpdating();
     }
 
     public void onDestroyView() {
@@ -164,13 +163,16 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
         mSupportMapFragment.getMapAsync(this);
     }
 
+    public void startLocationUpdating() {
+        mBestLocationProvider.startLocationUpdatesWithListener(mBestLocationListener);
+    }
+
     public void setupGeofencing(Location location) {
         XamoomEndUserApi.getInstance().getContentByLocation(location.getLatitude(), location.getLongitude(), null, new APICallback<ContentByLocation>() {
             @Override
             public void finished(ContentByLocation result) {
                 mBestLocationProvider.stopLocationUpdates();
                 if (result.getItems().size() > 0) {
-                    Log.v("pingeborg","Hellyeah, got a geofence: " + result.getItems().get(0).getContentName());
                     openGeofenceFragment(result.getItems().get(0));
                 }
             }
@@ -182,9 +184,13 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
         if(mGeofenceFragment == null)
             fragmentTransaction.setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom);
 
-        mGeofenceFragment = GeofenceFragment.newInstance(content.getContentName(), content.getImagePublicUrl());
+        mGeofenceFragment = GeofenceFragment.newInstance(content.getContentName(), content.getImagePublicUrl(), content.getContentId());
         mGeofenceFragment.setSavedGeofence(content);
         fragmentTransaction.replace(R.id.geofenceFrameLayout, mGeofenceFragment).commit();
+    }
+
+    public void closeGeofenceFragment() {
+        getActivity().getSupportFragmentManager().beginTransaction().remove(mGeofenceFragment).commit();
     }
 
     public void onMapReady(GoogleMap googleMap) {

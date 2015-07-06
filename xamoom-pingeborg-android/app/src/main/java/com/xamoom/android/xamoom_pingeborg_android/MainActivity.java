@@ -23,13 +23,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 
-public class MainActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener {
+public class MainActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener, GeofenceFragment.OnGeofenceFragmentInteractionListener {
 
     private DrawerLayout mDrawerLayout;
     private FloatingActionButton mQRScannerFAB;
     private Fragment mMainFragment;
-    private Fragment mBottomFragment;
-    private Fragment mGeofenceFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +35,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         setContentView(R.layout.activity_main);
 
         //Strict Policy
-        //StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
 
         Analytics.getInstance(this).sendEvent("App", "Start", "User startet the app");
 
@@ -88,17 +86,20 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                             case R.id.nav_home:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to artist list fragment", "User navigated to the artist list fragment");
                                 mQRScannerFAB.setVisibility(View.VISIBLE);
-                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, ArtistListFragment.newInstance()).commit();
+                                mMainFragment =  ArtistListFragment.newInstance();
+                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
                                 break;
                             case R.id.nav_map:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to map fragment", "User navigated to the map fragment");
                                 mQRScannerFAB.setVisibility(View.GONE);
-                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, MapActivityFragment.newInstance()).commit();
+                                mMainFragment = MapActivityFragment.newInstance();
+                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
                                 break;
                             case R.id.nav_about:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to about fragment", "User navigated to the about fragment");
                                 mQRScannerFAB.setVisibility(View.GONE);
-                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, AboutFragment.newInstance()).commit();
+                                mMainFragment = AboutFragment.newInstance();
+                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
                                 break;
                             case R.id.nav_settings:
                                 break;
@@ -130,5 +131,14 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_artist, menu);
         return true;
+    }
+
+    @Override
+    public void closeGeofenceFragment() {
+        if(mMainFragment.getClass().equals(MapActivityFragment.class)) {
+            Log.v("pingeborg","MainFragment: " + mMainFragment);
+            MapActivityFragment mapActivityFragment = (MapActivityFragment) mMainFragment;
+            mapActivityFragment.closeGeofenceFragment();
+        }
     }
 }
