@@ -14,7 +14,14 @@
 
     <!-- pingeb.org System Strings -->
     <string name="pingeborg_carinthia_system_name">pingeb.org Kärnten</string>
+    <string name="pingeborg_carinthia_system_id">6588702901927936</string>
     <string name="pingeborg_carinthia_about_page_id">d8be762e9b644fc4bb7aedfa8c0e17b7</string>
 
+    <string name="activate_text">Aktivieren</string>
+    <string name="cancel_text">Abbrechen</string>
+    <string name="nfc_enable_text">Hey, du hast NFC, aber es nicht aktiviert. Aktiviere es und entdecke damit pingeb.org Sticker.</string>
+    <string name="title_activity_qrcode_scanner">QRCodeScannerActivity</string>
+    <string name="scanned_false_qr_code">Du hast keinen xamoom QR-Code gescannt.</string>
+    <string name="old_pingeborg_sticker_redirect_failure">Fehler beim Scannen.</string>
 
 </resources>
