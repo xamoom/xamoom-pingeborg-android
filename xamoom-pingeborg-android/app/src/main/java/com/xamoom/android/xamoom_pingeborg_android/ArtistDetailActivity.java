@@ -2,6 +2,7 @@ package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -42,10 +43,10 @@ public class ArtistDetailActivity extends ActionBarActivity {
         //get contentId or locationIdentifier from intent
         Intent myIntent = getIntent();
         String contentId = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_CONTENT_ID);
-        String locationIdentifier= myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
+        final String locationIdentifier= myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
 
         //load data
-        if (!contentId.equals("")) {
+        if (contentId != null) {
             Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with contentId: " + contentId);
             XamoomEndUserApi.getInstance().getContentbyIdFull(contentId, false, false, null, true, new APICallback<ContentById>() { //TODO: Check if full o
                 @Override
@@ -59,11 +60,12 @@ public class ArtistDetailActivity extends ActionBarActivity {
                     setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
                 }
             });
-        } else if (!locationIdentifier.equals("")){
+        } else if (locationIdentifier != null) {
             Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with locationIdentifier: " + locationIdentifier);
             XamoomEndUserApi.getInstance().getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
                 @Override
                 public void finished(ContentByLocationIdentifier result) {
+
                     //create title and titleImage from content & add them to contentBlocks
                     ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
                     result.getContent().getContentBlocks().add(0, cb0);
