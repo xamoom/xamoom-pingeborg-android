@@ -1,9 +1,15 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -12,12 +18,15 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,6 +35,7 @@ import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 public class MainActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener, GeofenceFragment.OnGeofenceFragmentInteractionListener {
 
+    public final static int LOCATION_IDENTIFIER_REQUEST_CODE = 0001;
     private DrawerLayout mDrawerLayout;
     private FloatingActionButton mQRScannerFAB;
     private Fragment mMainFragment;
@@ -37,7 +47,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         setContentView(R.layout.activity_main);
 
         //Strict Policy
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
+        //StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
 
         //analytics
         Analytics.getInstance(this).sendEvent("App", "Start", "User startet the app");
@@ -70,13 +80,58 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         mQRScannerFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(getApplicationContext(), QRCodeScannerActivity.class);
+                startActivityForResult(intent, LOCATION_IDENTIFIER_REQUEST_CODE);
             }
         });
 
+        checkNFC();
+
         //setup artistListFragment
         setupArtistListFragment();
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LOCATION_IDENTIFIER_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                String locationIdentifier = data.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
+                Log.v(Global.DEBUG_TAG, locationIdentifier);
+
+                Intent intent = new Intent(MainActivity.this, ArtistDetailActivity.class);
+                intent.putExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER, locationIdentifier);
+                startActivity(intent);
+            }
+        }
+    }
+
+    private void checkNFC() {
+        NfcManager manager = (NfcManager) getApplicationContext().getSystemService(Context.NFC_SERVICE);
+        NfcAdapter adapter = manager.getDefaultAdapter();
+        if (adapter != null ) {
+            if (!adapter.isEnabled()) {
+                Log.v(Global.DEBUG_TAG, "NFC is not activated");
+                openNFCDialog();
+            }
+        }
+    }
+
+    private void openNFCDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+
+        builder.setView(inflater.inflate(R.layout.nfc_dialog, null))
+                .setPositiveButton(R.string.activate_text, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        startActivityForResult(new Intent(Settings.ACTION_NFC_SETTINGS), 0);
+                    }
+                })
+                .setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        builder.create().show();
     }
 
     private void setupArtistListFragment() {
