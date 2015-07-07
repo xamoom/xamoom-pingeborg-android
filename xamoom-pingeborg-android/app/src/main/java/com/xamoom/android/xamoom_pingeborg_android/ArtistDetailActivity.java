@@ -47,19 +47,35 @@ public class ArtistDetailActivity extends ActionBarActivity {
 
         //load data
         if (contentId != null) {
-            Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with contentId: " + contentId);
-            XamoomEndUserApi.getInstance().getContentbyIdFull(contentId, false, false, null, true, new APICallback<ContentById>() { //TODO: Check if full o
-                @Override
-                public void finished(ContentById result) {
-                    //create title and titleImage from content & add them to contentBlocks
-                    ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
-                    result.getContent().getContentBlocks().add(0, cb0);
-                    ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
-                    result.getContent().getContentBlocks().add(1, cb3);
+            if(Global.getInstance().getSavedArtists().contains(contentId)) {
+                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with contentId: " + contentId);
+                XamoomEndUserApi.getInstance().getContentbyIdFull(contentId, false, false, null, true, new APICallback<ContentById>() { //TODO: Check if full o
+                    @Override
+                    public void finished(ContentById result) {
+                        //create title and titleImage from content & add them to contentBlocks
+                        ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
+                        result.getContent().getContentBlocks().add(0, cb0);
+                        ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
+                        result.getContent().getContentBlocks().add(1, cb3);
 
-                    setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
-                }
-            });
+                        setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
+                    }
+                });
+            } else {
+                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with contentId: " + contentId);
+                XamoomEndUserApi.getInstance().getContentbyIdFull(contentId, false, false, null, false, new APICallback<ContentById>() {
+                    @Override
+                    public void finished(ContentById result) {
+                        //create title and titleImage from content & add them to contentBlocks
+                        ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
+                        result.getContent().getContentBlocks().add(0, cb0);
+                        ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
+                        result.getContent().getContentBlocks().add(1, cb3);
+
+                        setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
+                    }
+                });
+            }
         } else if (locationIdentifier != null) {
             Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with locationIdentifier: " + locationIdentifier);
             XamoomEndUserApi.getInstance().getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {

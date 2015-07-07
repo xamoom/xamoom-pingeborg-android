@@ -58,7 +58,7 @@ public class Global {
      * TODO
      */
     public String getStringFromSharedPref (String key) {
-       return mSharedPreferences.getString(key, null);
+       return mSharedPreferences.getString(key, "");
     }
 
     /**
