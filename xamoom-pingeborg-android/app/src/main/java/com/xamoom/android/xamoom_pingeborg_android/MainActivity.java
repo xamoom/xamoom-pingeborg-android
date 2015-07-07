@@ -160,6 +160,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                         }
 
                         mDrawerLayout.closeDrawers();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
                         return true;
                     }
                 });
@@ -177,7 +178,6 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
             }
 
             @Override
