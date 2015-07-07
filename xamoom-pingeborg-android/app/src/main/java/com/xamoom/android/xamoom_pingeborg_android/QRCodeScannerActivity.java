@@ -3,11 +3,14 @@ package com.xamoom.android.xamoom_pingeborg_android;
 import android.content.Intent;
 import android.graphics.PointF;
 import android.net.Uri;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
@@ -30,6 +33,14 @@ public class QRCodeScannerActivity extends ActionBarActivity implements QRCodeRe
         mydecoderview = (QRCodeReaderView) findViewById(R.id.qrdecoderview);
         mydecoderview.setOnQRCodeReadListener(this);
 
+        //setup toolbar/actionbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        final ActionBar ab = getSupportActionBar();
+        ab.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle(getString(R.string.scan_qr_text));
     }
 
     @Override
@@ -47,7 +58,8 @@ public class QRCodeScannerActivity extends ActionBarActivity implements QRCodeRe
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == android.R.id.home) {
+            onBackPressed();
             return true;
         }
 

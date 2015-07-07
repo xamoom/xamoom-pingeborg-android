@@ -12,7 +12,6 @@ import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -25,11 +24,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 
@@ -39,7 +34,6 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
     private DrawerLayout mDrawerLayout;
     private FloatingActionButton mQRScannerFAB;
     private Fragment mMainFragment;
-    private Fragment mMapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +41,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         setContentView(R.layout.activity_main);
 
         //Strict Policy
-        //StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
 
         //analytics
         Analytics.getInstance(this).sendEvent("App", "Start", "User startet the app");

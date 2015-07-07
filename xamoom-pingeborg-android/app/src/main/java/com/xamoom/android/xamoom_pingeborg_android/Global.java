@@ -9,17 +9,18 @@ import java.util.ResourceBundle;
  * Global is used for everything that is used globally.
  */
 public class Global {
-    public static String DEBUG_TAG = "pingeborg.android.xamoom.at";
-    public static String YOUTUBE_API_KEY = "AIzaSyD5PVVHQ8QIDAqPuk47mN90WBPuQdxGnUU";
+    public static final String DEBUG_TAG = "pingeborg.xamoom.at";
+    public static final String YOUTUBE_API_KEY = "AIzaSyD5PVVHQ8QIDAqPuk47mN90WBPuQdxGnUU";
 
-    private static String SAVED_ARTISTS_KEY = "savedArtists.android.xamoom.at";
-    private static String IS_FIRST_START_KEY = "isFirstStart.android.xamoom.at";
+    private static final String SAVED_ARTISTS_KEY = "savedArtists.android.xamoom.at";
+    private static final String IS_FIRST_START_KEY = "isFirstStart.android.xamoom.at";
 
     private static Global mInstance;
-    private static SharedPreferences mSharedPreferences;
-    private static String mAboutPage;
-    private static int mCurrentSystem;
-    private static Activity mContext;
+
+    private SharedPreferences mSharedPreferences;
+    private String mAboutPage;
+    private int mCurrentSystem;
+    private Activity mContext;
 
     public Global () {
     }
@@ -50,7 +51,7 @@ public class Global {
     public void saveStringToSharedPref (String key, String value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString(key, value);
-        editor.commit();
+        editor.apply();
     }
 
     /**
@@ -90,7 +91,7 @@ public class Global {
         } else {
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.putBoolean(IS_FIRST_START_KEY, true);
-            editor.commit();
+            editor.apply();
 
             return true;
         }
