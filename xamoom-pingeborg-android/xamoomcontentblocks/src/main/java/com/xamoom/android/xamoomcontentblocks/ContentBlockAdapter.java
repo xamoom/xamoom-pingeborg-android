@@ -72,13 +72,19 @@ import com.xamoom.android.mapping.ContentById;
 import com.xamoom.android.mapping.Spot;
 import com.xamoom.android.mapping.SpotMap;
 
+import org.kobjects.htmlview.Element;
+import org.kobjects.htmlview.HtmlView;
+import org.kobjects.htmlview.RequestHandler;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -96,11 +102,13 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private Fragment mFragment;
     private List<ContentBlock> mContentBlocks;
     private String mYoutubeApiKey;
+    private String mLinkColor;
 
-    public ContentBlockAdapter(Fragment context, List<ContentBlock> contentBlocks, String youtubeApiKey) {
+    public ContentBlockAdapter(Fragment context, List<ContentBlock> contentBlocks, String youtubeApiKey, String linkColor) {
         mFragment = context;
         mContentBlocks = contentBlocks;
         mYoutubeApiKey = youtubeApiKey;
+        mLinkColor = linkColor;
     }
 
 
@@ -181,6 +189,7 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock0ViewHolder":
                 ContentBlockType0 cb0 = (ContentBlockType0)cb;
                 ContentBlock0ViewHolder newHolder = (ContentBlock0ViewHolder) holder;
+                newHolder.setLinkColor(mLinkColor);
                 newHolder.setupContentBlock(cb0);
                 break;
             case "class com.xamoom.android.xamoomcontentblocks.ContentBlock1ViewHolder":
@@ -239,11 +248,16 @@ class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
 
     public TextView mTitleTextView;
     public TextView mContentTextView;
+    public HtmlView mHTMLView;
+    private String mLinkColor = "#00F";
 
     public ContentBlock0ViewHolder(View itemView) {
         super(itemView);
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mContentTextView = (TextView) itemView.findViewById(R.id.contentTextView);
+        LinearLayout linearLayout = (LinearLayout) itemView.findViewById(R.id.rootLayout);
+        mHTMLView = new HtmlView(itemView.getContext());
+        linearLayout.addView(mHTMLView);
     }
 
     public void setupContentBlock(ContentBlockType0 cb0){
@@ -259,11 +273,23 @@ class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
             mContentTextView.setLayoutParams(params);
         }
 
-        if(cb0.getText() != null)
-            mContentTextView.setText(Html.fromHtml(cb0.getText()));
-        else {
+        if(cb0.getText() != null) {
+            //mContentTextView.setText(Html.fromHtml(cb0.getText()));
+            try {
+                mContentTextView.setVisibility(View.GONE);
+                mHTMLView.loadHtml("<style>html, body {margin: 0; padding: 0dp;} a {color: #" + mLinkColor.substring(1) + "}</style>" + cb0.getText());
+
+            } catch (Exception e) {
+                mContentTextView.setVisibility(View.VISIBLE);
+                mContentTextView.setText(Html.fromHtml(cb0.getText()));
+            }
+        } else {
             mContentTextView.setVisibility(View.GONE);
         }
+    }
+
+    public void setLinkColor(String mLinkColor) {
+        this.mLinkColor = mLinkColor;
     }
 }
 

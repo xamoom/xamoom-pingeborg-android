@@ -34,10 +34,11 @@ import java.util.List;
  */
 public class XamoomContentFragment extends Fragment {
 
-    public static String XAMOOM_CONTENT_ID = "xamoomContentId";
-    public static String XAMOOM_LOCATION_IDENTIFIER = "xamoomLocationIdentifier";
+    public static final String XAMOOM_CONTENT_ID = "xamoomContentId";
+    public static final String XAMOOM_LOCATION_IDENTIFIER = "xamoomLocationIdentifier";
 
     private static final String YOUTUBE_API_KEY = "youtubeApiKeyParam";
+    private static final String LINK_COLOR_KEY = "LinkColorKeyParam";
 
     private RecyclerView mRecyclerView;
     private ContentBlockAdapter mContentBlockAdapter;
@@ -46,18 +47,19 @@ public class XamoomContentFragment extends Fragment {
     private String mContentId;
     private String mLocationIdentifier;
     private String mYoutubeApiKey;
+    private String mLinkColor;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      * //TODO: comment
-     * @param contentId contentId.
      * @return A new instance of fragment XamoomContentFragment.
      */
-    public static XamoomContentFragment newInstance(List<ContentBlock> contentBlocks, String youtubeApiKey) {
+    public static XamoomContentFragment newInstance(List<ContentBlock> contentBlocks, String youtubeApiKey, String linkColor) {
         XamoomContentFragment fragment = new XamoomContentFragment();
         Bundle args = new Bundle();
         args.putString(YOUTUBE_API_KEY, youtubeApiKey);
+        args.putString(LINK_COLOR_KEY, linkColor);
         fragment.setArguments(args);
         return fragment;
     }
@@ -83,6 +85,7 @@ public class XamoomContentFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mYoutubeApiKey = getArguments().getString(YOUTUBE_API_KEY);
+            mLinkColor = getArguments().getString(LINK_COLOR_KEY);
         }
     }
 
@@ -106,7 +109,7 @@ public class XamoomContentFragment extends Fragment {
     private void setupRecyclerView(RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         //DISPLAY DATA
-        mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mYoutubeApiKey);
+        mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mYoutubeApiKey, mLinkColor);
         mRecyclerView.setAdapter(mContentBlockAdapter);
     }
 

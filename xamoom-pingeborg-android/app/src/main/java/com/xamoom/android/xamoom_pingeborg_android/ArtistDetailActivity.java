@@ -97,7 +97,7 @@ public class ArtistDetailActivity extends ActionBarActivity {
     }
 
     private void setupXamoomContentFrameLayout(List<ContentBlock> contentBlocks) {
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(null, Global.YOUTUBE_API_KEY);
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(null, Global.YOUTUBE_API_KEY, Integer.toHexString(getResources().getColor(R.color.pingeborg_green)));
         fragment.setContentBlocks(contentBlocks);
 
         if (!this.isDestroyed())

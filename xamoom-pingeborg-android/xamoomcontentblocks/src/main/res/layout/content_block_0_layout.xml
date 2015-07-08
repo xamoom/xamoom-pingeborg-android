@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,13 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/contentblock_title_size"
-    />
+        android:textColor="@color/primary_text_default_material_light"
+        />
 
     <TextView
         android:id="@+id/contentTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/contentblock_children_margin"
+        android:textSize="14sp"
+        android:textColor="@color/primary_text_default_material_light"
         />
 
 </LinearLayout>
