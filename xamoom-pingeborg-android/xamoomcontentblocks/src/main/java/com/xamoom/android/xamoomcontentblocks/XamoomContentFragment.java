@@ -55,7 +55,7 @@ public class XamoomContentFragment extends Fragment {
      * //TODO: comment
      * @return A new instance of fragment XamoomContentFragment.
      */
-    public static XamoomContentFragment newInstance(List<ContentBlock> contentBlocks, String youtubeApiKey, String linkColor) {
+    public static XamoomContentFragment newInstance(String youtubeApiKey, String linkColor) {
         XamoomContentFragment fragment = new XamoomContentFragment();
         Bundle args = new Bundle();
         args.putString(YOUTUBE_API_KEY, youtubeApiKey);

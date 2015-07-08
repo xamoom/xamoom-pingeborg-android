@@ -1,9 +1,11 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -97,14 +99,28 @@ public class ArtistDetailActivity extends ActionBarActivity {
     }
 
     private void setupXamoomContentFrameLayout(List<ContentBlock> contentBlocks) {
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(null, Global.YOUTUBE_API_KEY, Integer.toHexString(getResources().getColor(R.color.pingeborg_green)));
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Global.YOUTUBE_API_KEY, Integer.toHexString(getResources().getColor(R.color.pingeborg_green)));
         fragment.setContentBlocks(contentBlocks);
 
-        if (!this.isDestroyed())
+        try {
             getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.XamoomContentFrameLayout, fragment)
-                .commit();
+                    .beginTransaction()
+                    .replace(R.id.XamoomContentFrameLayout, fragment)
+                    .commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
