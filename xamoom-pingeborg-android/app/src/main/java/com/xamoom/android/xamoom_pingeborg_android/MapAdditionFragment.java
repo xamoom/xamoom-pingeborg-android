@@ -17,6 +17,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xamoom.android.request.Location;
 
+import org.w3c.dom.Text;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -83,14 +85,12 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
         TextView tx = (TextView) view.findViewById(R.id.spotDescriptionTextView);
         tx.setText(mSpotDescription);
 
-        CollapsingToolbarLayout collapsingToolbar =
-                (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
-        collapsingToolbar.setTitle(mSpotName);
+        TextView titleTextView = (TextView) view.findViewById(R.id.spotTitleTextView);
+        titleTextView.setText(mSpotName);
 
         final ImageView imageView = (ImageView) view.findViewById(R.id.backdrop);
         Glide.with(this)
                 .load(mSpotImageUrl)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .placeholder(R.drawable.placeholder)
                 .into(imageView);

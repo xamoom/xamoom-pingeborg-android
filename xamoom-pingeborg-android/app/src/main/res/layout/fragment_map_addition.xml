@@ -14,31 +14,33 @@
         android:fitsSystemWindows="true"
         android:gravity="bottom">
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleMarginStart="16dp"
-            app:expandedTitleMarginEnd="16dp"
-            android:layout_gravity="bottom">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/backdrop"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:fitsSystemWindows="true"/>
+                android:fitsSystemWindows="true" />
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                app:layout_collapseMode="pin" />
+            <TextView
+                android:id="@+id/spotTitleTextView"
+                android:layout_width="fill_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom"
+                android:gravity="center|start"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:paddingStart="@dimen/artist_list_text_padding"
+                android:paddingEnd="@dimen/artist_list_text_padding"
+                android:textSize="18sp"
+                android:textColor="@color/artist_list_text"
+                android:background="@color/artist_list_text_background"/>
 
-        </android.support.design.widget.CollapsingToolbarLayout>
+
+        </RelativeLayout>
 
     </android.support.design.widget.AppBarLayout>
 

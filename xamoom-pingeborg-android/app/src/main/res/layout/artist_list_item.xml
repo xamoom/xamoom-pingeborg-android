@@ -40,11 +40,11 @@
             android:layout_width="fill_parent"
             android:layout_height="30dp"
             android:layout_gravity="bottom"
-            android:text="Test"
             android:gravity="center|start"
             android:maxLines="1"
             android:ellipsize="end"
-            android:paddingLeft="@dimen/artist_list_text_padding"
+            android:paddingStart="@dimen/artist_list_text_padding"
+            android:paddingEnd="@dimen/artist_list_text_padding"
             android:textSize="18sp"
             android:textColor="@color/artist_list_text"
             android:background="@color/artist_list_text_background"/>
