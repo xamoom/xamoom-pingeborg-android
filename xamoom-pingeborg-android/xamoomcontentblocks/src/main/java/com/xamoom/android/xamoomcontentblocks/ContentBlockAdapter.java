@@ -6,11 +6,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.PictureDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.provider.Telephony;
 import android.support.v4.app.Fragment;
@@ -29,12 +31,16 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.GenericRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.model.StreamEncoder;
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.android.gms.maps.CameraUpdate;
@@ -501,7 +507,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                 .listener(new SvgSoftwareLayerSetter<Uri>());
     }
 
-    public void setupContentBlock(ContentBlockType3 cb3) {
+    public void setupContentBlock(final ContentBlockType3 cb3) {
         mTitleTextView.setVisibility(View.VISIBLE);
         if(cb3.getTitle() != null)
             mTitleTextView.setText(cb3.getTitle());
@@ -534,10 +540,29 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
             }
         }
 
-        mImageView.setOnClickListener(new View.OnClickListener() {
+        mImageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
-                Log.v("pingeborg.xamoom.at", "ImageView Height " + mImageView.getHeight());
+            public boolean onLongClick(View v) {
+                if(cb3.getFileId().contains(".svg") || cb3.getFileId().contains(".gif")) {
+                    Toast.makeText(mFragment.getActivity(), mFragment.getString(R.string.cannot_save_image), Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                try {
+                    Glide.with(mFragment)
+                            .load(cb3.getFileId())
+                            .asBitmap()
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                    MediaStore.Images.Media.insertImage(mFragment.getActivity().getContentResolver(), resource, cb3.getTitle() , "");
+                                    Toast.makeText(mFragment.getActivity(), mFragment.getString(R.string.image_saved_text), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return false;
             }
         });
     }
