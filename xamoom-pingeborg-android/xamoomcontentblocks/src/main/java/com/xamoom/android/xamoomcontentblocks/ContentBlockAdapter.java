@@ -54,6 +54,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerFragment;
+import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
@@ -441,18 +445,14 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
 
     private Fragment mFragment;
     public TextView mTitleTextView;
-    private ImageView mImageView;
     public String mYoutubeVideoCode;
     public String mYoutubeApiKey;
-    private RelativeLayout mYoutubeLayout;
 
     public ContentBlock2ViewHolder(View itemView, Fragment activity, String youtubeApiKey) {
         super(itemView);
         mFragment = activity;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
-        mImageView = (ImageView) itemView.findViewById(R.id.youtubeImageView);
         mYoutubeApiKey = youtubeApiKey;
-        mYoutubeLayout = (RelativeLayout) itemView.findViewById(R.id.youtubeRelativLayout);
     }
 
     public void setupContentBlock(ContentBlockType2 cb2) {
@@ -463,28 +463,19 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
             mTitleTextView.setText(cb2.getTitle());
         else {
             mTitleTextView.setVisibility(View.GONE);
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mYoutubeLayout.getLayoutParams();
-            params.setMargins(0,0,0,0);
-            mYoutubeLayout.setLayoutParams(params);
         }
 
-        int deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
-        float margin = mFragment.getResources().getDimension(R.dimen.fragment_margin);
-        deviceWidth = deviceWidth - (int)(margin*2);
-
-        Glide.with(mFragment)
-                .load("http://img.youtube.com/vi/" + mYoutubeVideoCode + "/maxresdefault.jpg")
-                .placeholder(R.drawable.placeholder)
-                .fitCenter()
-                .override(deviceWidth, (int)(deviceWidth/1.77))
-                .into(mImageView);
-
-        mImageView.setOnClickListener(new View.OnClickListener() {
+        YouTubePlayerSupportFragment youTubePlayerSupportFragment = (YouTubePlayerSupportFragment) mFragment.getFragmentManager().findFragmentById(R.id.youtubeplayerfragment);
+        youTubePlayerSupportFragment.initialize(mYoutubeApiKey, new YouTubePlayer.OnInitializedListener() {
             @Override
-            public void onClick(View v) {
-                //open video in YoutubeStandalonePlayer
-                Intent intent = YouTubeStandalonePlayer.createVideoIntent(mFragment.getActivity(), mYoutubeApiKey, mYoutubeVideoCode);
-                mFragment.getActivity().startActivity(intent);
+            public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+                youTubePlayer.setFullscreenControlFlags(0);
+                youTubePlayer.cueVideo(mYoutubeVideoCode);
+            }
+
+            @Override
+            public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+
             }
         });
     }
@@ -898,7 +889,7 @@ class ContentBlock8ViewHolder extends RecyclerView.ViewHolder {
         mRootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_VIEW,Uri.parse(cb8.getFileId()));
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(cb8.getFileId()));
                 mFragment.startActivity(i);
             }
         });

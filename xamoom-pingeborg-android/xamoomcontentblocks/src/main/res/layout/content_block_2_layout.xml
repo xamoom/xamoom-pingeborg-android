@@ -11,25 +11,11 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/contentblock_title_size"/>
 
-
-    <RelativeLayout
-        android:id="@+id/youtubeRelativLayout"
-        android:layout_width="fill_parent"
+    <fragment
+        android:name="com.google.android.youtube.player.YouTubePlayerSupportFragment"
+        android:id="@+id/youtubeplayerfragment"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/contentblock_children_margin">
-
-        <ImageView
-            android:id="@+id/youtubeImageView"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"/>
-
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_youtube_play" />
-
-    </RelativeLayout>
+        android:layout_marginTop="@dimen/contentblock_children_margin"/>
 
 </LinearLayout>
