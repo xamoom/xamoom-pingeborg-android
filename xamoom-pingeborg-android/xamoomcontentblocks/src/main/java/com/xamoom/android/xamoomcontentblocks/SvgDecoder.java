@@ -1,6 +1,8 @@
 package com.xamoom.android.xamoomcontentblocks;
 
 
+import android.util.Log;
+
 import com.bumptech.glide.load.ResourceDecoder;
 import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.load.resource.SimpleResource;
@@ -17,6 +19,7 @@ public class SvgDecoder implements ResourceDecoder<InputStream, SVG> {
     public Resource<SVG> decode(InputStream source, int width, int height) throws IOException {
         try {
             SVG svg = SVG.getFromInputStream(source);
+            //Log.v("pingeborg.xamoom.at", "SVG width:" + svg + " height: " + svg.getDocumentHeight());
             return new SimpleResource<SVG>(svg);
         } catch (SVGParseException ex) {
             throw new IOException("Cannot load SVG from stream", ex);

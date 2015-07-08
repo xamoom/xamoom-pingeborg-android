@@ -487,15 +487,17 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mImageView = (ImageView) itemView.findViewById(R.id.imageImageView);
 
+        SvgDrawableTranscoder svgDrawableTranscoder =  new SvgDrawableTranscoder();
+        svgDrawableTranscoder.setmDeviceWidth(mFragment.getResources().getDisplayMetrics().widthPixels);
+
         requestBuilder = Glide.with(mFragment)
         .using(Glide.buildStreamModelLoader(Uri.class, mFragment.getActivity()), InputStream.class)
                 .from(Uri.class)
                 .as(SVG.class)
-                .transcode(new SvgDrawableTranscoder(), PictureDrawable.class)
+                .transcode(svgDrawableTranscoder, PictureDrawable.class)
                 .sourceEncoder(new StreamEncoder())
                 .cacheDecoder(new FileToStreamDecoder<SVG>(new SvgDecoder()))
                 .decoder(new SvgDecoder())
-                .animate(android.R.anim.fade_in)
                 .listener(new SvgSoftwareLayerSetter<Uri>());
     }
 
@@ -511,18 +513,17 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
         }
 
         if(cb3.getFileId() != null) {
+            int deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
+            float margin = mFragment.getResources().getDimension(R.dimen.fragment_margin);
+
             if (cb3.getFileId().contains(".svg")) {
                 Uri uri = Uri.parse(cb3.getFileId());
                 requestBuilder
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                // SVG cannot be serialized so it's not worth to cache it
                         .placeholder(R.drawable.placeholder)
                         .load(uri)
                         .into(mImageView);
             } else {
-                int deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
-                float margin = mFragment.getResources().getDimension(R.dimen.fragment_margin);
-
                 Glide.with(mFragment)
                         .load(cb3.getFileId())
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -532,6 +533,13 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                         .into(mImageView);
             }
         }
+
+        mImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("pingeborg.xamoom.at", "ImageView Height " + mImageView.getHeight());
+            }
+        });
     }
 }
 
