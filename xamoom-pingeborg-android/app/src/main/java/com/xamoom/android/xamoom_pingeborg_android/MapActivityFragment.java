@@ -138,12 +138,16 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     private void setupViewPager(ViewPager viewPager) {
         mSupportMapFragment = SupportMapFragment.newInstance();
 
-        //add fragments to viewPager
-        FragmentManager fragmentManager = getChildFragmentManager();
-        Adapter adapter = new Adapter(fragmentManager);
-        adapter.addFragment(mSupportMapFragment, "Map");
-        adapter.addFragment(SpotListFragment.newInstance(), "List");
-        viewPager.setAdapter(adapter);
+        try {
+            //add fragments to viewPager
+            FragmentManager fragmentManager = getChildFragmentManager();
+            Adapter adapter = new Adapter(fragmentManager);
+            adapter.addFragment(mSupportMapFragment, "Map");
+            adapter.addFragment(SpotListFragment.newInstance(), "List");
+            viewPager.setAdapter(adapter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //hide mapAddition when changing tabs
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -215,8 +219,12 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
                 if(marker == mActiveMarker)
                     return true;
 
-                mActiveMarker = marker;
-                openMapAdditionFragment(markerMap.get(marker));
+                try {
+                    mActiveMarker = marker;
+                    openMapAdditionFragment(markerMap.get(marker));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 return false;
             }
