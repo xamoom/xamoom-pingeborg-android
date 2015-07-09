@@ -13,6 +13,7 @@
     <color name="googlemaps_linkblock_background_color">#0f9d58</color>
     <color name="ebook_contentblock_color">#058b8c</color>
     <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
     <color name="vcf_downloadBlock_background_color">#AA3F41</color>
     <color name="ical_downloadBlock_background_color">#3b5998</color>
 </resources>
