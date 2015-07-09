@@ -3,7 +3,6 @@ package com.xamoom.android.xamoom_pingeborg_android;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -39,17 +38,15 @@ import com.xamoom.android.mapping.SpotMap;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import retrofit.RetrofitError;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MapActivityFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private final HashMap<Marker, Spot> markerMap = new HashMap<Marker, Spot>();
 
@@ -65,12 +62,12 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     /**
      * TODO
      */
-    public static MapActivityFragment newInstance() {
-        MapActivityFragment mapActivityFragment = new MapActivityFragment();
-        return mapActivityFragment;
+    public static MapFragment newInstance() {
+        MapFragment mapFragment = new MapFragment();
+        return mapFragment;
     }
 
-    public MapActivityFragment() {
+    public MapFragment() {
     }
 
     @Override

@@ -145,7 +145,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                             case R.id.nav_map:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to map fragment", "User navigated to the map fragment");
                                 mQRScannerFAB.setVisibility(View.GONE);
-                                mMainFragment = MapActivityFragment.newInstance();
+                                mMainFragment = MapFragment.newInstance();
                                 break;
                             case R.id.nav_about:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to about fragment", "User navigated to the about fragment");
@@ -203,10 +203,10 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
 
     @Override
     public void closeGeofenceFragment() {
-        if(mMainFragment.getClass().equals(MapActivityFragment.class)) {
+        if(mMainFragment.getClass().equals(MapFragment.class)) {
             Log.v("pingeborg", "MainFragment: " + mMainFragment);
-            MapActivityFragment mapActivityFragment = (MapActivityFragment) mMainFragment;
-            mapActivityFragment.closeGeofenceFragment();
+            MapFragment mapFragment = (MapFragment) mMainFragment;
+            mapFragment.closeGeofenceFragment();
         }
     }
 }
