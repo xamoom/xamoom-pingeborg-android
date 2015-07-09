@@ -34,6 +34,7 @@ import java.util.List;
  */
 public class XamoomContentFragment extends Fragment {
 
+
     public static final String XAMOOM_CONTENT_ID = "xamoomContentId";
     public static final String XAMOOM_LOCATION_IDENTIFIER = "xamoomLocationIdentifier";
 
