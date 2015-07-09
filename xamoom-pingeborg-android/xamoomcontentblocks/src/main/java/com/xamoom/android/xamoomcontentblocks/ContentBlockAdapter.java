@@ -468,20 +468,22 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
         }
 
         try {
-            youTubePlayerSupportFragmentFragment = new YouTubePlayerSupportFragment();
-            mFragment.getChildFragmentManager().beginTransaction().add(R.id.youtubePlayerFrameLayout, youTubePlayerSupportFragmentFragment).commit();
-            youTubePlayerSupportFragmentFragment.initialize(mYoutubeApiKey, new YouTubePlayer.OnInitializedListener() {
-                @Override
-                public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-                    youTubePlayer.setFullscreenControlFlags(0);
-                    youTubePlayer.cueVideo(mYoutubeVideoCode);
-                }
+            if(youTubePlayerSupportFragmentFragment == null) {
+                youTubePlayerSupportFragmentFragment = new YouTubePlayerSupportFragment();
+                mFragment.getChildFragmentManager().beginTransaction().add(R.id.youtubePlayerFrameLayout, youTubePlayerSupportFragmentFragment).commit();
+                youTubePlayerSupportFragmentFragment.initialize(mYoutubeApiKey, new YouTubePlayer.OnInitializedListener() {
+                    @Override
+                    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+                        youTubePlayer.setFullscreenControlFlags(0);
+                        youTubePlayer.cueVideo(mYoutubeVideoCode);
+                    }
 
-                @Override
-                public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+                    @Override
+                    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
 
-                }
-            });
+                    }
+                });
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
