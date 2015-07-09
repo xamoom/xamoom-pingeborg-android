@@ -3,12 +3,9 @@ package com.xamoom.android.xamoom_pingeborg_android;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -49,6 +46,9 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         //setup Global
         Global.getInstance().setActivity(this);
         Global.getInstance().setCurrentSystem(0);
+        if (Global.getInstance().checkFirstStart()) {
+            Log.v(Global.DEBUG_TAG, "First time starting the app");
+        }
 
         //setup toolbar/actionbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

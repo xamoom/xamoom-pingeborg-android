@@ -13,7 +13,7 @@ public class Global {
     public static final String YOUTUBE_API_KEY = "AIzaSyD5PVVHQ8QIDAqPuk47mN90WBPuQdxGnUU";
 
     private static final String SAVED_ARTISTS_KEY = "savedArtists.android.xamoom.at";
-    private static final String IS_FIRST_START_KEY = "isFirstStart.android.xamoom.at";
+    private static final String IS_FIRST_START_KEY = "checkFirstStart.android.xamoom.at";
 
     private static Global mInstance;
 
@@ -21,6 +21,7 @@ public class Global {
     private String mAboutPage;
     private int mCurrentSystem;
     private Activity mContext;
+    private Boolean mIsFirstStart = false;
 
     public Global () {
     }
@@ -85,10 +86,12 @@ public class Global {
     /**
      * TODO
      */
-    public boolean isFirstStart () {
+    public boolean checkFirstStart() {
         if(mSharedPreferences.getBoolean(IS_FIRST_START_KEY, false)) {
+            mIsFirstStart = false;
             return false;
         } else {
+            mIsFirstStart = true;
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.putBoolean(IS_FIRST_START_KEY, true);
             editor.apply();
@@ -126,5 +129,9 @@ public class Global {
             default:
                 return mContext.getString(R.string.pingeborg_carinthia_system_name);
         }
+    }
+
+    public Boolean getIsFirstStart() {
+        return mIsFirstStart;
     }
 }

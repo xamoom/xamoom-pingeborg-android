@@ -93,7 +93,7 @@ public class ArtistListFragment extends Fragment {
                 mProgressBar.setVisibility(View.GONE);
 
                 //save 3 artists as present for the user
-                if (Global.getInstance().getSavedArtists() == null) {
+                if (Global.getInstance().getIsFirstStart()) {
                     for (int i = 1; i < 4; i++) {
                         Content c = result.getItems().get(i);
                         Global.getInstance().saveArtist(c.getContentId());
