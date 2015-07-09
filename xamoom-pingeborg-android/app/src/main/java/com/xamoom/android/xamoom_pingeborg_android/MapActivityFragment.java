@@ -99,7 +99,7 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
     }
 
     private void setupLocation() {
-        mBestLocationProvider = new BestLocationProvider(getActivity(), true, true, 10000, 10000, 10, 40);
+        mBestLocationProvider = new BestLocationProvider(getActivity(), true, true, 1000, 1000, 5, 10);
         mBestLocationListener = new BestLocationListener() {
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -179,9 +179,9 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
         XamoomEndUserApi.getInstance().getContentByLocation(location.getLatitude(), location.getLongitude(), null, new APICallback<ContentByLocation>() {
             @Override
             public void finished(ContentByLocation result) {
-                mBestLocationProvider.stopLocationUpdates();
                 //open geofence when there is at least on item (you can only get one geofence at a time - the nearest)
                 if (result.getItems().size() > 0) {
+                    mBestLocationProvider.stopLocationUpdates();
                     openGeofenceFragment(result.getItems().get(0));
                 }
             }
@@ -223,7 +223,7 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
                     mActiveMarker = marker;
                     openMapAdditionFragment(markerMap.get(marker));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(Global.DEBUG_TAG,"Pressing on many Spot-Markers at the same time. (Stacked Spots in one Place)");
                 }
 
                 return false;
