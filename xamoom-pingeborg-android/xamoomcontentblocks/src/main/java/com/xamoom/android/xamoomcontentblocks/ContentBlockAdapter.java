@@ -465,19 +465,25 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
             mTitleTextView.setVisibility(View.GONE);
         }
 
-        YouTubePlayerSupportFragment youTubePlayerSupportFragment = (YouTubePlayerSupportFragment) mFragment.getFragmentManager().findFragmentById(R.id.youtubeplayerfragment);
-        youTubePlayerSupportFragment.initialize(mYoutubeApiKey, new YouTubePlayer.OnInitializedListener() {
-            @Override
-            public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-                youTubePlayer.setFullscreenControlFlags(0);
-                youTubePlayer.cueVideo(mYoutubeVideoCode);
-            }
+        try {
+            YouTubePlayerSupportFragment youTubePlayerSupportFragmentFragment = new YouTubePlayerSupportFragment();
+            mFragment.getFragmentManager().beginTransaction().replace(R.id.youtubePlayerFrameLayout, youTubePlayerSupportFragmentFragment).commit();
+            youTubePlayerSupportFragmentFragment.initialize(mYoutubeApiKey, new YouTubePlayer.OnInitializedListener() {
+                @Override
+                public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+                    youTubePlayer.setFullscreenControlFlags(0);
+                    youTubePlayer.cueVideo(mYoutubeVideoCode);
+                }
 
-            @Override
-            public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+                @Override
+                public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
 
-            }
-        });
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static String getVideoId(String videoUrl) {

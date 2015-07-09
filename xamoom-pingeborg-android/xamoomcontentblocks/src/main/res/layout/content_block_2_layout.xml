@@ -11,9 +11,8 @@
         android:layout_height="wrap_content"
         android:textSize="@dimen/contentblock_title_size"/>
 
-    <fragment
-        android:name="com.google.android.youtube.player.YouTubePlayerSupportFragment"
-        android:id="@+id/youtubeplayerfragment"
+    <FrameLayout
+        android:id="@+id/youtubePlayerFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/contentblock_children_margin"/>
