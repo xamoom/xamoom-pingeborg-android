@@ -1,5 +1,6 @@
 package com.xamoom.android.xamoomcontentblocks;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -444,9 +445,10 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
     final static String reg = "(?:youtube(?:-nocookie)?\\.com\\/(?:[^\\/\\n\\s]+\\/\\S+\\/|(?:v|e(?:mbed)?)\\/|\\S*?[?&]v=)|youtu\\.be\\/)([a-zA-Z0-9_-]{11})";
 
     private Fragment mFragment;
-    public TextView mTitleTextView;
-    public String mYoutubeVideoCode;
-    public String mYoutubeApiKey;
+    private TextView mTitleTextView;
+    private String mYoutubeVideoCode;
+    private String mYoutubeApiKey;
+    private YouTubePlayerSupportFragment youTubePlayerSupportFragmentFragment;
 
     public ContentBlock2ViewHolder(View itemView, Fragment activity, String youtubeApiKey) {
         super(itemView);
@@ -466,8 +468,8 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
         }
 
         try {
-            YouTubePlayerSupportFragment youTubePlayerSupportFragmentFragment = new YouTubePlayerSupportFragment();
-            mFragment.getFragmentManager().beginTransaction().replace(R.id.youtubePlayerFrameLayout, youTubePlayerSupportFragmentFragment).commit();
+            youTubePlayerSupportFragmentFragment = new YouTubePlayerSupportFragment();
+            mFragment.getChildFragmentManager().beginTransaction().add(R.id.youtubePlayerFrameLayout, youTubePlayerSupportFragmentFragment).commit();
             youTubePlayerSupportFragmentFragment.initialize(mYoutubeApiKey, new YouTubePlayer.OnInitializedListener() {
                 @Override
                 public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {

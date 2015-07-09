@@ -107,6 +107,13 @@ public class XamoomContentFragment extends Fragment {
         return mRecyclerView;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mContentBlockAdapter = null;
+        mRecyclerView.setAdapter(null);
+    }
+
     private void setupRecyclerView(RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         //DISPLAY DATA
