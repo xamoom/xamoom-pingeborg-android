@@ -12,6 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
@@ -26,6 +28,8 @@ import java.util.List;
 
 
 public class ArtistDetailActivity extends ActionBarActivity {
+
+    private ProgressBar mProgressbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,8 @@ public class ArtistDetailActivity extends ActionBarActivity {
         Intent myIntent = getIntent();
         String contentId = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_CONTENT_ID);
         final String locationIdentifier= myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
+
+        mProgressbar = (ProgressBar) findViewById(R.id.artistDetailLoadingIndicator);
 
         //load data
         if (contentId != null) {
@@ -95,10 +101,14 @@ public class ArtistDetailActivity extends ActionBarActivity {
             });
         } else {
             Log.w(Global.DEBUG_TAG, "There is no contentId or locationIdentifier");
+            finish();
         }
     }
 
     private void setupXamoomContentFrameLayout(List<ContentBlock> contentBlocks) {
+        //hide loading indicator
+        mProgressbar.setVisibility(View.GONE);
+
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(Global.YOUTUBE_API_KEY, Integer.toHexString(getResources().getColor(R.color.pingeborg_green)));
         fragment.setContentBlocks(contentBlocks);
 

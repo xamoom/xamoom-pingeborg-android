@@ -101,10 +101,11 @@ public class XamoomContentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mRecyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_xamoom_content, container, false);
+        View view = inflater.inflate(R.layout.fragment_xamoom_content, container, false);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.contentBlocksRecycler);
         setupRecyclerView(mRecyclerView);
 
-        return mRecyclerView;
+        return view;
     }
 
     @Override

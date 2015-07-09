@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
@@ -21,6 +22,8 @@ import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
  * TODO
  */
 public class AboutFragment extends android.support.v4.app.Fragment {
+
+    private ProgressBar mProgressbar;
 
     /**
      * Use this factory method to create a new instance of
@@ -48,6 +51,7 @@ public class AboutFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_about, container, false);
+        mProgressbar = (ProgressBar) view.findViewById(R.id.aboutLoadingIndicator);
         setupXamoomContentFragment();
         return view;
     }
@@ -57,6 +61,8 @@ public class AboutFragment extends android.support.v4.app.Fragment {
         XamoomEndUserApi.getInstance().getContentbyIdFull(Global.getInstance().getAboutPage(), false, false, null, true, new APICallback<ContentById>() {
             @Override
             public void finished(ContentById result) {
+                mProgressbar.setVisibility(View.GONE);
+
                 //create title and titleImage from content
                 ContentBlockType0 title = new ContentBlockType0(result.getContent().getTitle(),true, 0, result.getContent().getDescriptionOfContent());
                 ContentBlockType3 image = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());

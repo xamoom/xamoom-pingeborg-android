@@ -25,11 +25,17 @@ android:fitsSystemWindows="true">
 
     </android.support.design.widget.AppBarLayout>
 
+    <ProgressBar
+        android:id="@+id/artistDetailLoadingIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="98dp" />
+
     <FrameLayout
         android:id="@+id/XamoomContentFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        android:layout_marginTop="?attr/actionBarSize" />
 
 </android.support.design.widget.CoordinatorLayout>
 

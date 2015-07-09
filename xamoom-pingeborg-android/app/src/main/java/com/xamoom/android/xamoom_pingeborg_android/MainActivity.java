@@ -41,17 +41,14 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         setContentView(R.layout.activity_main);
 
         //Strict Policy
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
+        //StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
 
         //analytics
         Analytics.getInstance(this).sendEvent("App", "Start", "User startet the app");
 
-        //check if this is the first start of the app
+        //setup Global
         Global.getInstance().setActivity(this);
         Global.getInstance().setCurrentSystem(0);
-        if (Global.getInstance().isFirstStart()) {
-            Log.v(Global.DEBUG_TAG, "First time starting the app");
-        }
 
         //setup toolbar/actionbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -154,8 +151,6 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to about fragment", "User navigated to the about fragment");
                                 mQRScannerFAB.setVisibility(View.GONE);
                                 mMainFragment = AboutFragment.newInstance();
-                                break;
-                            case R.id.nav_settings:
                                 break;
                         }
 

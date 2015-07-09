@@ -116,16 +116,6 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         mLinkColor = linkColor;
     }
 
-
-    public void test() {
-        for (ContentBlock cb : mContentBlocks) {
-            if (cb.getContentBlockType() == 1) {
-                mContentBlocks.remove(cb);
-                this.notifyDataSetChanged();
-            }
-        }
-    }
-
     @Override
     public int getItemViewType(int position) {
         // Just as an example, return 0 or 2 depending on position

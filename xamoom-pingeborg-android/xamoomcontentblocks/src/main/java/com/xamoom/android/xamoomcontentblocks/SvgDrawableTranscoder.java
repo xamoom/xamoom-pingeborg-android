@@ -22,23 +22,8 @@ public class SvgDrawableTranscoder implements ResourceTranscoder<SVG, PictureDra
     @Override
     public Resource<PictureDrawable> transcode(Resource<SVG> toTranscode) {
         SVG svg = toTranscode.get();
-        //Picture picture = svg.renderToPicture();
-        Log.v("pingeborg.xamoom.at", "Width: " + svg.getDocumentWidth() + " Height: " + svg.getDocumentHeight() + " Ratio: " + svg.getDocumentAspectRatio());
+        //Log.v("pingeborg.xamoom.at", "Width: " + svg.getDocumentWidth() + " Height: " + svg.getDocumentHeight() + " Ratio: " + svg.getDocumentAspectRatio());
         Picture picture;
-        /*
-        if (svg.getDocumentAspectRatio() < 1.0 ) {
-            //svg.setDocumentWidth(mDeviceWidth * 1.0f);
-            //svg.setDocumentHeight(mDeviceWidth * svg.getDocumentAspectRatio());
-
-            svg.setDocumentPreserveAspectRatio(PreserveAspectRatio.FULLSCREEN);
-
-            picture = svg.renderToPicture();
-            //picture = svg.renderToPicture(mDeviceWidth, Math.round(mDeviceWidth*svg.getDocumentAspectRatio()));
-        } else {
-            svg.setDocumentPreserveAspectRatio(PreserveAspectRatio.FULLSCREEN);
-            picture = svg.renderToPicture();
-
-        }*/
         if (svg.getDocumentWidth() != -1) {
             svg.setDocumentPreserveAspectRatio(PreserveAspectRatio.FULLSCREEN);
             picture = svg.renderToPicture();
