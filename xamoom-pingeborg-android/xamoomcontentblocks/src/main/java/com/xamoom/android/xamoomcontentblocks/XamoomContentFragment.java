@@ -50,6 +50,8 @@ public class XamoomContentFragment extends Fragment {
     private String mYoutubeApiKey;
     private String mLinkColor;
 
+    private OnXamoomContentFragmentInteractionListener mListener;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -66,11 +68,13 @@ public class XamoomContentFragment extends Fragment {
     }
 
     public void contentBlockClick(String contentId) {
+        /*
         Context context = this.getActivity().getApplicationContext();
         Intent intent = new Intent(context, this.getActivity().getClass());
         intent.putExtra(XAMOOM_CONTENT_ID,contentId);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        context.startActivity(intent);*/
+        mListener.clickedContentBlock(contentId);
     }
 
     public XamoomContentFragment() {
@@ -120,6 +124,30 @@ public class XamoomContentFragment extends Fragment {
         //DISPLAY DATA
         mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mYoutubeApiKey, mLinkColor);
         mRecyclerView.setAdapter(mContentBlockAdapter);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnXamoomContentFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnXamoomContentFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    /**
+     * TODO
+     */
+    public interface OnXamoomContentFragmentInteractionListener {
+        public void clickedContentBlock(String contentId);
     }
 
 }

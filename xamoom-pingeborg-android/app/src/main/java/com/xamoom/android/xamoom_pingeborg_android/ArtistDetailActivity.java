@@ -29,7 +29,7 @@ import java.util.List;
 import retrofit.RetrofitError;
 
 
-public class ArtistDetailActivity extends ActionBarActivity {
+public class ArtistDetailActivity extends ActionBarActivity implements XamoomContentFragment.OnXamoomContentFragmentInteractionListener {
 
     private ProgressBar mProgressbar;
 
@@ -176,5 +176,16 @@ public class ArtistDetailActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void clickedContentBlock(String contentId) {
+        //also discover this artist
+        Global.getInstance().saveArtist(contentId);
+
+        Intent intent = new Intent(ArtistDetailActivity.this, ArtistDetailActivity.class);
+        intent.putExtra(XamoomContentFragment.XAMOOM_CONTENT_ID,contentId);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 }
