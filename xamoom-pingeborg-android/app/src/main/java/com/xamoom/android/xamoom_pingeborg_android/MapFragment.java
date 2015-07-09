@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
@@ -50,14 +51,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private final HashMap<Marker, Spot> markerMap = new HashMap<Marker, Spot>();
 
-    private SupportMapFragment mSupportMapFragment;
-    private GoogleMap mGoogleMap;
     private ViewPager mViewPager;
+    private SupportMapFragment mSupportMapFragment;
     private MapAdditionFragment mMapAdditionFragment;
     private GeofenceFragment mGeofenceFragment;
+
+    private GoogleMap mGoogleMap;
     private Marker mActiveMarker;
     private BestLocationProvider mBestLocationProvider;
     private BestLocationListener mBestLocationListener;
+
+    private ProgressBar mProgressBar;
 
     /**
      * TODO
@@ -84,6 +88,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.mapProgressBar);
 
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         if (mViewPager != null) {
@@ -91,7 +96,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabs);
             tabLayout.setupWithViewPager(mViewPager);
         }
-
         setupLocation();
 
         return view;
@@ -303,11 +307,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 //move camera to calulated point
                 CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 70);
                 googleMap.moveCamera(cu);
+
+                //remove progressBar
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void error(RetrofitError error) {
                 Log.e(Global.DEBUG_TAG, "Error:" + error);
+                mProgressBar.setVisibility(View.GONE);
             }
         });
     }
