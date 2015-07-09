@@ -26,6 +26,8 @@ import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 import java.util.List;
 
+import retrofit.RetrofitError;
+
 
 public class ArtistDetailActivity extends ActionBarActivity {
 
@@ -68,6 +70,11 @@ public class ArtistDetailActivity extends ActionBarActivity {
 
                         setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
                     }
+
+                    @Override
+                    public void error(RetrofitError error) {
+                        Log.e(Global.DEBUG_TAG, "Error:" + error);
+                    }
                 });
             } else {
                 Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with contentId: " + contentId);
@@ -81,6 +88,11 @@ public class ArtistDetailActivity extends ActionBarActivity {
                         result.getContent().getContentBlocks().add(1, cb3);
 
                         setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
+                    }
+
+                    @Override
+                    public void error(RetrofitError error) {
+                        Log.e(Global.DEBUG_TAG, "Error:" + error);
                     }
                 });
             }
@@ -97,6 +109,11 @@ public class ArtistDetailActivity extends ActionBarActivity {
                     result.getContent().getContentBlocks().add(1, cb3);
 
                     setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
+                }
+
+                @Override
+                public void error(RetrofitError error) {
+                    Log.e(Global.DEBUG_TAG, "Error:" + error);
                 }
             });
         } else {

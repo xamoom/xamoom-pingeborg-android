@@ -44,6 +44,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import retrofit.RetrofitError;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -185,6 +187,11 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
                     openGeofenceFragment(result.getItems().get(0));
                 }
             }
+
+            @Override
+            public void error(RetrofitError error) {
+                Log.e(Global.DEBUG_TAG, "Error:" + error);
+            }
         });
     }
 
@@ -299,6 +306,11 @@ public class MapActivityFragment extends Fragment implements OnMapReadyCallback 
                 //move camera to calulated point
                 CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 70);
                 googleMap.moveCamera(cu);
+            }
+
+            @Override
+            public void error(RetrofitError error) {
+                Log.e(Global.DEBUG_TAG, "Error:" + error);
             }
         });
     }

@@ -25,6 +25,8 @@ import com.xamoom.android.mapping.SpotMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import retrofit.RetrofitError;
+
 
 /**
  * TODO
@@ -120,6 +122,11 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
                 mProgressBar.setVisibility(View.GONE);
                 mSpotList.addAll(result.getItems());
                 mRecyclerView.getAdapter().notifyDataSetChanged();
+            }
+
+            @Override
+            public void error(RetrofitError error) {
+                Log.e(Global.DEBUG_TAG, "Error:" + error);
             }
         });
     }

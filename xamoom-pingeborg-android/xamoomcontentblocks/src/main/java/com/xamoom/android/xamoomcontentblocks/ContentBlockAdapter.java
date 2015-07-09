@@ -94,6 +94,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import retrofit.RetrofitError;
+
 /**
  * ContentBlockAdapter will display all the contentBlocks you get from the xamoom cloud
  * like we think it is good.
@@ -803,6 +805,10 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
                             .into(mContentThumbnailImageView);
                 }
             }
+
+            @Override
+            public void error(RetrofitError error) {
+            }
         });
 
         mRootLayout.setOnClickListener(new View.OnClickListener() {
@@ -986,6 +992,11 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 70);
                     googleMap.moveCamera(cu);
                 }
+            }
+
+            @Override
+            public void error(RetrofitError error) {
+                Log.e("xamoom-android-sdk", "Error:" + error);
             }
         });
     }

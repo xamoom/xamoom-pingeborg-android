@@ -17,6 +17,8 @@ import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
 import com.xamoom.android.mapping.ContentById;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
+import retrofit.RetrofitError;
+
 
 /**
  * TODO
@@ -74,6 +76,11 @@ public class AboutFragment extends android.support.v4.app.Fragment {
                 XamoomContentFragment fragment = XamoomContentFragment.newInstance(Global.YOUTUBE_API_KEY, Integer.toHexString(getResources().getColor(R.color.pingeborg_green)));
                 fragment.setContentBlocks(result.getContent().getContentBlocks());
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.aboutContentFrameLayout, fragment).commit();
+            }
+
+            @Override
+            public void error(RetrofitError error) {
+                Log.e(Global.DEBUG_TAG, "Error:" + error);
             }
         });
     }

@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jp.wasabeef.glide.transformations.GrayscaleTransformation;
+import retrofit.RetrofitError;
 
 
 /**
@@ -106,6 +107,11 @@ public class ArtistListFragment extends Fragment {
                 mCursor[0] = result.getCursor();
                 isMore[0] = result.isMore();
             }
+
+            @Override
+            public void error(RetrofitError error) {
+                Log.e(Global.DEBUG_TAG, "Error:" + error);
+            }
         });
 
         //load more on scrolling
@@ -149,6 +155,11 @@ public class ArtistListFragment extends Fragment {
                                 mContentList.addAll(resultReload.getItems());
                                 recyclerView.getAdapter().notifyDataSetChanged();
                                 isLoading[0] = false;
+                            }
+
+                            @Override
+                            public void error(RetrofitError error) {
+                                Log.e(Global.DEBUG_TAG, "Error:" + error);
                             }
                         });
                     }
