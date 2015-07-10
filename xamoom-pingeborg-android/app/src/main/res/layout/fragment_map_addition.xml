@@ -39,7 +39,6 @@
                 android:textColor="@color/artist_list_text"
                 android:background="@color/artist_list_text_background"/>
 
-
         </RelativeLayout>
 
     </android.support.design.widget.AppBarLayout>

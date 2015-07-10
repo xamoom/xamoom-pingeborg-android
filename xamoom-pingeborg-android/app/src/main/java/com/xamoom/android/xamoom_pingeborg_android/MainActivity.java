@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -77,6 +78,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         });
 
         checkNFC();
+
 
         //setup artistListFragment
         setupArtistListFragment();
@@ -209,4 +211,5 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
             mapFragment.closeGeofenceFragment();
         }
     }
+
 }
