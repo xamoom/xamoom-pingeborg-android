@@ -334,6 +334,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         byte[] data2 = "".getBytes();
         String decodedString1 = "";
         String decodedString2 = "";
+        float newImageWidth = 25.0f;
+
+        //image will be resized depending on the density of the screen
+        newImageWidth = newImageWidth * getResources().getDisplayMetrics().density;
 
         if (base64String == null)
             return null;
@@ -356,12 +360,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 svg = SVG.getFromString(decodedString2);
 
                 if (svg != null) {
-                    Log.v("pingeborg", "HELLYEAH SVG: " + svg);
-
                     //resize svg
                     float imageRatio = svg.getDocumentWidth() / svg.getDocumentHeight();
-                    svg.setDocumentWidth(70.0f);
-                    svg.setDocumentHeight(70 / imageRatio);
+                    svg.setDocumentWidth(newImageWidth);
+                    svg.setDocumentHeight(newImageWidth / imageRatio);
 
                     icon = Bitmap.createBitmap((int) svg.getDocumentWidth(), (int) svg.getDocumentHeight(), Bitmap.Config.ARGB_8888);
                     Canvas canvas1 = new Canvas(icon);
@@ -372,8 +374,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 icon = BitmapFactory.decodeByteArray(data2, 0, data2.length);
                 //resize the icon
                 double imageRatio = (double) icon.getWidth() / (double) icon.getHeight();
-                double newHeight = 70.0 / imageRatio;
-                icon = Bitmap.createScaledBitmap(icon, 70, (int) newHeight, false);
+                double newHeight = newImageWidth / imageRatio;
+                icon = Bitmap.createScaledBitmap(icon, (int) newImageWidth, (int) newHeight, false);
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
