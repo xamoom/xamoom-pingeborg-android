@@ -126,7 +126,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
         //hide loading indicator
         mProgressbar.setVisibility(View.GONE);
 
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Global.YOUTUBE_API_KEY, Integer.toHexString(getResources().getColor(R.color.pingeborg_green)));
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Global.YOUTUBE_API_KEY, Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
         fragment.setContentBlocks(contentBlocks);
 
         try {

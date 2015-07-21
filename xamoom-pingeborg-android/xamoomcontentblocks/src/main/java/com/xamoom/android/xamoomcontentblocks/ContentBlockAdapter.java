@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -244,44 +245,43 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
 
     public TextView mTitleTextView;
-    public TextView mContentTextView;
-    public HtmlView mHTMLView;
-    private String mLinkColor = "#00F";
+    private WebView mWebView;
+    private String mLinkColor = "00F";
 
     public ContentBlock0ViewHolder(View itemView) {
         super(itemView);
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
-        mContentTextView = (TextView) itemView.findViewById(R.id.contentTextView);
-        LinearLayout linearLayout = (LinearLayout) itemView.findViewById(R.id.rootLayout);
-        mHTMLView = new HtmlView(itemView.getContext());
-        linearLayout.addView(mHTMLView);
+        mWebView = (WebView) itemView.findViewById(R.id.webView);
+        mWebView.setBackgroundColor(Color.TRANSPARENT);
+
+        mWebView.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.getContext().startActivity(
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                return true;
+            }
+        });
     }
 
     public void setupContentBlock(ContentBlockType0 cb0){
         mTitleTextView.setVisibility(View.VISIBLE);
-        mContentTextView.setVisibility(View.VISIBLE);
+        mWebView.setVisibility(View.VISIBLE);
 
         if(cb0.getTitle() != null) {
             mTitleTextView.setText(cb0.getTitle());
         } else {
             mTitleTextView.setVisibility(View.GONE);
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mContentTextView.getLayoutParams();
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mWebView.getLayoutParams();
             params.setMargins(0,0,0,0);
-            mContentTextView.setLayoutParams(params);
+            mWebView.setLayoutParams(params);
         }
 
-        if(cb0.getText() != null) {
-            //mContentTextView.setText(Html.fromHtml(cb0.getText()));
-            try {
-                mContentTextView.setVisibility(View.GONE);
-                mHTMLView.loadHtml("<style>html, body {margin: 0; padding: 0dp;} a {color: #" + mLinkColor.substring(1) + "}</style>" + cb0.getText());
-
-            } catch (Exception e) {
-                mContentTextView.setVisibility(View.VISIBLE);
-                mContentTextView.setText(Html.fromHtml(cb0.getText()));
-            }
+        if((cb0.getText() != null) && !(cb0.getText().equalsIgnoreCase("<p><br></p>"))) {
+            String style = "<style type=\"text/css\">html, body {margin: 0; padding: 0dp;} a {color: #"+mLinkColor+"}</style>";
+            String htmlAsString = String.format("%s%s", style, cb0.getText());
+            mWebView.loadData(htmlAsString, "text/html", "UTF-8");
         } else {
-            mContentTextView.setVisibility(View.GONE);
+            mWebView.setVisibility(View.GONE);
         }
     }
 

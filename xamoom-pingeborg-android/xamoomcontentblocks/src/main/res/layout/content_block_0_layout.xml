@@ -14,8 +14,8 @@
         android:textColor="@color/black"
         />
 
-    <TextView
-        android:id="@+id/contentTextView"
+    <WebView
+        android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/contentblock_children_margin"
