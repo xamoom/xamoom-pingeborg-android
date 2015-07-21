@@ -843,6 +843,13 @@ class ContentBlock7ViewHolder extends RecyclerView.ViewHolder {
         mSoundCloudWebview = (WebView) itemView.findViewById(R.id.soundcloudWebview);
         WebSettings webSettings = mSoundCloudWebview.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        mSoundCloudWebview.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.getContext().startActivity(
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                return true;
+            }
+        });
     }
 
     public void setupContentBlock(ContentBlockType7 cb7) {
