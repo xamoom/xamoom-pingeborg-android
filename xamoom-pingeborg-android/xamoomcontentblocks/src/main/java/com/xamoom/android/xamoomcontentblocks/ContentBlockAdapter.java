@@ -971,7 +971,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                     Bitmap icon;
                     if (result.getStyle().getCustomMarker() != null) {
                         String iconString = result.getStyle().getCustomMarker();
-                        icon = getIconFromBase64(iconString);
+                        icon = getIconFromBase64(iconString, mFragment);
                     } else {
                         icon = BitmapFactory.decodeResource(mFragment.getResources(), R.drawable.ic_default_map_marker);
                         float imageRatio = (float) icon.getWidth() / (float) icon.getHeight();
@@ -1016,12 +1016,16 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
      * @param base64String Base64 string that will be resized. Must start with "data:image/"
      * @return icon as BitMap, or null if there was a problem
      */
-    public Bitmap getIconFromBase64(String base64String) {
+    public Bitmap getIconFromBase64(String base64String, Fragment fragment) {
         Bitmap icon = null;
         byte[] data1;
         byte[] data2 = "".getBytes();
         String decodedString1 = "";
         String decodedString2 = "";
+        float newImageWidth = 25.0f;
+
+        //image will be resized depending on the density of the screen
+        newImageWidth = newImageWidth * fragment.getResources().getDisplayMetrics().density;
 
         if (base64String == null)
             return null;
@@ -1048,8 +1052,8 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
 
                     //resize svg
                     float imageRatio = svg.getDocumentWidth() / svg.getDocumentHeight();
-                    svg.setDocumentWidth(70.0f);
-                    svg.setDocumentHeight(70 / imageRatio);
+                    svg.setDocumentWidth(newImageWidth);
+                    svg.setDocumentHeight(newImageWidth / imageRatio);
 
                     icon = Bitmap.createBitmap((int) svg.getDocumentWidth(), (int) svg.getDocumentHeight(), Bitmap.Config.ARGB_8888);
                     Canvas canvas1 = new Canvas(icon);
@@ -1060,8 +1064,8 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                 icon = BitmapFactory.decodeByteArray(data2, 0, data2.length);
                 //resize the icon
                 double imageRatio = (double) icon.getWidth() / (double) icon.getHeight();
-                double newHeight = 70.0 / imageRatio;
-                icon = Bitmap.createScaledBitmap(icon, 70, (int) newHeight, false);
+                double newHeight = newImageWidth/ imageRatio;
+                icon = Bitmap.createScaledBitmap(icon, (int)newImageWidth, (int)newHeight, false);
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
