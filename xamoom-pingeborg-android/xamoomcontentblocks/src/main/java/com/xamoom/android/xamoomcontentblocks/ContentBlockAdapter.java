@@ -279,7 +279,7 @@ class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
         if((cb0.getText() != null) && !(cb0.getText().equalsIgnoreCase("<p><br></p>"))) {
             String style = "<style type=\"text/css\">html, body {margin: 0; padding: 0dp;} a {color: #"+mLinkColor+"}</style>";
             String htmlAsString = String.format("%s%s", style, cb0.getText());
-            mWebView.loadData(htmlAsString, "text/html", "UTF-8");
+            mWebView.loadDataWithBaseURL(null, htmlAsString, "text/html", "UTF-8", null);
         } else {
             mWebView.setVisibility(View.GONE);
         }
