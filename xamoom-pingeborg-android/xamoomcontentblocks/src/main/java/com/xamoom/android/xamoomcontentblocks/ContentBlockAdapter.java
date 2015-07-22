@@ -39,10 +39,14 @@ import com.bumptech.glide.GenericRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.model.StreamEncoder;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.android.gms.maps.CameraUpdate;
@@ -52,6 +56,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -61,6 +66,8 @@ import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
@@ -89,6 +96,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -562,7 +570,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
         mImageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if(cb3.getFileId().contains(".svg") || cb3.getFileId().contains(".gif")) {
+                if (cb3.getFileId().contains(".svg") || cb3.getFileId().contains(".gif")) {
                     Toast.makeText(mFragment.getActivity(), mFragment.getString(R.string.cannot_save_image), Toast.LENGTH_SHORT).show();
                     return false;
                 }
@@ -573,7 +581,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                             .into(new SimpleTarget<Bitmap>() {
                                 @Override
                                 public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                    MediaStore.Images.Media.insertImage(mFragment.getActivity().getContentResolver(), resource, cb3.getTitle() , "");
+                                    MediaStore.Images.Media.insertImage(mFragment.getActivity().getContentResolver(), resource, cb3.getTitle(), "");
                                     Toast.makeText(mFragment.getActivity(), mFragment.getString(R.string.image_saved_text), Toast.LENGTH_SHORT).show();
                                 }
                             });
@@ -814,7 +822,7 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
         mRootLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                XamoomContentFragment xamoomContentFragment = (XamoomContentFragment)mFragment;
+                XamoomContentFragment xamoomContentFragment = (XamoomContentFragment) mFragment;
                 xamoomContentFragment.contentBlockClick(cb6.getContentId());
             }
         });
@@ -938,13 +946,12 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
     private TextView mTitleTextView;
     private SupportMapFragment mMapFragment;
     private ContentBlockType9 mContentBlock;
-    private ImageView mCustomMarkerImageView;
+    private GoogleMap mGoogleMap;
 
     public ContentBlock9ViewHolder(View itemView, Fragment fragment) {
         super(itemView);
         mFragment = fragment;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
-        //mMapFragment = (SupportMapFragment) fragment.getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
         mMapFragment = new SupportMapFragment().newInstance();
         mFragment.getFragmentManager().beginTransaction().replace(R.id.map, mMapFragment).commit();
     }
@@ -962,8 +969,9 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+        mGoogleMap = googleMap;
+        final HashMap<Marker, Spot> mMarkerArray = new HashMap<Marker, Spot>();
 
-        final ArrayList<Marker> mMarkerArray = new ArrayList<Marker>();
         XamoomEndUserApi.getInstance().getSpotMap(null, mContentBlock.getSpotMapTag().split(","), null, new APICallback<SpotMap>() {
             @Override
             public void finished(SpotMap result) {
@@ -986,18 +994,77 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                                 .title(s.getDisplayName())
                                 .position(new LatLng(s.getLocation().getLat(), s.getLocation().getLon())));
 
-                        mMarkerArray.add(marker);
+                        mMarkerArray.put(marker, s);
                     }
 
                     //zoom to display all markers
                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                    for (Marker marker : mMarkerArray) {
+                    for (Marker marker : mMarkerArray.keySet()) {
                         builder.include(marker.getPosition());
                     }
                     LatLngBounds bounds = builder.build();
 
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 70);
                     googleMap.moveCamera(cu);
+
+                    googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(Marker marker) {
+                            marker.showInfoWindow();
+
+                            int zoom = (int) mGoogleMap.getCameraPosition().zoom;
+                            CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(new LatLng(marker.getPosition().latitude + (double) 90 / Math.pow(2, zoom), marker.getPosition().longitude), zoom);
+                            mGoogleMap.moveCamera(cu);
+                            // return false;
+                            return true;
+                        }
+                    });
+
+                    googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                        private TextView mNameTextView;
+                        private TextView mDescriptionTextView;
+                        private ImageView mImageView;
+
+                        @Override
+                        public View getInfoWindow(Marker marker) {
+                            return null;
+                        }
+
+                        @Override
+                        public View getInfoContents(final Marker marker) {
+                            Spot spot = mMarkerArray.get(marker);
+                            if (spot == null) {
+                                return null;
+                            } else {
+                                View v = mFragment.getActivity().getLayoutInflater().inflate(R.layout.info_window, null);
+
+                                mNameTextView = (TextView) v.findViewById(R.id.infoWindowNameTextView);
+                                mDescriptionTextView = (TextView) v.findViewById(R.id.infoWindowDescriptionTextView);
+                                mImageView = (ImageView) v.findViewById(R.id.infoWindowImageView);
+
+
+                                if (spot.getDisplayName() != null)
+                                    mNameTextView.setText(spot.getDisplayName());
+
+                                if (spot.getDescription() != null)
+                                    mDescriptionTextView.setText(spot.getDescription());
+                                else
+                                    mDescriptionTextView.setVisibility(View.GONE);
+
+                                Log.v("pingeborg.xamoom.com", "Image: " + spot.getImage());
+
+                                if (spot.getImage() != null) {
+                                    int width = (int)(200 * mFragment.getResources().getDisplayMetrics().density);
+                                    int height = (int)(150 * mFragment.getResources().getDisplayMetrics().density);
+                                    Picasso.with(mFragment.getActivity()).load(spot.getImage()).resize(width, height).centerCrop().into(mImageView, new MarkerCallback(marker));
+                                } else {
+                                    mImageView.setVisibility(View.GONE);
+                                }
+
+                                return v;
+                            }
+                        }
+                    });
                 }
             }
 
@@ -1006,6 +1073,34 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                 Log.e("xamoom-android-sdk", "Error:" + error);
             }
         });
+    }
+
+    public class MarkerCallback implements Callback {
+        Marker marker = null;
+
+        MarkerCallback(Marker marker) {
+            LatLng markerLoc=new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
+            final CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(markerLoc)      // Sets the center of the map to Mountain View
+                    .zoom(13)                   // Sets the zoom
+                    .bearing(0)                // Sets the orientation of the camera to east
+                    .tilt(0)                   // Sets the tilt of the camera to 30 degrees
+                    .build();
+            this.marker=marker;
+        }
+
+        @Override
+        public void onError() {
+            Log.e(getClass().getSimpleName(), "Error loading thumbnail!");
+        }
+
+        @Override
+        public void onSuccess() {
+            if (marker != null && marker.isInfoWindowShown()) {
+                marker.hideInfoWindow();
+                marker.showInfoWindow();
+            }
+        }
     }
 
     /**

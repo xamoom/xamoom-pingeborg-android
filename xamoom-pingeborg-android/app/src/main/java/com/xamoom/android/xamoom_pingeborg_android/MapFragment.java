@@ -337,7 +337,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         float newImageWidth = 25.0f;
 
         //image will be resized depending on the density of the screen
-        newImageWidth = newImageWidth * getResources().getDisplayMetrics().density;
+        if(getActivity() != null) {
+            newImageWidth = newImageWidth * getResources().getDisplayMetrics().density;
+        }
 
         if (base64String == null)
             return null;
