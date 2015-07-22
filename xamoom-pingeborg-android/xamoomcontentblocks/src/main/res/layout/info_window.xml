@@ -21,6 +21,8 @@
         android:id="@+id/infoWindowDescriptionTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:maxLines="3"
+        android:ellipsize="end"/>
 
 </LinearLayout>

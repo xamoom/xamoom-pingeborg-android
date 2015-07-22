@@ -986,8 +986,8 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                         icon = getIconFromBase64(iconString, mFragment);
                     } else {
                         icon = BitmapFactory.decodeResource(mFragment.getResources(), R.drawable.ic_default_map_marker);
-                        float imageRatio = (float) icon.getWidth() / (float) icon.getHeight();
-                        icon = Bitmap.createScaledBitmap(icon, 70, (int) (70 / imageRatio), false);
+                        //float imageRatio = (float) icon.getWidth() / (float) icon.getHeight();
+                        //icon = Bitmap.createScaledBitmap(icon, 70, (int) (70 / imageRatio), false);
                     }
 
                     //show all markers
@@ -1007,10 +1007,10 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                         builder.include(marker.getPosition());
                     }
                     LatLngBounds bounds = builder.build();
-
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 70);
                     googleMap.moveCamera(cu);
 
+                    //click listener to move camera to spot and show the complete infowindow
                     googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override
                         public boolean onMarkerClick(final Marker marker) {
@@ -1081,17 +1081,16 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
         });
     }
 
+    /**
+     * Callback is needed to load the spotImage async with picasso.
+     * InfoWindow is drawn and cannot be updated after loading the image.
+     * This callback will hide and show the infoWindow after loading the image,
+     * so that it gets redrawn and the image will be shown.
+     */
     public class MarkerCallback implements Callback {
         Marker marker = null;
 
         MarkerCallback(Marker marker) {
-            LatLng markerLoc=new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
-            final CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(markerLoc)      // Sets the center of the map to Mountain View
-                    .zoom(13)                   // Sets the zoom
-                    .bearing(0)                // Sets the orientation of the camera to east
-                    .tilt(0)                   // Sets the tilt of the camera to 30 degrees
-                    .build();
             this.marker=marker;
         }
 
