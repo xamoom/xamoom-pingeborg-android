@@ -38,10 +38,11 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                android:screenOrientation="portrait"
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -49,11 +50,13 @@
             android:name=".ArtistDetailActivity"
             android:label="@string/title_activity_artist_detail"
             android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
             >
         </activity>
         <activity
             android:name=".QRCodeScannerActivity"
-            android:label="@string/title_activity_qrcode_scanner" >
+            android:label="@string/title_activity_qrcode_scanner"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 
