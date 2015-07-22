@@ -87,7 +87,7 @@ public class ArtistListFragment extends Fragment {
         final boolean[] isMore = new boolean[1];
 
         //get contentList and display via SimpleStringRecyclerView
-        XamoomEndUserApi.getInstance().getContentList(null, 7, null, new String[]{"artists"}, new APICallback<ContentList>() {
+        XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getContentList(null, 7, null, new String[]{"artists"}, new APICallback<ContentList>() {
             @Override
             public void finished(final ContentList result) {
                 //stop the progress indicator on activity
@@ -140,7 +140,7 @@ public class ArtistListFragment extends Fragment {
                         mContentList.add(null);
                         recyclerView.getAdapter().notifyItemInserted(mContentList.size() - 1);
 
-                        XamoomEndUserApi.getInstance().getContentList(null, 7, mCursor[0], new String[]{"artists"}, new APICallback<ContentList>() {
+                        XamoomEndUserApi.getInstance(getActivity().getApplicationContext()).getContentList(null, 7, mCursor[0], new String[]{"artists"}, new APICallback<ContentList>() {
                             @Override
                             public void finished(ContentList resultReload) {
                                 Analytics.getInstance(getActivity()).sendEvent("UX", "Loaded more artists", "The user loaded more artists");

@@ -60,7 +60,7 @@ public class AboutFragment extends android.support.v4.app.Fragment {
 
     public void setupXamoomContentFragment () {
         //load content with contentId
-        XamoomEndUserApi.getInstance().getContentbyIdFull(Global.getInstance().getAboutPage(), false, false, null, true, new APICallback<ContentById>() {
+        XamoomEndUserApi.getInstance(this.getActivity()).getContentbyIdFull(Global.getInstance().getAboutPage(), false, false, null, true, new APICallback<ContentById>() {
             @Override
             public void finished(ContentById result) {
                 mProgressbar.setVisibility(View.GONE);

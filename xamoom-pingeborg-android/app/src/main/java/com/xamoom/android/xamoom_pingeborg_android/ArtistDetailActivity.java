@@ -59,7 +59,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
         if (contentId != null) {
             if(Global.getInstance().getSavedArtists().contains(contentId)) {
                 Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with contentId: " + contentId);
-                XamoomEndUserApi.getInstance().getContentbyIdFull(contentId, false, false, null, true, new APICallback<ContentById>() { //TODO: Check if full o
+                XamoomEndUserApi.getInstance(this.getApplicationContext()).getContentbyIdFull(contentId, false, false, null, true, new APICallback<ContentById>() { //TODO: Check if full o
                     @Override
                     public void finished(ContentById result) {
                         //create title and titleImage from content & add them to contentBlocks
@@ -78,7 +78,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
                 });
             } else {
                 Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with contentId: " + contentId);
-                XamoomEndUserApi.getInstance().getContentbyIdFull(contentId, false, false, null, false, new APICallback<ContentById>() {
+                XamoomEndUserApi.getInstance(this.getApplicationContext()).getContentbyIdFull(contentId, false, false, null, false, new APICallback<ContentById>() {
                     @Override
                     public void finished(ContentById result) {
                         //create title and titleImage from content & add them to contentBlocks
@@ -98,7 +98,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
             }
         } else if (locationIdentifier != null) {
             Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with locationIdentifier: " + locationIdentifier);
-            XamoomEndUserApi.getInstance().getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
+            XamoomEndUserApi.getInstance(this.getApplicationContext()).getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
                 @Override
                 public void finished(ContentByLocationIdentifier result) {
 

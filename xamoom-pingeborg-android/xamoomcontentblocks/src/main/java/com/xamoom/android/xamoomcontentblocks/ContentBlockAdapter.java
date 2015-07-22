@@ -799,7 +799,7 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
         mTitleTextView.setText(null);
         mDescriptionTextView.setText(null);
 
-        XamoomEndUserApi.getInstance().getContentbyIdFull(cb6.getContentId(), false, false, null, false, new APICallback<ContentById>() {
+        XamoomEndUserApi.getInstance(mFragment.getActivity().getApplicationContext()).getContentbyIdFull(cb6.getContentId(), false, false, null, false, new APICallback<ContentById>() {
             @Override
             public void finished(ContentById result) {
                 mTitleTextView.setText(result.getContent().getTitle());
@@ -976,7 +976,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
 
         final HashMap<Marker, Spot> mMarkerArray = new HashMap<Marker, Spot>();
 
-        XamoomEndUserApi.getInstance().getSpotMap(null, mContentBlock.getSpotMapTag().split(","), null, new APICallback<SpotMap>() {
+        XamoomEndUserApi.getInstance(mFragment.getActivity().getApplicationContext()).getSpotMap(null, mContentBlock.getSpotMapTag().split(","), null, new APICallback<SpotMap>() {
             @Override
             public void finished(SpotMap result) {
                 if (mMapFragment.isAdded()) {
