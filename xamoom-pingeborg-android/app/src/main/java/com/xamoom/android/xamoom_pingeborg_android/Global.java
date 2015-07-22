@@ -9,7 +9,7 @@ import java.util.ResourceBundle;
  * Global is used for everything that is used globally.
  */
 public class Global {
-    public static final String DEBUG_TAG = "pingeborg.xamoom.at";
+    public static final String DEBUG_TAG = "pingeborg.xamoom.com";
     public static final String YOUTUBE_API_KEY = "AIzaSyD5PVVHQ8QIDAqPuk47mN90WBPuQdxGnUU";
 
     private static final String SAVED_ARTISTS_KEY = "savedArtists.android.xamoom.at";
