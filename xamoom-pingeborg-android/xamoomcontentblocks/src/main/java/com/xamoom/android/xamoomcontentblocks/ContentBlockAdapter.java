@@ -55,6 +55,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -947,11 +948,13 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
     private SupportMapFragment mMapFragment;
     private ContentBlockType9 mContentBlock;
     private GoogleMap mGoogleMap;
+    private LinearLayout mRootLayout;
 
     public ContentBlock9ViewHolder(View itemView, Fragment fragment) {
         super(itemView);
         mFragment = fragment;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+        mRootLayout = (LinearLayout) itemView.findViewById(R.id.rootLayout);
         mMapFragment = new SupportMapFragment().newInstance();
         mFragment.getFragmentManager().beginTransaction().replace(R.id.map, mMapFragment).commit();
     }
@@ -970,6 +973,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mGoogleMap = googleMap;
+
         final HashMap<Marker, Spot> mMarkerArray = new HashMap<Marker, Spot>();
 
         XamoomEndUserApi.getInstance().getSpotMap(null, mContentBlock.getSpotMapTag().split(","), null, new APICallback<SpotMap>() {
@@ -1009,14 +1013,19 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
 
                     googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override
-                        public boolean onMarkerClick(Marker marker) {
+                        public boolean onMarkerClick(final Marker marker) {
                             marker.showInfoWindow();
 
-                            int zoom = (int) mGoogleMap.getCameraPosition().zoom;
-                            CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(new LatLng(marker.getPosition().latitude + (double) 90 / Math.pow(2, zoom), marker.getPosition().longitude), zoom);
-                            mGoogleMap.moveCamera(cu);
-                            // return false;
-                            return true;
+                            mRootLayout.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    int zoom = (int) mGoogleMap.getCameraPosition().zoom;
+                                    CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(new LatLng(marker.getPosition().latitude + (double) 90 / Math.pow(2, zoom), marker.getPosition().longitude), zoom);
+                                    mGoogleMap.animateCamera(cu);
+                                }
+                            });
+
+                            return false;
                         }
                     });
 
@@ -1042,7 +1051,6 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                                 mDescriptionTextView = (TextView) v.findViewById(R.id.infoWindowDescriptionTextView);
                                 mImageView = (ImageView) v.findViewById(R.id.infoWindowImageView);
 
-
                                 if (spot.getDisplayName() != null)
                                     mNameTextView.setText(spot.getDisplayName());
 
@@ -1050,8 +1058,6 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                                     mDescriptionTextView.setText(spot.getDescription());
                                 else
                                     mDescriptionTextView.setVisibility(View.GONE);
-
-                                Log.v("pingeborg.xamoom.com", "Image: " + spot.getImage());
 
                                 if (spot.getImage() != null) {
                                     int width = (int)(200 * mFragment.getResources().getDisplayMetrics().density);

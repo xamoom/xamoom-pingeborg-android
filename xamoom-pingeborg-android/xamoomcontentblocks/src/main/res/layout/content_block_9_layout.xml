@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,6 +19,7 @@
         android:layout_marginTop="@dimen/contentblock_children_margin"
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        android:id="@+id/map" />
+        android:id="@+id/map"
+        map:liteMode="true" />
 
 </LinearLayout>
