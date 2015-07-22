@@ -9,7 +9,8 @@
         android:id="@+id/titleTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/contentblock_title_size"/>
+        android:textSize="@dimen/contentblock_title_size"
+        android:textColor="@color/black"/>
 
     <FrameLayout
         android:id="@+id/youtubePlayerFrameLayout"
