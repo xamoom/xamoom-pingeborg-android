@@ -1,5 +1,6 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,10 +12,12 @@ import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -22,14 +25,16 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 
-public class MainActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener, GeofenceFragment.OnGeofenceFragmentInteractionListener, XamoomContentFragment.OnXamoomContentFragmentInteractionListener {
+public class MainActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener, GeofenceFragment.OnGeofenceFragmentInteractionListener, XamoomContentFragment.OnXamoomContentFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
 
     public final static int LOCATION_IDENTIFIER_REQUEST_CODE = 0001;
     private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
     private FloatingActionButton mQRScannerFAB;
     private Fragment mMainFragment;
 
@@ -37,6 +42,8 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
 
         //Strict Policy
         //StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
@@ -51,20 +58,35 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
             Log.v(Global.DEBUG_TAG, "First time starting the app");
         }
 
+        //setup navigation drawer
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
         //setup toolbar/actionbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         final ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
-        ab.setDisplayHomeAsUpEnabled(true);
-        ab.setTitle(Global.getInstance().getCurrentSystemName());
+        if (ab != null) {
+            ab.setTitle(Global.getInstance().getCurrentSystemName());
 
-        //setup navigation drawer
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            mDrawerToggle = new ActionBarDrawerToggle(
+                    this,
+                    mDrawerLayout,
+                    //toolbar,
+                    R.string.app_name,
+                    R.string.app_name);
+
+            if (mDrawerLayout != null)
+                mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mDrawerToggle.syncState();
+        }
+
         if (navigationView != null) {
             setupDrawerContent(navigationView);
+            mDrawerLayout.setDrawerListener(mDrawerToggle);
         }
 
         //setup FAB Button
@@ -78,7 +100,6 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         });
 
         checkNFC();
-
 
         //setup artistListFragment
         setupArtistListFragment();
@@ -143,7 +164,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                             case R.id.nav_home:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to artist list fragment", "User navigated to the artist list fragment");
                                 mQRScannerFAB.setVisibility(View.VISIBLE);
-                                mMainFragment =  ArtistListFragment.newInstance();
+                                mMainFragment = ArtistListFragment.newInstance();
                                 break;
                             case R.id.nav_map:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to map fragment", "User navigated to the map fragment");
@@ -157,32 +178,16 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                                 break;
                         }
 
+                        if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                            getSupportFragmentManager().popBackStack();
+                        }
+
                         mDrawerLayout.closeDrawers();
                         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
+
                         return true;
                     }
                 });
-
-        mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-
-            }
-        });
     }
 
 
@@ -190,8 +195,11 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Analytics.getInstance(this).sendEvent("UX", "Drawer opened", "User opened the navigation drawer");
-                mDrawerLayout.openDrawer(GravityCompat.START);
+                if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getSupportFragmentManager().popBackStack();
+                } else {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -218,6 +226,41 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         //also discover this artist
         Global.getInstance().saveArtist(contentId);
 
+        //TODO Replace Fragment
+    }
 
+    @Override
+    public void onBackStackChanged() {
+        shouldDisplayHomeUp();
+    }
+
+    public void shouldDisplayHomeUp(){
+        if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    float slideOffset = (Float) valueAnimator.getAnimatedValue();
+                    mDrawerToggle.onDrawerSlide(mDrawerLayout, slideOffset);
+                }
+            });
+            anim.setInterpolator(new DecelerateInterpolator());
+            // You can change this duration to more closely match that of the default animation.
+            anim.setDuration(500);
+            anim.start();
+        } else {
+            ValueAnimator anim = ValueAnimator.ofFloat(1, 0);
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    float slideOffset = (Float) valueAnimator.getAnimatedValue();
+                    mDrawerToggle.onDrawerSlide(mDrawerLayout, slideOffset);
+                }
+            });
+            anim.setInterpolator(new DecelerateInterpolator());
+            // You can change this duration to more closely match that of the default animation.
+            anim.setDuration(500);
+            anim.start();
+        }
     }
 }

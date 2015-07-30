@@ -2,10 +2,8 @@ package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -176,9 +173,8 @@ public class ArtistListFragment extends Fragment {
 
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(R.anim.bottom_swipe_in, 0, 0, R.anim.bottom_swipe_out)
                 .add(R.id.mainFrameLayout, fragment)
-                .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom)
-                //.replace(R.id.mainFrameLayout, fragment)
                 .addToBackStack(null)
                 .commit();
     }

@@ -129,15 +129,12 @@ public class XamoomContentFragment extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.contentBlocksRecycler);
         addContentTitleAndImage();
         setupRecyclerView(mRecyclerView);
-        Log.v("pingeborg.xamoom.com", "onCreateView");
         return view;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mContentBlockAdapter = null;
-        mRecyclerView.setAdapter(null);
     }
 
     private void addContentTitleAndImage() {
@@ -156,24 +153,6 @@ public class XamoomContentFragment extends Fragment {
         //DISPLAY DATA
         mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mYoutubeApiKey, mLinkColor);
         mRecyclerView.setAdapter(mContentBlockAdapter);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.v("pingeborg.xamoom.com", "onStart");
-    }
-
-    @Override
-    public void onResume() {
-        super.onStart();
-        Log.v("pingeborg.xamoom.com", "onResume");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStart();
-        Log.v("pingeborg.xamoom.com", "onStop");
     }
 
     @Override
@@ -209,3 +188,4 @@ public class XamoomContentFragment extends Fragment {
         mListener.clickedContentBlock(contentId);
     }
 }
+
