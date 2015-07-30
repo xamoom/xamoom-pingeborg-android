@@ -1124,8 +1124,10 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
         String decodedString2 = "";
         float newImageWidth = 25.0f;
 
-        //image will be resized depending on the density of the screen
-        newImageWidth = newImageWidth * fragment.getResources().getDisplayMetrics().density;
+        if(fragment.isAdded()) {
+            //image will be resized depending on the density of the screen
+            newImageWidth = newImageWidth * fragment.getResources().getDisplayMetrics().density;
+        }
 
         if (base64String == null)
             return null;

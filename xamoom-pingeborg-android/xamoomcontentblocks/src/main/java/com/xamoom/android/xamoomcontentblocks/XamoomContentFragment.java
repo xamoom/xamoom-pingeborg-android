@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,14 +16,18 @@ import android.view.ViewGroup;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
+import com.xamoom.android.mapping.Content;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType6;
 import com.xamoom.android.mapping.ContentById;
 import com.xamoom.android.mapping.ContentByLocationIdentifier;
+import com.xamoom.android.mapping.Menu;
+import com.xamoom.android.mapping.Style;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -54,9 +59,10 @@ public class XamoomContentFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ContentBlockAdapter mContentBlockAdapter;
 
+    private Content mContent;
     private List<ContentBlock> mContentBlocks;
-    private String mContentId;
-    private String mLocationIdentifier;
+    private Style mStyle;
+    private Menu mMenu;
     private String mYoutubeApiKey;
     private String mLinkColor;
 
@@ -87,8 +93,16 @@ public class XamoomContentFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public void setContentBlocks(List<ContentBlock> contentBlocks) {
-        this.mContentBlocks = contentBlocks;
+    public void setContent(Content content) {
+        this.mContent = content;
+    }
+
+    public void setMenu(Menu mMenu) {
+        this.mMenu = mMenu;
+    }
+
+    public void setStyle(Style mStyle) {
+        this.mStyle = mStyle;
     }
 
     @Override
@@ -113,8 +127,9 @@ public class XamoomContentFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_xamoom_content, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.contentBlocksRecycler);
+        addContentTitleAndImage();
         setupRecyclerView(mRecyclerView);
-
+        Log.v("pingeborg.xamoom.com", "onCreateView");
         return view;
     }
 
@@ -125,11 +140,40 @@ public class XamoomContentFragment extends Fragment {
         mRecyclerView.setAdapter(null);
     }
 
+    private void addContentTitleAndImage() {
+        ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, mContent.getImagePublicUrl());
+        ContentBlockType0 cb0 = new ContentBlockType0(mContent.getTitle(), true, 0, mContent.getDescriptionOfContent());
+
+        mContentBlocks = new LinkedList<ContentBlock>();
+        mContentBlocks.addAll(mContent.getContentBlocks());
+        mContentBlocks.add(0, cb3);
+        mContentBlocks.add(0, cb0);
+    }
+
     private void setupRecyclerView(RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+
         //DISPLAY DATA
         mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mYoutubeApiKey, mLinkColor);
         mRecyclerView.setAdapter(mContentBlockAdapter);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.v("pingeborg.xamoom.com", "onStart");
+    }
+
+    @Override
+    public void onResume() {
+        super.onStart();
+        Log.v("pingeborg.xamoom.com", "onResume");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStart();
+        Log.v("pingeborg.xamoom.com", "onStop");
     }
 
     @Override
