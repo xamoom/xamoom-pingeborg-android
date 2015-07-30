@@ -74,7 +74,7 @@ public class AboutFragment extends android.support.v4.app.Fragment {
 
                 //Create XamoomContentFragment
                 XamoomContentFragment fragment = XamoomContentFragment.newInstance(Global.YOUTUBE_API_KEY, Integer.toHexString(getResources().getColor(R.color.pingeborg_green)));
-                fragment.setContentBlocks(result.getContent().getContentBlocks());
+                fragment.setContent(result.getContent());
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.aboutContentFrameLayout, fragment).commit();
             }
 

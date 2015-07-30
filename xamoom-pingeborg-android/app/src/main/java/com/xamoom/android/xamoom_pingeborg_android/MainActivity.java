@@ -26,7 +26,7 @@ import android.view.View;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 
-public class MainActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener, GeofenceFragment.OnGeofenceFragmentInteractionListener {
+public class MainActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener, GeofenceFragment.OnGeofenceFragmentInteractionListener, XamoomContentFragment.OnXamoomContentFragmentInteractionListener {
 
     public final static int LOCATION_IDENTIFIER_REQUEST_CODE = 0001;
     private DrawerLayout mDrawerLayout;
@@ -128,6 +128,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
     }
 
     private void setupArtistListFragment() {
+        Log.v(Global.DEBUG_TAG, "setupArtistListFragment");
         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, ArtistListFragment.newInstance()).commit();
     }
 
@@ -212,4 +213,11 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         }
     }
 
+    @Override
+    public void clickedContentBlock(String contentId) {
+        //also discover this artist
+        Global.getInstance().saveArtist(contentId);
+
+
+    }
 }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -169,6 +170,19 @@ public class ArtistListFragment extends Fragment {
         });
     }
 
+    public void openArtistDetails(Content mBoundContent) {
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Global.YOUTUBE_API_KEY, Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
+        fragment.setContent(mBoundContent);
+
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.mainFrameLayout, fragment)
+                .setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom)
+                //.replace(R.id.mainFrameLayout, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String contentId) {
         if (mListener != null) {
@@ -211,7 +225,7 @@ public class ArtistListFragment extends Fragment {
      *
      *
      */
-    public static class SimpleStringRecyclerViewAdapter extends RecyclerView.Adapter<SimpleStringRecyclerViewAdapter.ViewHolder> {
+    public class SimpleStringRecyclerViewAdapter extends RecyclerView.Adapter<SimpleStringRecyclerViewAdapter.ViewHolder> {
         private final static int VIEW_ITEM = 1;
         private final static int VIEW_PROG = 0;
 
@@ -220,7 +234,7 @@ public class ArtistListFragment extends Fragment {
         private int mBackground;
         private List<Content> mContentList;
 
-        public static class ViewHolder extends RecyclerView.ViewHolder {
+        public class ViewHolder extends RecyclerView.ViewHolder {
             public Content mBoundContent;
 
             public final View mView;
@@ -319,10 +333,12 @@ public class ArtistListFragment extends Fragment {
                 holder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        openArtistDetails(holder.mBoundContent);
+                        /*
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ArtistDetailActivity.class);
                         intent.putExtra(XamoomContentFragment.XAMOOM_CONTENT_ID, holder.mBoundContent.getContentId());
-                        context.startActivity(intent);
+                        context.startActivity(intent);*/
                     }
                 });
             }

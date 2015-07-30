@@ -116,19 +116,22 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
     private void getClosesSpots(final Location location) {
         final boolean[] isLoading = {false};
 
-        XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getClosestSpots(location.getLatitude(), location.getLongitude(), null, 2000, 100, new APICallback<SpotMap>() {
-            @Override
-            public void finished(final SpotMap result) {
-                mProgressBar.setVisibility(View.GONE);
-                mSpotList.addAll(result.getItems());
-                mRecyclerView.getAdapter().notifyDataSetChanged();
-            }
+        if(this.isAdded()) {
+            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getClosestSpots(location.getLatitude(), location.getLongitude(), null, 2000, 100, new APICallback<SpotMap>() {
+                @Override
+                public void finished(final SpotMap result) {
+                    mProgressBar.setVisibility(View.GONE);
+                    mSpotList.addAll(result.getItems());
+                    mRecyclerView.getAdapter().notifyDataSetChanged();
+                }
 
-            @Override
-            public void error(RetrofitError error) {
-                Log.e(Global.DEBUG_TAG, "Error:" + error);
-            }
-        });
+                @Override
+                public void error(RetrofitError error) {
+                    Log.e(Global.DEBUG_TAG, "Error:" + error);
+                }
+            });
+        }
+
     }
 
     private void setupRecyclerView(final RecyclerView recyclerView) {

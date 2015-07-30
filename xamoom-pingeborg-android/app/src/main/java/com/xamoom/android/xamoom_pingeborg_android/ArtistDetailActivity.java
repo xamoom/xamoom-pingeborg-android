@@ -6,6 +6,9 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.NavUtils;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,6 +20,7 @@ import android.widget.ProgressBar;
 
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
+import com.xamoom.android.mapping.Content;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
@@ -32,6 +36,8 @@ import retrofit.RetrofitError;
 public class ArtistDetailActivity extends ActionBarActivity implements XamoomContentFragment.OnXamoomContentFragmentInteractionListener {
 
     private ProgressBar mProgressbar;
+    private DrawerLayout mDrawerLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,13 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
         ab.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle(Global.getInstance().getCurrentSystemName());
+
+        //setup navigation drawer
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
+        }
 
         //get contentId or locationIdentifier from intent
         Intent myIntent = getIntent();
@@ -68,7 +81,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
                         ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
                         result.getContent().getContentBlocks().add(1, cb3);
 
-                        setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
+                        setupXamoomContentFrameLayout(result.getContent());
                     }
 
                     @Override
@@ -87,7 +100,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
                         ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
                         result.getContent().getContentBlocks().add(1, cb3);
 
-                        setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
+                        setupXamoomContentFrameLayout(result.getContent());
                     }
 
                     @Override
@@ -108,7 +121,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
                     ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
                     result.getContent().getContentBlocks().add(1, cb3);
 
-                    setupXamoomContentFrameLayout(result.getContent().getContentBlocks());
+                    setupXamoomContentFrameLayout(result.getContent());
                 }
 
                 @Override
@@ -122,12 +135,12 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
         }
     }
 
-    private void setupXamoomContentFrameLayout(List<ContentBlock> contentBlocks) {
+    private void setupXamoomContentFrameLayout(Content content) {
         //hide loading indicator
         mProgressbar.setVisibility(View.GONE);
 
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(Global.YOUTUBE_API_KEY, Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
-        fragment.setContentBlocks(contentBlocks);
+        fragment.setContent(content);
 
         try {
             getSupportFragmentManager()
@@ -162,6 +175,61 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
         return true;
     }
 
+    public void test() {
+
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        menuItem.setChecked(true);
+
+                        switch (menuItem.getItemId()) {
+                            case R.id.nav_home:
+                                Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to artist list fragment", "User navigated to the artist list fragment");
+                                //mMainFragment =  ArtistListFragment.newInstance();
+                                break;
+                            case R.id.nav_map:
+                                Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to map fragment", "User navigated to the map fragment");
+                                //mMainFragment = MapFragment.newInstance();
+                                break;
+                            case R.id.nav_about:
+                                Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to about fragment", "User navigated to the about fragment");
+                                //mMainFragment = AboutFragment.newInstance();
+                                break;
+                        }
+
+                        //NavUtils.navigateUpFromSameTask(getA);
+                        test();
+                        mDrawerLayout.closeDrawers();
+                        //getParent().getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
+                        return true;
+                    }
+                });
+
+        mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
