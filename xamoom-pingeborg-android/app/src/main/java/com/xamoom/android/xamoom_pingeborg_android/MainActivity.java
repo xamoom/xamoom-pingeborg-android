@@ -86,8 +86,29 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
 
         if (navigationView != null) {
             setupDrawerContent(navigationView);
-            mDrawerLayout.setDrawerListener(mDrawerToggle);
+            mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+                @Override
+                public void onDrawerSlide(View drawerView, float slideOffset) {
+
+                }
+
+                @Override
+                public void onDrawerOpened(View drawerView) {
+
+                }
+
+                @Override
+                public void onDrawerClosed(View drawerView) {
+
+                }
+
+                @Override
+                public void onDrawerStateChanged(int newState) {
+
+                }
+            });
         }
+
 
         //setup FAB Button
         mQRScannerFAB = (FloatingActionButton) findViewById(R.id.fab);
@@ -178,7 +199,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                                 break;
                         }
 
-                        if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                             getSupportFragmentManager().popBackStack();
                         }
 
@@ -236,31 +257,41 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
 
     public void shouldDisplayHomeUp(){
         if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
-            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    float slideOffset = (Float) valueAnimator.getAnimatedValue();
-                    mDrawerToggle.onDrawerSlide(mDrawerLayout, slideOffset);
-                }
-            });
-            anim.setInterpolator(new DecelerateInterpolator());
-            // You can change this duration to more closely match that of the default animation.
-            anim.setDuration(500);
-            anim.start();
+            mQRScannerFAB.setVisibility(View.GONE);
+            makeBackButton();
         } else {
-            ValueAnimator anim = ValueAnimator.ofFloat(1, 0);
-            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    float slideOffset = (Float) valueAnimator.getAnimatedValue();
-                    mDrawerToggle.onDrawerSlide(mDrawerLayout, slideOffset);
-                }
-            });
-            anim.setInterpolator(new DecelerateInterpolator());
-            // You can change this duration to more closely match that of the default animation.
-            anim.setDuration(500);
-            anim.start();
+            mQRScannerFAB.setVisibility(View.VISIBLE);
+            makeBurgerButton();
         }
+    }
+
+    public void makeBackButton() {
+        ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float slideOffset = (Float) valueAnimator.getAnimatedValue();
+                mDrawerToggle.onDrawerSlide(mDrawerLayout, slideOffset);
+            }
+        });
+        anim.setInterpolator(new DecelerateInterpolator());
+        // You can change this duration to more closely match that of the default animation.
+        anim.setDuration(500);
+        anim.start();
+    }
+
+    public void makeBurgerButton() {
+        ValueAnimator anim = ValueAnimator.ofFloat(1, 0);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float slideOffset = (Float) valueAnimator.getAnimatedValue();
+                mDrawerToggle.onDrawerSlide(mDrawerLayout, slideOffset);
+            }
+        });
+        anim.setInterpolator(new DecelerateInterpolator());
+        // You can change this duration to more closely match that of the default animation.
+        anim.setDuration(500);
+        anim.start();
     }
 }

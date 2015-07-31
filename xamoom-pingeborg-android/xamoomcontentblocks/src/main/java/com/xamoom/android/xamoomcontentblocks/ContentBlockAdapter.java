@@ -1009,7 +1009,10 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                         builder.include(marker.getPosition());
                     }
 
-                    int deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
+                    int deviceWidth = 1000;
+                    if(mFragment.isAdded())
+                         deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
+
                     LatLngBounds bounds = builder.build();
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, deviceWidth, deviceWidth, 70);
                     googleMap.moveCamera(cu);
