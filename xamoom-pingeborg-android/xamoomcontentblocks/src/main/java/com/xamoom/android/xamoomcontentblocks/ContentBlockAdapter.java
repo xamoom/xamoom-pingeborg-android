@@ -965,7 +965,9 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
             mTitleTextView.setVisibility(View.GONE);
 
         mContentBlock = cb9;
-        mMapFragment.getMapAsync(this);
+
+        if(mGoogleMap == null)
+            mMapFragment.getMapAsync(this);
     }
 
     @Override
@@ -998,6 +1000,8 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
 
                         mMarkerArray.put(marker, s);
                     }
+
+                    Log.d("pingeborg.xamoom.com", "Done MarkerArray: " + mMarkerArray.size());
 
                     //zoom to display all markers
                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -1040,7 +1044,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                         }
 
                         @Override
-                        public View getInfoContents(final Marker marker) {
+                        public View getInfoContents(Marker marker) {
                             Spot spot = mMarkerArray.get(marker);
                             if (spot == null) {
                                 return null;
