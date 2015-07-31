@@ -330,11 +330,6 @@ public class ArtistListFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         openArtistDetails(holder.mBoundContent);
-                        /*
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, ArtistDetailActivity.class);
-                        intent.putExtra(XamoomContentFragment.XAMOOM_CONTENT_ID, holder.mBoundContent.getContentId());
-                        context.startActivity(intent);*/
                     }
                 });
             }

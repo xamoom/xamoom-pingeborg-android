@@ -224,11 +224,11 @@ public class XamoomContentFragment extends Fragment {
      * a new activity or update the XamoomContentFragment with the passed contentId.
      */
     public interface OnXamoomContentFragmentInteractionListener {
-        public void clickedContentBlock(String contentId);
+        public void clickedContentBlock(Content content);
     }
 
-    public void contentBlockClick(String contentId) {
-        mListener.clickedContentBlock(contentId);
+    public void contentBlockClick(Content content) {
+        mListener.clickedContentBlock(content);
     }
 
     public class PreCachingLayoutManager extends LinearLayoutManager {

@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
+import com.xamoom.android.mapping.Content;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 
@@ -243,11 +244,19 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
     }
 
     @Override
-    public void clickedContentBlock(String contentId) {
+    public void clickedContentBlock(Content content) {
         //also discover this artist
-        Global.getInstance().saveArtist(contentId);
+        Global.getInstance().saveArtist(content.getContentId());
 
-        //TODO Replace Fragment
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Global.YOUTUBE_API_KEY, Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
+        fragment.setContent(content);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.bottom_swipe_in, 0, 0, R.anim.bottom_swipe_out)
+                .add(R.id.mainFrameLayout, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
@@ -276,7 +285,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         });
         anim.setInterpolator(new DecelerateInterpolator());
         // You can change this duration to more closely match that of the default animation.
-        anim.setDuration(500);
+        anim.setDuration(300);
         anim.start();
     }
 
@@ -291,7 +300,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         });
         anim.setInterpolator(new DecelerateInterpolator());
         // You can change this duration to more closely match that of the default animation.
-        anim.setDuration(500);
+        anim.setDuration(300);
         anim.start();
     }
 }

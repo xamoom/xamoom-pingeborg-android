@@ -247,13 +247,13 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
     }
 
     @Override
-    public void clickedContentBlock(String contentId) {
+    public void clickedContentBlock(Content content) {
         //also discover this artist
-        Global.getInstance().saveArtist(contentId);
+        /*Global.getInstance().saveArtist(contentId);
 
         Intent intent = new Intent(ArtistDetailActivity.this, ArtistDetailActivity.class);
         intent.putExtra(XamoomContentFragment.XAMOOM_CONTENT_ID,contentId);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        startActivity(intent);*/
     }
 }

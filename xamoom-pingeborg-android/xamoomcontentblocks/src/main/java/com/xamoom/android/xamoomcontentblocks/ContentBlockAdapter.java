@@ -799,7 +799,7 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
 
         XamoomEndUserApi.getInstance(mFragment.getActivity().getApplicationContext()).getContentbyIdFull(cb6.getContentId(), false, false, null, false, new APICallback<ContentById>() {
             @Override
-            public void finished(ContentById result) {
+            public void finished(final ContentById result) {
                 mTitleTextView.setText(result.getContent().getTitle());
                 mDescriptionTextView.setText(result.getContent().getDescriptionOfContent());
 
@@ -811,18 +811,18 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
                             .centerCrop()
                             .into(mContentThumbnailImageView);
                 }
+
+                mRootLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        XamoomContentFragment xamoomContentFragment = (XamoomContentFragment) mFragment;
+                        xamoomContentFragment.contentBlockClick(result.getContent());
+                    }
+                });
             }
 
             @Override
             public void error(RetrofitError error) {
-            }
-        });
-
-        mRootLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                XamoomContentFragment xamoomContentFragment = (XamoomContentFragment) mFragment;
-                xamoomContentFragment.contentBlockClick(cb6.getContentId());
             }
         });
     }
