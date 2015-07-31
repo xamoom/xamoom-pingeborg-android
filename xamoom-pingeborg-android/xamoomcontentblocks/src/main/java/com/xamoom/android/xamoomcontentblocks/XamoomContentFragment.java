@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.xamoom.android.APICallback;
@@ -129,7 +130,27 @@ public class XamoomContentFragment extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.contentBlocksRecycler);
         addContentTitleAndImage();
         setupRecyclerView(mRecyclerView);
+
         return view;
+    }
+
+    @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        Log.v("pingeborg.xamoom.com", "onCreateAnimation");
+        return super.onCreateAnimation(transit, enter, nextAnim);
+    }
+
+    @Override
+    public void onStart() {
+        Log.v("pingeborg.xamoom.com", "onStart");
+        super.onStart();
+        mRecyclerView.setAdapter(mContentBlockAdapter);
+    }
+
+    @Override
+    public Object getEnterTransition() {
+        Log.v("pingeborg.xamoom.com", "getEnterTransition");
+        return super.getEnterTransition();
     }
 
     @Override
@@ -148,11 +169,10 @@ public class XamoomContentFragment extends Fragment {
     }
 
     private void setupRecyclerView(RecyclerView recyclerView) {
-        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        recyclerView.setLayoutManager(new PreCachingLayoutManager(recyclerView.getContext()));
 
         //DISPLAY DATA
         mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mYoutubeApiKey, mLinkColor);
-        mRecyclerView.setAdapter(mContentBlockAdapter);
     }
 
     @Override
@@ -186,6 +206,40 @@ public class XamoomContentFragment extends Fragment {
 
     public void contentBlockClick(String contentId) {
         mListener.clickedContentBlock(contentId);
+    }
+
+    public class PreCachingLayoutManager extends LinearLayoutManager {
+        private static final int DEFAULT_EXTRA_LAYOUT_SPACE = 600;
+        private int extraLayoutSpace = -1;
+        private Context context;
+
+        public PreCachingLayoutManager(Context context) {
+            super(context);
+            this.context = context;
+        }
+
+        public PreCachingLayoutManager(Context context, int extraLayoutSpace) {
+            super(context);
+            this.context = context;
+            this.extraLayoutSpace = extraLayoutSpace;
+        }
+
+        public PreCachingLayoutManager(Context context, int orientation, boolean reverseLayout) {
+            super(context, orientation, reverseLayout);
+            this.context = context;
+        }
+
+        public void setExtraLayoutSpace(int extraLayoutSpace) {
+            this.extraLayoutSpace = extraLayoutSpace;
+        }
+
+        @Override
+        protected int getExtraLayoutSpace(RecyclerView.State state) {
+            if (extraLayoutSpace > 0) {
+                return extraLayoutSpace;
+            }
+            return DEFAULT_EXTRA_LAYOUT_SPACE;
+        }
     }
 }
 

@@ -130,8 +130,6 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemViewType(int position) {
-        // Just as an example, return 0 or 2 depending on position
-        // Note that unlike in ListView adapters, types don't have to be contiguous
         return mContentBlocks.get(position).getContentBlockType();
     }
 
@@ -1014,8 +1012,6 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                     googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override
                         public boolean onMarkerClick(final Marker marker) {
-                            marker.showInfoWindow();
-
                             mRootLayout.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -1024,6 +1020,8 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                                     mGoogleMap.animateCamera(cu);
                                 }
                             });
+
+                            marker.showInfoWindow();
 
                             return false;
                         }
@@ -1060,8 +1058,8 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                                     mDescriptionTextView.setVisibility(View.GONE);
 
                                 if (spot.getImage() != null) {
-                                    int width = (int)(200 * mFragment.getResources().getDisplayMetrics().density);
-                                    int height = (int)(150 * mFragment.getResources().getDisplayMetrics().density);
+                                    int width = (int) (200 * mFragment.getResources().getDisplayMetrics().density);
+                                    int height = (int) (150 * mFragment.getResources().getDisplayMetrics().density);
                                     Picasso.with(mFragment.getActivity()).load(spot.getImage()).resize(width, height).centerCrop().into(mImageView, new MarkerCallback(marker));
                                 } else {
                                     mImageView.setVisibility(View.GONE);

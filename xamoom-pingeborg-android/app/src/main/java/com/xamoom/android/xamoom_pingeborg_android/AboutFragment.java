@@ -65,13 +65,6 @@ public class AboutFragment extends android.support.v4.app.Fragment {
             public void finished(ContentById result) {
                 mProgressbar.setVisibility(View.GONE);
 
-                //create title and titleImage from content
-                ContentBlockType0 title = new ContentBlockType0(result.getContent().getTitle(),true, 0, result.getContent().getDescriptionOfContent());
-                ContentBlockType3 image = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
-                //add title and titleImage to contentBlocks
-                result.getContent().getContentBlocks().add(0, title);
-                result.getContent().getContentBlocks().add(1, image);
-
                 //Create XamoomContentFragment
                 XamoomContentFragment fragment = XamoomContentFragment.newInstance(Global.YOUTUBE_API_KEY, Integer.toHexString(getResources().getColor(R.color.pingeborg_green)));
                 fragment.setContent(result.getContent());
