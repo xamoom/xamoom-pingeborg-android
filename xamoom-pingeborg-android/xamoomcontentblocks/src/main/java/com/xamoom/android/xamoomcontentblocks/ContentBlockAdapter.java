@@ -510,6 +510,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
 
     private Fragment mFragment;
     public TextView mTitleTextView;
+    private ProgressBar mImageProgressBar;
     public ImageView mImageView;
     private GenericRequestBuilder<Uri, InputStream, SVG, PictureDrawable> requestBuilder;
 
@@ -518,6 +519,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
         mFragment = activity;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mImageView = (ImageView) itemView.findViewById(R.id.imageImageView);
+        mImageProgressBar = (ProgressBar) itemView.findViewById(R.id.imageProgressBar);
 
         SvgDrawableTranscoder svgDrawableTranscoder =  new SvgDrawableTranscoder();
         svgDrawableTranscoder.setmDeviceWidth(mFragment.getResources().getDisplayMetrics().widthPixels);
@@ -555,6 +557,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                         .placeholder(R.drawable.placeholder)
                         .load(uri)
                         .into(mImageView);
+                mImageProgressBar.setVisibility(View.GONE);
             } else {
                 Glide.with(mFragment)
                         .load(cb3.getFileId())
@@ -562,7 +565,12 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                         //.placeholder(R.drawable.placeholder)
                         .fitCenter()
                         .override(deviceWidth-(int)(margin*2),2500)
-                        .into(mImageView);
+                        .into(new GlideDrawableImageViewTarget(mImageView) {
+                            public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
+                                super.onResourceReady(drawable, anim);
+                                mImageProgressBar.setVisibility(View.GONE);
+                            }
+                        });
             }
         }
 

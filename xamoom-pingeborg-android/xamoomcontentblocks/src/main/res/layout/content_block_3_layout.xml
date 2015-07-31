@@ -13,6 +13,12 @@
         android:textColor="@color/black"
         />
 
+    <ProgressBar
+        android:id="@+id/imageProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
     <ImageView
         android:id="@+id/imageImageView"
         android:layout_width="fill_parent"
