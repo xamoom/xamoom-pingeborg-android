@@ -30,6 +30,8 @@ import android.view.animation.DecelerateInterpolator;
 import com.xamoom.android.mapping.Content;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
+import java.util.LinkedList;
+import java.util.List;
 
 public class MainActivity extends ActionBarActivity implements ArtistListFragment.OnFragmentInteractionListener, GeofenceFragment.OnGeofenceFragmentInteractionListener, XamoomContentFragment.OnXamoomContentFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
 

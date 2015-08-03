@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.bumptech.glide.Glide;
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
@@ -121,14 +122,23 @@ public class XamoomContentFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.v("pingeborg.xamoom.com", "onDestroy");
+        mContent = null;
+        mContentBlocks.clear();
+        mContentBlockAdapter.notifyDataSetChanged();
         mContentBlockAdapter = null;
         mRecyclerView.setAdapter(null);
+        mRecyclerView = null;
+        mContentBlocks = null;
+
+        Log.v("pingeborg.xamoom.com", "mContentBlocks : " + mContentBlocks);
+        Log.v("pingeborg.xamoom.com", "mContentBlockAdapter : " + mContentBlockAdapter);
+        Log.v("pingeborg.xamoom.com", "mRecyclerView : " + mRecyclerView);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.v("pingeborg.xamoom.com", "onCreateView");
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_xamoom_content, container, false);
@@ -140,7 +150,6 @@ public class XamoomContentFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Log.v("pingeborg.xamoom.com", "onStart");
         if(!isAnimated) {
             setupRecyclerView();
         }
@@ -148,7 +157,6 @@ public class XamoomContentFragment extends Fragment {
 
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        Log.v("pingeborg.xamoom.com", "onCreateAnimation");
 
         if (nextAnim != 0) {
             isAnimated = true;
@@ -164,7 +172,6 @@ public class XamoomContentFragment extends Fragment {
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    Log.d("pingeborg.xamoom.com", "Animation ended.");
                     setupRecyclerView();
                 }
             });
@@ -191,7 +198,7 @@ public class XamoomContentFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        mRecyclerView.setLayoutManager(new PreCachingLayoutManager(mRecyclerView.getContext()));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity().getApplicationContext()));
 
         //DISPLAY DATA
         mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mYoutubeApiKey, mLinkColor);
@@ -231,6 +238,9 @@ public class XamoomContentFragment extends Fragment {
         mListener.clickedContentBlock(content);
     }
 
+    /**
+     *
+     */
     public class PreCachingLayoutManager extends LinearLayoutManager {
         private static final int DEFAULT_EXTRA_LAYOUT_SPACE = 600;
         private int extraLayoutSpace = -1;

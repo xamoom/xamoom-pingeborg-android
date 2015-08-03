@@ -23,6 +23,7 @@ import com.xamoom.android.mapping.Content;
 import com.xamoom.android.mapping.ContentList;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,10 +36,16 @@ import retrofit.RetrofitError;
  */
 public class ArtistListFragment extends Fragment {
 
+    private final static int PAGE_SIZE = 7;
+
+    private static ArtistListFragment mInstance;
     private OnFragmentInteractionListener mListener;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
-    private ProgressBar mProgressBar;
+    private List<Content> mContentList = new LinkedList<Content>();
+    private String mCursor;
+    private boolean isMore = true;
+    private boolean isLoading = false;
 
     /**
      * Use this factory method to create a new instance of
@@ -47,8 +54,10 @@ public class ArtistListFragment extends Fragment {
      * @return A new instance of fragment ArtistListFragment.
      */
     public static ArtistListFragment newInstance() {
-        ArtistListFragment fragment = new ArtistListFragment();
-        return fragment;
+        if(mInstance == null) {
+            mInstance = new ArtistListFragment();
+        }
+        return mInstance;
     }
 
     public ArtistListFragment() {
@@ -66,54 +75,27 @@ public class ArtistListFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_artist_list, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.artistListRecyclerView);
-        mProgressBar = (ProgressBar) view.findViewById(R.id.loadingArtistsProgressBar);
-        mProgressBar.setVisibility(View.VISIBLE);
         setupRecyclerView(mRecyclerView);
+
+        if(mContentList.size() > 0) {
+            setupContentList();
+        } else {
+            downloadArtists();
+            setupContentList();
+        }
+
         return view;
     }
 
-    private void setupRecyclerView(final RecyclerView recyclerView) {
+    public void setupRecyclerView(final RecyclerView recyclerView) {
         mLayoutManager = new LinearLayoutManager(recyclerView.getContext());
         recyclerView.setLayoutManager(mLayoutManager);
-
-        final List<Content> mContentList = new LinkedList<Content>();
         recyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(getActivity(), mContentList));
+    }
 
-        //TODO
-        final String[] mCursor = new String[1];
-        final boolean[] isLoading = {false};
-        final boolean[] isMore = new boolean[1];
-
-        //get contentList and display via SimpleStringRecyclerView
-        XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getContentList(null, 7, null, new String[]{"artists"}, new APICallback<ContentList>() {
-            @Override
-            public void finished(final ContentList result) {
-                //stop the progress indicator on activity
-                mProgressBar.setVisibility(View.GONE);
-
-                //save 3 artists as present for the user
-                if (Global.getInstance().getIsFirstStart()) {
-                    for (int i = 1; i < 4; i++) {
-                        Content c = result.getItems().get(i);
-                        Global.getInstance().saveArtist(c.getContentId());
-                    }
-                }
-
-                mContentList.addAll(result.getItems());
-                recyclerView.getAdapter().notifyDataSetChanged();
-
-                mCursor[0] = result.getCursor();
-                isMore[0] = result.isMore();
-            }
-
-            @Override
-            public void error(RetrofitError error) {
-                Log.e(Global.DEBUG_TAG, "Error:" + error);
-            }
-        });
-
+    public void setupContentList() {
         //load more on scrolling
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -130,41 +112,50 @@ public class ArtistListFragment extends Fragment {
 
                 //true when there are only 2 items until end
                 if ((visibleItemCount + pastVisiblesItems) >= totalItemCount - 1) {
-
-                    if (!isLoading[0] && isMore[0]) {
-                        isLoading[0] = true;
-
-                        //add loading indicator
-                        mContentList.add(null);
-                        recyclerView.getAdapter().notifyItemInserted(mContentList.size() - 1);
-
-                        XamoomEndUserApi.getInstance(getActivity().getApplicationContext()).getContentList(null, 7, mCursor[0], new String[]{"artists"}, new APICallback<ContentList>() {
-                            @Override
-                            public void finished(ContentList resultReload) {
-                                Analytics.getInstance(getActivity()).sendEvent("UX", "Loaded more artists", "The user loaded more artists");
-                                mCursor[0] = resultReload.getCursor();
-                                isMore[0] = resultReload.isMore();
-
-                                //remove loading indicator
-                                mContentList.remove(mContentList.size() - 1);
-                                recyclerView.getAdapter().notifyItemInserted(mContentList.size());
-
-                                //add items to get displayed
-                                mContentList.addAll(resultReload.getItems());
-                                recyclerView.getAdapter().notifyDataSetChanged();
-                                isLoading[0] = false;
-                            }
-
-                            @Override
-                            public void error(RetrofitError error) {
-                                Log.e(Global.DEBUG_TAG, "Error:" + error);
-                            }
-                        });
-                    }
-
+                    downloadArtists();
                 }
             }
         });
+    }
+
+    public void downloadArtists() {
+        if(isMore && !isLoading) {
+            isLoading = true;
+
+            //add loading indicator
+            mContentList.add(null);
+            mRecyclerView.getAdapter().notifyItemInserted(mContentList.size() - 1);
+
+            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getContentList(null, PAGE_SIZE, mCursor, new String[]{"artists"}, new APICallback<ContentList>() {
+                @Override
+                public void finished(final ContentList result) {
+
+                    //save 3 artists as present for the user
+                    if (Global.getInstance().getIsFirstStart()) {
+                        for (int i = 1; i < 4; i++) {
+                            Content c = result.getItems().get(i);
+                            Global.getInstance().saveArtist(c.getContentId());
+                        }
+                    }
+
+                    mContentList.remove(mContentList.size() - 1);
+                    mRecyclerView.getAdapter().notifyItemInserted(mContentList.size());
+
+                    mContentList.addAll(result.getItems());
+                    mRecyclerView.getAdapter().notifyDataSetChanged();
+
+                    mCursor = result.getCursor();
+                    isMore = result.isMore();
+                    isLoading = false;
+                }
+
+                @Override
+                public void error(RetrofitError error) {
+                    Log.e(Global.DEBUG_TAG, "Error:" + error);
+                    isLoading = false;
+                }
+            });
+        }
     }
 
     public void openArtistDetails(Content mBoundContent) {

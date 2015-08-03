@@ -71,6 +71,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
+import com.xamoom.android.mapping.Content;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType1;
@@ -121,8 +122,8 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private String mYoutubeApiKey;
     private String mLinkColor;
 
-    public ContentBlockAdapter(Fragment context, List<ContentBlock> contentBlocks, String youtubeApiKey, String linkColor) {
-        mFragment = context;
+    public ContentBlockAdapter(Fragment fragment, List<ContentBlock> contentBlocks, String youtubeApiKey, String linkColor) {
+        mFragment = fragment;
         mContentBlocks = contentBlocks;
         mYoutubeApiKey = youtubeApiKey;
         mLinkColor = linkColor;
@@ -182,7 +183,7 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         .inflate(R.layout.content_block_9_layout, parent, false);
                 return new ContentBlock9ViewHolder(view9, mFragment);
             default:
-                return null;
+                return null; //TODO Replace
         }
     }
 
@@ -553,7 +554,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
             if (cb3.getFileId().contains(".svg")) {
                 Uri uri = Uri.parse(cb3.getFileId());
                 requestBuilder
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .placeholder(R.drawable.placeholder)
                         .load(uri)
                         .into(mImageView);
@@ -561,10 +562,11 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
             } else {
                 Glide.with(mFragment)
                         .load(cb3.getFileId())
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                         //.placeholder(R.drawable.placeholder)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .fitCenter()
-                        .override(deviceWidth-(int)(margin*2),2500)
+                        .dontAnimate()
+                        .override(deviceWidth - (int) (margin * 2), 2500)
                         .into(new GlideDrawableImageViewTarget(mImageView) {
                             public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
                                 super.onResourceReady(drawable, anim);
@@ -790,6 +792,10 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
     private TextView mDescriptionTextView;
     private LinearLayout mRootLayout;
     private ImageView mContentThumbnailImageView;
+    private ProgressBar mProgressBar;
+
+    private static HashMap<String,ContentById> mSavedContentContentBlock = new HashMap<String,ContentById>();
+
 
     public ContentBlock6ViewHolder(View itemView, Fragment activity) {
         super(itemView);
@@ -797,6 +803,7 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
         mDescriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         mRootLayout = (LinearLayout) itemView.findViewById(R.id.contentBlockLinearLayout);
         mContentThumbnailImageView = (ImageView) itemView.findViewById(R.id.contentThumbnailImageView);
+        mProgressBar = (ProgressBar) itemView.findViewById(R.id.contentProgressBar);
         mFragment = activity;
     }
 
@@ -805,34 +812,66 @@ class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
         mTitleTextView.setText(null);
         mDescriptionTextView.setText(null);
 
-        XamoomEndUserApi.getInstance(mFragment.getActivity().getApplicationContext()).getContentbyIdFull(cb6.getContentId(), false, false, null, false, new APICallback<ContentById>() {
-            @Override
-            public void finished(final ContentById result) {
-                mTitleTextView.setText(result.getContent().getTitle());
-                mDescriptionTextView.setText(result.getContent().getDescriptionOfContent());
+        mProgressBar.setVisibility(View.VISIBLE);
 
-                if (mFragment.isAdded()) {
-                    Glide.with(mFragment)
-                            .load(result.getContent().getImagePublicUrl())
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .crossFade()
-                            .centerCrop()
-                            .into(mContentThumbnailImageView);
+        if(mSavedContentContentBlock.containsKey(cb6.getContentId())) {
+            final ContentById result = mSavedContentContentBlock.get(cb6.getContentId());
+            mTitleTextView.setText(result.getContent().getTitle());
+            mDescriptionTextView.setText(result.getContent().getDescriptionOfContent());
+
+            if (mFragment.isAdded()) {
+                Glide.with(mFragment)
+                        .load(result.getContent().getImagePublicUrl())
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .crossFade()
+                        .centerCrop()
+                        .into(mContentThumbnailImageView);
+            }
+
+            mProgressBar.setVisibility(View.GONE);
+
+            mRootLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    XamoomContentFragment xamoomContentFragment = (XamoomContentFragment) mFragment;
+                    xamoomContentFragment.contentBlockClick(result.getContent());
+                }
+            });
+        } else {
+            XamoomEndUserApi.getInstance(mFragment.getActivity().getApplicationContext()).getContentbyIdFull(cb6.getContentId(), false, false, null, false, new APICallback<ContentById>() {
+                @Override
+                public void finished(final ContentById result) {
+                    //save result
+                    mSavedContentContentBlock.put(cb6.getContentId(), result);
+
+                    mTitleTextView.setText(result.getContent().getTitle());
+                    mDescriptionTextView.setText(result.getContent().getDescriptionOfContent());
+
+                    if (mFragment.isAdded()) {
+                        Glide.with(mFragment)
+                                .load(result.getContent().getImagePublicUrl())
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .crossFade()
+                                .centerCrop()
+                                .into(mContentThumbnailImageView);
+                    }
+
+                    mProgressBar.setVisibility(View.GONE);
+
+                    mRootLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            XamoomContentFragment xamoomContentFragment = (XamoomContentFragment) mFragment;
+                            xamoomContentFragment.contentBlockClick(result.getContent());
+                        }
+                    });
                 }
 
-                mRootLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        XamoomContentFragment xamoomContentFragment = (XamoomContentFragment) mFragment;
-                        xamoomContentFragment.contentBlockClick(result.getContent());
-                    }
-                });
-            }
-
-            @Override
-            public void error(RetrofitError error) {
-            }
-        });
+                @Override
+                public void error(RetrofitError error) {
+                }
+            });
+        }
     }
 }
 
@@ -851,6 +890,7 @@ class ContentBlock7ViewHolder extends RecyclerView.ViewHolder {
             "&visual=true'></iframe>" +
             "<script src=\"https://w.soundcloud.com/player/api.js\" type=\"text/javascript\"></script>" +
             "</body>";
+    private boolean isSetup = false;
 
     public ContentBlock7ViewHolder(View itemView) {
         super(itemView);
@@ -879,8 +919,11 @@ class ContentBlock7ViewHolder extends RecyclerView.ViewHolder {
             mSoundCloudWebview.setLayoutParams(params);
         }
 
-        String test = String.format(mSoundCloudHTML, cb7.getSoundcloudUrl());
-        mSoundCloudWebview.loadData(test, "text/html", "utf-8");
+        if(!isSetup) {
+            String test = String.format(mSoundCloudHTML, cb7.getSoundcloudUrl());
+            mSoundCloudWebview.loadData(test, "text/html", "utf-8");
+            isSetup = true;
+        }
     }
 }
 
@@ -1009,8 +1052,6 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                         mMarkerArray.put(marker, s);
                     }
 
-                    Log.d("pingeborg.xamoom.com", "Done MarkerArray: " + mMarkerArray.size());
-
                     //zoom to display all markers
                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
                     for (Marker marker : mMarkerArray.keySet()) {
@@ -1018,8 +1059,8 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                     }
 
                     int deviceWidth = 1000;
-                    if(mFragment.isAdded())
-                         deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
+                    if (mFragment.isAdded())
+                        deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
 
                     LatLngBounds bounds = builder.build();
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, deviceWidth, deviceWidth, 70);
