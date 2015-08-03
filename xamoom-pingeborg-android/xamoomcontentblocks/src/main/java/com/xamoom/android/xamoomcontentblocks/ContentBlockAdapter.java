@@ -643,6 +643,7 @@ class ContentBlock4ViewHolder extends RecyclerView.ViewHolder {
             }
         });
 
+        mRootLayout.setVisibility(View.VISIBLE);
         switch (cb4.getLinkType()) {
             case 0:
                 mRootLayout.setBackgroundResource(R.color.facebook_linkblock_background_color);
@@ -731,6 +732,24 @@ class ContentBlock4ViewHolder extends RecyclerView.ViewHolder {
             case 14:
                 mRootLayout.setBackgroundResource(R.color.googlemaps_linkblock_background_color);
                 mIcon.setImageResource(R.drawable.ic_navigation);
+                mTitleTextView.setTextColor(Color.WHITE);
+                mContentTextView.setTextColor(Color.WHITE);
+                break;
+            case 15:
+                mRootLayout.setBackgroundResource(R.color.appstore_linkblock_background_color);
+                mIcon.setImageResource(R.drawable.ic_apple);
+                mTitleTextView.setTextColor(Color.WHITE);
+                mContentTextView.setTextColor(Color.WHITE);
+                break;
+            case 16:
+                mRootLayout.setBackgroundResource(R.color.playstore_downloadBlock_background_color);
+                mIcon.setImageResource(R.drawable.ic_android);
+                mTitleTextView.setTextColor(Color.WHITE);
+                mContentTextView.setTextColor(Color.WHITE);
+                break;
+            case 17:
+                mRootLayout.setBackgroundResource(R.color.windowsstore_downloadBlock_background_color);
+                mIcon.setImageResource(R.drawable.ic_windows);
                 mTitleTextView.setTextColor(Color.WHITE);
                 mContentTextView.setTextColor(Color.WHITE);
                 break;
