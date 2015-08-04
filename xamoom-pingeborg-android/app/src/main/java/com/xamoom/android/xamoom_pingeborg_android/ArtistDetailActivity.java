@@ -78,7 +78,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
                         //create title and titleImage from content & add them to contentBlocks
                         ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
                         result.getContent().getContentBlocks().add(0, cb0);
-                        ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
+                        ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl(), 0);
                         result.getContent().getContentBlocks().add(1, cb3);
 
                         setupXamoomContentFrameLayout(result.getContent());
@@ -97,7 +97,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
                         //create title and titleImage from content & add them to contentBlocks
                         ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
                         result.getContent().getContentBlocks().add(0, cb0);
-                        ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
+                        ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl(), 0);
                         result.getContent().getContentBlocks().add(1, cb3);
 
                         setupXamoomContentFrameLayout(result.getContent());
@@ -118,7 +118,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
                     //create title and titleImage from content & add them to contentBlocks
                     ContentBlockType0 cb0 = new ContentBlockType0(result.getContent().getTitle(), true, 0, result.getContent().getDescriptionOfContent());
                     result.getContent().getContentBlocks().add(0, cb0);
-                    ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl());
+                    ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, result.getContent().getImagePublicUrl(), 0);
                     result.getContent().getContentBlocks().add(1, cb3);
 
                     setupXamoomContentFrameLayout(result.getContent());

@@ -526,8 +526,6 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setupContentBlock(final ContentBlockType3 cb3) {
-        Log.v("pingeborg.xamoom.com","ScaleV: " + cb3.getScaleV());
-
         mTitleTextView.setVisibility(View.VISIBLE);
         if(cb3.getTitle() != null)
             mTitleTextView.setText(cb3.getTitle());
