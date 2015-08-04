@@ -162,7 +162,8 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         .inflate(R.layout.content_block_9_layout, parent, false);
                 return new ContentBlock9ViewHolder(view9, mFragment);
             default:
-                return null; //TODO Replace
+                View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_layout, parent, false);
+                return new ViewHolder(v);
         }
     }
 
@@ -223,6 +224,15 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 newHolder9.setupContentBlock(cb9);
                 break;
         }
+    }
+}
+
+/**
+ * Empty ViewHolder.
+ */
+class ViewHolder extends RecyclerView.ViewHolder {
+    public ViewHolder(View v) {
+        super(v);
     }
 }
 
