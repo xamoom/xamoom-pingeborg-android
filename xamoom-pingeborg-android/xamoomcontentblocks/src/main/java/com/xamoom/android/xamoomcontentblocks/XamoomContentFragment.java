@@ -130,10 +130,6 @@ public class XamoomContentFragment extends Fragment {
         mRecyclerView.setAdapter(null);
         mRecyclerView = null;
         mContentBlocks = null;
-
-        Log.v("pingeborg.xamoom.com", "mContentBlocks : " + mContentBlocks);
-        Log.v("pingeborg.xamoom.com", "mContentBlockAdapter : " + mContentBlockAdapter);
-        Log.v("pingeborg.xamoom.com", "mRecyclerView : " + mRecyclerView);
     }
 
     @Override
