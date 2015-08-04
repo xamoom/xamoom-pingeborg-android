@@ -226,14 +226,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if(marker == mActiveMarker)
+                if (marker == mActiveMarker)
                     return true;
 
                 try {
                     mActiveMarker = marker;
                     openMapAdditionFragment(markerMap.get(marker));
                 } catch (Exception e) {
-                    Log.e(Global.DEBUG_TAG,"Pressing on many Spot-Markers at the same time. (Stacked Spots in one Place)");
+                    Log.e(Global.DEBUG_TAG, "Pressing on many Spot-Markers at the same time. (Stacked Spots in one Place)");
                 }
 
                 return false;
@@ -256,10 +256,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if(mMapAdditionFragment == null)
             fragmentTransaction.setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom);
 
-        Location spotLocation = new Location("xamoom-api");
-        spotLocation.setLatitude(spot.getLocation().getLat());
-        spotLocation.setLongitude(spot.getLocation().getLon());
-        float distance = spotLocation.distanceTo(mUserLocation);
+        float distance = 0;
+        if(mUserLocation != null) {
+            Location spotLocation = new Location("xamoom-api");
+            spotLocation.setLatitude(spot.getLocation().getLat());
+            spotLocation.setLongitude(spot.getLocation().getLon());
+            distance = spotLocation.distanceTo(mUserLocation);
+        }
 
         mMapAdditionFragment = MapAdditionFragment.newInstance(spot.getDisplayName(), spot.getDescription(), spot.getImage(), spot.getLocation(), distance);
         fragmentTransaction.replace(R.id.mapAdditionFrameLayout, mMapAdditionFragment).commit();

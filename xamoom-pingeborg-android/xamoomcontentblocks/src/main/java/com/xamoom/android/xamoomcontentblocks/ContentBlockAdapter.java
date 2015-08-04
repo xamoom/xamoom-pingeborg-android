@@ -6,9 +6,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.PictureDrawable;
+import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -80,6 +82,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import at.theengine.android.bestlocation.BestLocationListener;
+import at.theengine.android.bestlocation.BestLocationProvider;
 import retrofit.RetrofitError;
 
 /**
@@ -992,6 +996,9 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
     private ContentBlockType9 mContentBlock;
     private GoogleMap mGoogleMap;
     private LinearLayout mRootLayout;
+    private BestLocationProvider mBestLocationProvider;
+    private BestLocationListener mBestLocationListener;
+    private Location mUserLocation;
 
     public ContentBlock9ViewHolder(View itemView, Fragment fragment) {
         super(itemView);
@@ -1025,6 +1032,11 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
             @Override
             public void finished(SpotMap result) {
                 if (mMapFragment.isAdded()) {
+                    //setup location
+                    setupLocation();
+
+                    googleMap.getUiSettings().setZoomControlsEnabled(true);
+
                     Bitmap icon;
                     if (result.getStyle().getCustomMarker() != null) {
                         String iconString = result.getStyle().getCustomMarker();
@@ -1082,6 +1094,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                     googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                         private TextView mNameTextView;
                         private TextView mDescriptionTextView;
+                        private TextView mDistanceTextView;
                         private ImageView mImageView;
 
                         @Override
@@ -1100,6 +1113,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                                 mNameTextView = (TextView) v.findViewById(R.id.infoWindowNameTextView);
                                 mDescriptionTextView = (TextView) v.findViewById(R.id.infoWindowDescriptionTextView);
                                 mImageView = (ImageView) v.findViewById(R.id.infoWindowImageView);
+                                mDistanceTextView = (TextView) v.findViewById(R.id.infoWindowDistanceTextView);
 
                                 if (spot.getDisplayName() != null)
                                     mNameTextView.setText(spot.getDisplayName());
@@ -1117,6 +1131,19 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                                     mImageView.setVisibility(View.GONE);
                                 }
 
+                                //display the distance from user to spot
+                                float distance = 0;
+                                if(mUserLocation != null) {
+                                    Location spotLocation = new Location("xamoom-api");
+                                    spotLocation.setLatitude(spot.getLocation().getLat());
+                                    spotLocation.setLongitude(spot.getLocation().getLon());
+                                    distance = spotLocation.distanceTo(mUserLocation);
+
+                                    mDistanceTextView.setText(String.format("%.0f %s", distance, mFragment.getString(R.string.meterLabel)));
+                                } else {
+                                    mDistanceTextView.setText(mFragment.getActivity().getString(R.string.noLocation));
+                                }
+
                                 return v;
                             }
                         }
@@ -1130,7 +1157,6 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
             }
         });
     }
-
     /**
      * Callback is needed to load the spotImage async with picasso.
      * InfoWindow is drawn and cannot be updated after loading the image.
@@ -1226,5 +1252,37 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
         }
 
         return icon;
+    }
+
+    private void setupLocation() {
+        mBestLocationProvider = new BestLocationProvider(mFragment.getActivity(), true, true, 1000, 1000, 5, 10);
+        mBestLocationListener = new BestLocationListener() {
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+            }
+
+            @Override
+            public void onLocationUpdateTimeoutExceeded(BestLocationProvider.LocationType type) {
+            }
+
+            @Override
+            public void onLocationUpdate(Location location, BestLocationProvider.LocationType type, boolean isFresh) {
+                if(isFresh) {
+                    Log.i("pingeborg", "onLocationUpdate TYPE:" + type + " Location:" + mBestLocationProvider.locationToString(location));
+                    mUserLocation = location;
+                }
+            }
+        };
+
+        //start Location Updates
+        mBestLocationProvider.startLocationUpdatesWithListener(mBestLocationListener);
     }
 }
