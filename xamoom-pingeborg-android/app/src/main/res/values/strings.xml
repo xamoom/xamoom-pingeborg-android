@@ -25,4 +25,5 @@
     <string name="scanned_false_qr_code">Du hast keinen xamoom QR-Code gescannt.</string>
     <string name="old_pingeborg_sticker_redirect_failure">Fehler beim Scannen.</string>
     <string name="scan_qr_text">Scanne Sticker!</string>
+    <string name="nfc_dialog_title">NFC Aktivieren?</string>
 </resources>

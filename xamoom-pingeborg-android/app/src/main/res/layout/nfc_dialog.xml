@@ -3,12 +3,12 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        android:src="@drawable/nfc_description" />
-
+        android:layout_margin="@dimen/frameLayoutPadding"
+        android:textSize="22sp"
+        android:text="@string/nfc_dialog_title"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
