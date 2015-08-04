@@ -2,9 +2,7 @@ package com.xamoom.android.xamoomcontentblocks;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,21 +13,17 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import com.bumptech.glide.Glide;
-import com.google.android.youtube.player.YouTubeStandalonePlayer;
-import com.xamoom.android.APICallback;
-import com.xamoom.android.XamoomEndUserApi;
 import com.xamoom.android.mapping.Content;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
+import com.xamoom.android.mapping.ContentBlocks.ContentBlockType4;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType6;
-import com.xamoom.android.mapping.ContentById;
-import com.xamoom.android.mapping.ContentByLocationIdentifier;
 import com.xamoom.android.mapping.Menu;
 import com.xamoom.android.mapping.Style;
 
-import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -69,6 +63,7 @@ public class XamoomContentFragment extends Fragment {
     private String mYoutubeApiKey;
     private String mLinkColor;
 
+    private boolean isStoreLinksActivated = false;
     private boolean isAnimated = false;
 
     private OnXamoomContentFragmentInteractionListener mListener;
@@ -191,6 +186,9 @@ public class XamoomContentFragment extends Fragment {
         mContentBlocks.addAll(mContent.getContentBlocks());
         mContentBlocks.add(0, cb3);
         mContentBlocks.add(0, cb0);
+
+        if(!isStoreLinksActivated)
+            mContentBlocks = removeStoreLinks(mContentBlocks);
     }
 
     private void setupRecyclerView() {
@@ -199,6 +197,22 @@ public class XamoomContentFragment extends Fragment {
         //DISPLAY DATA
         mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mYoutubeApiKey, mLinkColor);
         mRecyclerView.setAdapter(mContentBlockAdapter);
+    }
+
+    private List<ContentBlock> removeStoreLinks(List<ContentBlock> contentBlocks) {
+        ArrayList<ContentBlock> cbToRemove = new ArrayList<ContentBlock>();
+        for (ContentBlock contentBlock : contentBlocks) {
+            if (contentBlock.getContentBlockType() == 4) {
+                ContentBlockType4 cb4 = (ContentBlockType4)contentBlock;
+                if(cb4.getLinkType() == 15 || cb4.getLinkType() == 17) {
+                    cbToRemove.add(contentBlock);
+                }
+            }
+        }
+
+        contentBlocks.removeAll(cbToRemove);
+
+        return contentBlocks;
     }
 
     @Override
@@ -218,6 +232,10 @@ public class XamoomContentFragment extends Fragment {
         mListener = null;
     }
 
+    public void setIsStoreLinksActivated(boolean isStoreLinksActivated) {
+        this.isStoreLinksActivated = isStoreLinksActivated;
+    }
+
     /**
      * Implement OnXamoomContentFragmentInteractionListener and override
      * <code>clickedContentBlock(String)</code>.
@@ -232,43 +250,6 @@ public class XamoomContentFragment extends Fragment {
 
     public void contentBlockClick(Content content) {
         mListener.clickedContentBlock(content);
-    }
-
-    /**
-     *
-     */
-    public class PreCachingLayoutManager extends LinearLayoutManager {
-        private static final int DEFAULT_EXTRA_LAYOUT_SPACE = 600;
-        private int extraLayoutSpace = -1;
-        private Context context;
-
-        public PreCachingLayoutManager(Context context) {
-            super(context);
-            this.context = context;
-        }
-
-        public PreCachingLayoutManager(Context context, int extraLayoutSpace) {
-            super(context);
-            this.context = context;
-            this.extraLayoutSpace = extraLayoutSpace;
-        }
-
-        public PreCachingLayoutManager(Context context, int orientation, boolean reverseLayout) {
-            super(context, orientation, reverseLayout);
-            this.context = context;
-        }
-
-        public void setExtraLayoutSpace(int extraLayoutSpace) {
-            this.extraLayoutSpace = extraLayoutSpace;
-        }
-
-        @Override
-        protected int getExtraLayoutSpace(RecyclerView.State state) {
-            if (extraLayoutSpace > 0) {
-                return extraLayoutSpace;
-            }
-            return DEFAULT_EXTRA_LAYOUT_SPACE;
-        }
     }
 }
 

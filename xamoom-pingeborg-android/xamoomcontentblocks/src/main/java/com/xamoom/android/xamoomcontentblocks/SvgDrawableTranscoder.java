@@ -1,16 +1,13 @@
 package com.xamoom.android.xamoomcontentblocks;
+
 import android.graphics.Picture;
 import android.graphics.drawable.PictureDrawable;
-import android.provider.Settings;
-import android.util.Log;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.load.resource.SimpleResource;
 import com.bumptech.glide.load.resource.transcode.ResourceTranscoder;
 import com.caverock.androidsvg.PreserveAspectRatio;
 import com.caverock.androidsvg.SVG;
-import com.caverock.androidsvg.SVGParseException;
 
 
 /**

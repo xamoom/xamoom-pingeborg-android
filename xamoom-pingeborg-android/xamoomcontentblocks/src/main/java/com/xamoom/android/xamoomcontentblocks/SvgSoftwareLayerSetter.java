@@ -1,8 +1,8 @@
 package com.xamoom.android.xamoomcontentblocks;
+
 import android.annotation.TargetApi;
 import android.graphics.drawable.PictureDrawable;
 import android.os.Build;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.request.RequestListener;
