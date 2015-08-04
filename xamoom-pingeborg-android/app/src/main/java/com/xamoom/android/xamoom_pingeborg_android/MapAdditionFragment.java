@@ -33,11 +33,13 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
     private static final String ARG_PARAM3 = "spotImageUrlParam";
     private static final String ARG_PARAM4 = "spotLocationLatitudeParam";
     private static final String ARG_PARAM5 = "spotLocationLongitudeParam";
+    private static final String ARG_PARAM6 = "spotUserDistanceParam";
 
     private String mSpotName;
     private String mSpotDescription;
     private String mSpotImageUrl;
     private Location mSpotLocation;
+    private float mDistance;
 
     /**
      * TODO
@@ -47,7 +49,7 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
      * @param location
      * @return
      */
-    public static MapAdditionFragment newInstance(String name, String description, String imageUrl, Location location) {
+    public static MapAdditionFragment newInstance(String name, String description, String imageUrl, Location location, float distance) {
         MapAdditionFragment fragment = new MapAdditionFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, name);
@@ -55,6 +57,7 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
         args.putString(ARG_PARAM3, imageUrl);
         args.putDouble(ARG_PARAM4, location.getLat());
         args.putDouble(ARG_PARAM5, location.getLon());
+        args.putFloat(ARG_PARAM6, distance);
         fragment.setArguments(args);
         return fragment;
     }
@@ -74,6 +77,7 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
             lat = getArguments().getDouble(ARG_PARAM4);
             lon = getArguments().getDouble(ARG_PARAM5);
             mSpotLocation = new Location(lat, lon);
+            mDistance = getArguments().getFloat(ARG_PARAM6);
         }
     }
 
@@ -87,6 +91,9 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
 
         TextView titleTextView = (TextView) view.findViewById(R.id.spotTitleTextView);
         titleTextView.setText(mSpotName);
+
+        TextView distanceTextView = (TextView) view.findViewById(R.id.spotDistanceTextView);
+        distanceTextView.setText(String.format("%.0f %s", mDistance, getString(R.string.meterLabel)));
 
         final ImageView imageView = (ImageView) view.findViewById(R.id.backdrop);
         Glide.with(this)

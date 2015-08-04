@@ -60,6 +60,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private Marker mActiveMarker;
     private BestLocationProvider mBestLocationProvider;
     private BestLocationListener mBestLocationListener;
+    private Location mUserLocation;
 
     private ProgressBar mProgressBar;
 
@@ -124,6 +125,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             public void onLocationUpdate(Location location, BestLocationProvider.LocationType type, boolean isFresh) {
                 if(isFresh) {
                     Log.i("pingeborg", "onLocationUpdate TYPE:" + type + " Location:" + mBestLocationProvider.locationToString(location));
+                    mUserLocation = location;
                     setupGeofencing(location);
                 }
             }
@@ -254,7 +256,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if(mMapAdditionFragment == null)
             fragmentTransaction.setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom);
 
-        mMapAdditionFragment = MapAdditionFragment.newInstance(spot.getDisplayName(), spot.getDescription(), spot.getImage(), spot.getLocation());
+        Location spotLocation = new Location("xamoom-api");
+        spotLocation.setLatitude(spot.getLocation().getLat());
+        spotLocation.setLongitude(spot.getLocation().getLon());
+        float distance = spotLocation.distanceTo(mUserLocation);
+
+        mMapAdditionFragment = MapAdditionFragment.newInstance(spot.getDisplayName(), spot.getDescription(), spot.getImage(), spot.getLocation(), distance);
         fragmentTransaction.replace(R.id.mapAdditionFrameLayout, mMapAdditionFragment).commit();
     }
 
