@@ -13,6 +13,9 @@
         <item name="colorAccent">@color/pingeborg_green</item>
 
         <item name="drawerArrowStyle">@style/MyDrawerArrowToggle</item>
+
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <!-- Animated Arrow/BurgerButton -->
