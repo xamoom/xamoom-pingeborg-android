@@ -41,6 +41,7 @@ import com.xamoom.android.mapping.SpotMap;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import retrofit.RetrofitError;
 
@@ -288,6 +289,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private void setupMapMarkers(final GoogleMap googleMap, final ArrayMap<Marker, Spot> markerMap) {
         if (!markerMap.isEmpty()) {
             Log.v("pingeborg.xamoom.com","MarkerMap is not empty");
+            googleMap.clear();
             addMarkersToMap();
         } else {
             XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getSpotMap(null, new String[]{"showAllTheSpots"}, null, new APICallback<SpotMap>() {
@@ -318,7 +320,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         //show all markers
         for (Spot s : result.getItems()) {
-            final Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+            Marker marker = mGoogleMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromBitmap(mMarkerIcon))
                     .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
                     .title(s.getDisplayName())
@@ -331,14 +333,24 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public void addMarkersToMap() {
-        //show all markers
-        for (Marker marker : markerMap.keySet()) {
-            mGoogleMap.addMarker(new MarkerOptions()
-            .icon(BitmapDescriptorFactory.fromBitmap(mMarkerIcon))
-            .anchor(0.0f, 1.0f)
-            .title(marker.getTitle())
-            .position(marker.getPosition()));
+        ArrayMap<Marker, Spot> newMarkerMap = new ArrayMap<Marker, Spot>();
+
+        for(int i = 0; i < markerMap.size(); i++) {
+            Spot s = markerMap.valueAt(i);
+
+            Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromBitmap(mMarkerIcon))
+                    .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
+                    .title(s.getDisplayName())
+                    .position(new LatLng(s.getLocation().getLat(), s.getLocation().getLon())));
+
+            newMarkerMap.put(marker, s);
         }
+
+        markerMap.clear();
+        markerMap.putAll((Map<? extends Marker, ? extends Spot>) newMarkerMap);
+
+        newMarkerMap.clear();
 
         zoomMapAcordingToMarkers();
     }

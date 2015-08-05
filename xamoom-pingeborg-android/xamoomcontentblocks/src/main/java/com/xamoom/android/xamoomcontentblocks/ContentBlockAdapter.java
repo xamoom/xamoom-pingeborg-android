@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
@@ -1007,7 +1008,6 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
     private GoogleMap mGoogleMap;
     private LinearLayout mRootLayout;
     private BestLocationProvider mBestLocationProvider;
-    private BestLocationListener mBestLocationListener;
     private Location mUserLocation;
 
     public ContentBlock9ViewHolder(View itemView, Fragment fragment) {
@@ -1036,7 +1036,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
     public void onMapReady(final GoogleMap googleMap) {
         mGoogleMap = googleMap;
 
-        final HashMap<Marker, Spot> mMarkerArray = new HashMap<Marker, Spot>();
+        final ArrayMap<Marker, Spot> mMarkerArray = new ArrayMap<Marker, Spot>();
 
         XamoomEndUserApi.getInstance(mFragment.getActivity().getApplicationContext()).getSpotMap(null, mContentBlock.getSpotMapTag().split(","), null, new APICallback<SpotMap>() {
             @Override
@@ -1118,7 +1118,13 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                             if (spot == null) {
                                 return null;
                             } else {
-                                View v = mFragment.getActivity().getLayoutInflater().inflate(R.layout.info_window, null);
+                                View v;
+
+                                if(mFragment.isAdded()) {
+                                    v = mFragment.getActivity().getLayoutInflater().inflate(R.layout.info_window, null);
+                                } else {
+                                    return null;
+                                }
 
                                 mNameTextView = (TextView) v.findViewById(R.id.infoWindowNameTextView);
                                 mDescriptionTextView = (TextView) v.findViewById(R.id.infoWindowDescriptionTextView);
@@ -1266,7 +1272,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
 
     private void setupLocation() {
         mBestLocationProvider = new BestLocationProvider(mFragment.getActivity(), true, true, 1000, 1000, 5, 10);
-        mBestLocationListener = new BestLocationListener() {
+        BestLocationListener mBestLocationListener = new BestLocationListener() {
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
             }
@@ -1285,7 +1291,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
 
             @Override
             public void onLocationUpdate(Location location, BestLocationProvider.LocationType type, boolean isFresh) {
-                if(isFresh) {
+                if (isFresh) {
                     Log.i("pingeborg", "onLocationUpdate TYPE:" + type + " Location:" + mBestLocationProvider.locationToString(location));
                     mUserLocation = location;
                 }
