@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.util.ArrayMap;
 import android.support.v4.view.ViewPager;
 import android.util.Base64;
 import android.util.Log;
@@ -39,7 +40,6 @@ import com.xamoom.android.mapping.SpotMap;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import retrofit.RetrofitError;
@@ -49,12 +49,15 @@ import retrofit.RetrofitError;
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    private final HashMap<Marker, Spot> markerMap = new HashMap<Marker, Spot>();
+    private final ArrayMap<Marker, Spot> markerMap = new ArrayMap<Marker, Spot>();
+
+    private static MapFragment mInstance;
 
     private ViewPager mViewPager;
     private SupportMapFragment mSupportMapFragment;
     private MapAdditionFragment mMapAdditionFragment;
     private GeofenceFragment mGeofenceFragment;
+    private ProgressBar mProgressBar;
 
     private GoogleMap mGoogleMap;
     private Marker mActiveMarker;
@@ -62,14 +65,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private BestLocationListener mBestLocationListener;
     private Location mUserLocation;
 
-    private ProgressBar mProgressBar;
+    private Bitmap mMarkerIcon;
 
     /**
      * TODO
      */
     public static MapFragment newInstance() {
-        MapFragment mapFragment = new MapFragment();
-        return mapFragment;
+        if(mInstance == null) {
+            mInstance = new MapFragment();
+        }
+        return mInstance;
     }
 
     public MapFragment() {
@@ -163,7 +168,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             @Override
             public void onPageSelected(int position) {
-                if(position != 0) {
+                if (position != 0) {
                     closeMapAdditionFragment();
                 }
             }
@@ -247,7 +252,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        addMarkersToMap(googleMap, markerMap);
+        setupMapMarkers(googleMap, markerMap);
         googleMap.setMyLocationEnabled(true);
     }
 
@@ -280,54 +285,79 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void addMarkersToMap(final GoogleMap googleMap, final HashMap<Marker, Spot> markerMap) {
-        XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getSpotMap(null, new String[]{"showAllTheSpots"}, null, new APICallback<SpotMap>() {
-            @Override
-            public void finished(SpotMap result) {
-                Bitmap icon;
-
-                //get the icon for the mapMarker (drawable image (eg. png) or SVG
-                if (result.getStyle().getCustomMarker() != null) {
-                    String iconString = result.getStyle().getCustomMarker();
-                    icon = getIconFromBase64(iconString);
-                } else {
-                    icon = BitmapFactory.decodeResource(getActivity().getResources(), com.xamoom.android.xamoomcontentblocks.R.drawable.ic_default_map_marker);
-                    float imageRatio = (float) icon.getWidth() / (float) icon.getHeight();
-                    icon = Bitmap.createScaledBitmap(icon, 70, (int) (70 / imageRatio), false);
+    private void setupMapMarkers(final GoogleMap googleMap, final ArrayMap<Marker, Spot> markerMap) {
+        if (!markerMap.isEmpty()) {
+            Log.v("pingeborg.xamoom.com","MarkerMap is not empty");
+            addMarkersToMap();
+        } else {
+            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getSpotMap(null, new String[]{"showAllTheSpots"}, null, new APICallback<SpotMap>() {
+                @Override
+                public void finished(SpotMap result) {
+                    getDataFromSpotMap(result);
                 }
 
-                //show all markers
-                for (Spot s : result.getItems()) {
-                    final Marker marker = googleMap.addMarker(new MarkerOptions()
-                            .icon(BitmapDescriptorFactory.fromBitmap(icon))
-                            .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
-                            .title(s.getDisplayName())
-                            .position(new LatLng(s.getLocation().getLat(), s.getLocation().getLon())));
-
-                    markerMap.put(marker, s);
+                @Override
+                public void error(RetrofitError error) {
+                    Log.e(Global.DEBUG_TAG, "Error:" + error);
+                    mProgressBar.setVisibility(View.GONE);
                 }
+            });
+        }
+    }
 
-                //zoom to display all markers
-                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                for (Marker marker : markerMap.keySet()) {
-                    builder.include(marker.getPosition());
-                }
-                LatLngBounds bounds = builder.build();
+    public void getDataFromSpotMap(SpotMap result) {
+        //get the icon for the mapMarker (drawable image (eg. png) or SVG
+        if (result.getStyle().getCustomMarker() != null) {
+            String iconString = result.getStyle().getCustomMarker();
+            mMarkerIcon = getIconFromBase64(iconString);
+        } else {
+            mMarkerIcon = BitmapFactory.decodeResource(getActivity().getResources(), com.xamoom.android.xamoomcontentblocks.R.drawable.ic_default_map_marker);
+            float imageRatio = (float) mMarkerIcon.getWidth() / (float) mMarkerIcon.getHeight();
+            mMarkerIcon = Bitmap.createScaledBitmap(mMarkerIcon, 70, (int) (70 / imageRatio), false);
+        }
 
-                //move camera to calulated point
-                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 70);
-                googleMap.moveCamera(cu);
+        //show all markers
+        for (Spot s : result.getItems()) {
+            final Marker marker = mGoogleMap.addMarker(new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromBitmap(mMarkerIcon))
+                    .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
+                    .title(s.getDisplayName())
+                    .position(new LatLng(s.getLocation().getLat(), s.getLocation().getLon())));
 
-                //remove progressBar
-                mProgressBar.setVisibility(View.GONE);
-            }
+            markerMap.put(marker, s);
+        }
 
-            @Override
-            public void error(RetrofitError error) {
-                Log.e(Global.DEBUG_TAG, "Error:" + error);
-                mProgressBar.setVisibility(View.GONE);
-            }
-        });
+        zoomMapAcordingToMarkers();
+    }
+
+    public void addMarkersToMap() {
+        //show all markers
+        for (Marker marker : markerMap.keySet()) {
+            mGoogleMap.addMarker(new MarkerOptions()
+            .icon(BitmapDescriptorFactory.fromBitmap(mMarkerIcon))
+            .anchor(0.0f, 1.0f)
+            .title(marker.getTitle())
+            .position(marker.getPosition()));
+        }
+
+        zoomMapAcordingToMarkers();
+    }
+
+    public void zoomMapAcordingToMarkers() {
+        //zoom to display all markers
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (Marker marker : markerMap.keySet()) {
+            builder.include(marker.getPosition());
+        }
+
+        LatLngBounds bounds = builder.build();
+
+        //move camera to calulated point
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 70);
+        mGoogleMap.moveCamera(cu);
+
+        //remove progressBar
+        mProgressBar.setVisibility(View.GONE);
     }
 
     /**
