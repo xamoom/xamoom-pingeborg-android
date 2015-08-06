@@ -52,7 +52,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         //StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
 
         //analytics
-        Analytics.getInstance(this).sendEvent("App", "Start", "User startet the app");
+        Analytics.getInstance(this).sendEvent("App", "Start", "User starts the app");
 
         //setup Global
         Global.getInstance().setActivity(this);
@@ -68,50 +68,10 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         //setup toolbar/actionbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setupActionBar();
 
-        final ActionBar ab = getSupportActionBar();
-        if (ab != null) {
-            ab.setTitle(Global.getInstance().getCurrentSystemName());
-
-            mDrawerToggle = new ActionBarDrawerToggle(
-                    this,
-                    mDrawerLayout,
-                    //toolbar,
-                    R.string.app_name,
-                    R.string.app_name);
-
-            if (mDrawerLayout != null)
-                mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            mDrawerToggle.syncState();
-        }
-
-        if (navigationView != null) {
-            setupDrawerContent(navigationView);
-            mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
-                @Override
-                public void onDrawerSlide(View drawerView, float slideOffset) {
-
-                }
-
-                @Override
-                public void onDrawerOpened(View drawerView) {
-
-                }
-
-                @Override
-                public void onDrawerClosed(View drawerView) {
-
-                }
-
-                @Override
-                public void onDrawerStateChanged(int newState) {
-
-                }
-            });
-        }
-
+        //setup NavigationDrawer
+        setupNavigationDrawer(navigationView);
 
         //setup FAB Button
         mQRScannerFAB = (FloatingActionButton) findViewById(R.id.fab);
@@ -127,6 +87,55 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
 
         //setup artistListFragment
         setupArtistListFragment();
+    }
+
+    public void setupNavigationDrawer(NavigationView navigationView) {
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
+            mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+                @Override
+                public void onDrawerSlide(View drawerView, float slideOffset) {
+
+                }
+
+                @Override
+                public void onDrawerOpened(View drawerView) {
+
+                }
+
+                @Override
+                public void onDrawerClosed(View drawerView) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
+                }
+
+                @Override
+                public void onDrawerStateChanged(int newState) {
+
+                }
+            });
+        }
+    }
+
+    public void setupActionBar() {
+        final ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            //set title
+            ab.setTitle(Global.getInstance().getCurrentSystemName());
+
+            //setup DrawerToggle
+            mDrawerToggle = new ActionBarDrawerToggle(
+                    this,
+                    mDrawerLayout,
+                    //toolbar,
+                    R.string.app_name,
+                    R.string.app_name);
+
+            if (mDrawerLayout != null)
+                mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mDrawerToggle.syncState();
+        }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -207,7 +216,6 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                         }
 
                         mDrawerLayout.closeDrawers();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
 
                         return true;
                     }
@@ -239,7 +247,6 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
     @Override
     public void closeGeofenceFragment() {
         if(mMainFragment.getClass().equals(MapFragment.class)) {
-            Log.v("pingeborg", "MainFragment: " + mMainFragment);
             MapFragment mapFragment = (MapFragment) mMainFragment;
             mapFragment.closeGeofenceFragment();
         }
