@@ -6,7 +6,7 @@
     <ProgressBar
         android:id="@+id/aboutLoadingIndicator"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="30dp"
         android:layout_marginTop="50dp" />
 
     <FrameLayout
