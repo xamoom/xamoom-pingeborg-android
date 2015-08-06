@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
 import android.location.Location;
 import android.media.AudioManager;
@@ -37,9 +38,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.model.StreamEncoder;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder;
+import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.SizeReadyCallback;
+import com.bumptech.glide.request.target.Target;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.android.gms.maps.CameraUpdate;
@@ -448,7 +452,7 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setupContentBlock(ContentBlockType2 cb2) {
-        mYoutubeVideoCode = getVideoId(cb2.getYoutubeUrl());
+        mYoutubeVideoCode = getVideoId(cb2.getVideoUrl());
 
         mTitleTextView.setVisibility(View.VISIBLE);
         if(cb2.getTitle() != null)
@@ -538,25 +542,32 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
         }
 
         if(cb3.getFileId() != null) {
-            int deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
-            float margin = mFragment.getResources().getDimension(R.dimen.fragment_margin);
+            final float scaleX;
+            //checking scale and divide it by 100.0f
+            if(cb3.getScaleX() != 0) {
+                scaleX = cb3.getScaleX()/100.0f;
+            } else {
+                scaleX = 100.0f/100;
+            }
 
             if (cb3.getFileId().contains(".svg")) {
                 Uri uri = Uri.parse(cb3.getFileId());
                 requestBuilder
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .placeholder(R.drawable.placeholder)
+                        //.placeholder(R.drawable.placeholder)
                         .load(uri)
                         .into(mImageView);
                 mImageProgressBar.setVisibility(View.GONE);
+
             } else {
+                //making the scaleX to a factor scaleX
+
                 Glide.with(mFragment)
                         .load(cb3.getFileId())
                         //.placeholder(R.drawable.placeholder)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .fitCenter()
+                        //.fitCenter()
                         .dontAnimate()
-                        .override(deviceWidth - (int) (margin * 2), 2500)
                         .into(new GlideDrawableImageViewTarget(mImageView) {
                             public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
                                 super.onResourceReady(drawable, anim);
@@ -564,6 +575,7 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                             }
                         });
             }
+            resizeImageViewWithScaling(mImageView, mFragment, scaleX);
         }
 
         mImageView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -591,6 +603,18 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                 return false;
             }
         });
+    }
+
+    public void resizeImageViewWithScaling(ImageView imageView, Fragment fragment, float scaleX) {
+        int deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
+        float margin = mFragment.getResources().getDimension(R.dimen.fragment_margin);
+
+        //calculate the diff between imageSize and scaledImageSize
+        float deviceWidthWithMargins =  (deviceWidth - (margin * 2));
+        float diff = deviceWidthWithMargins - (deviceWidthWithMargins*scaleX);
+        //set left and right margin to the half of the difference
+        //so the imageView is doing all the resizing
+        mImageView.setPadding((int)(diff/2),0,(int)(diff/2),0);
     }
 }
 
