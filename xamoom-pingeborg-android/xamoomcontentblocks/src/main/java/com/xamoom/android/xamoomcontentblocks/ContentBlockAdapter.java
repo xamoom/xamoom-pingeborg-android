@@ -578,6 +578,16 @@ class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
             resizeImageViewWithScaling(mImageView, mFragment, scaleX);
         }
 
+        if(cb3.getLinkUrl() != "" && cb3.getLinkUrl() != null) {
+            mImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(cb3.getLinkUrl()));
+                    mFragment.startActivity(intent);
+                }
+            });
+        }
+
         mImageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
