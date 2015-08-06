@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
 import android.location.Location;
 import android.media.AudioManager;
@@ -22,12 +21,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,12 +39,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.model.StreamEncoder;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder;
-import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.SizeReadyCallback;
-import com.bumptech.glide.request.target.Target;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.android.gms.maps.CameraUpdate;
@@ -432,7 +430,7 @@ class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
 }
 
 /**
- * YoutubeBlock
+ * VideoBlock
  */
 class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
 
@@ -440,6 +438,8 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
 
     private Fragment mFragment;
     private TextView mTitleTextView;
+    private WebView mVideoWebView;
+    private View mWebViewOverlay;
     private String mYoutubeVideoCode;
     private String mYoutubeApiKey;
     private YouTubePlayerSupportFragment youTubePlayerSupportFragmentFragment;
@@ -448,12 +448,12 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mFragment = activity;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
+        mVideoWebView = (WebView) itemView.findViewById(R.id.videoWebView);
+        mWebViewOverlay = (View) itemView.findViewById(R.id.webViewOverlay);
         mYoutubeApiKey = youtubeApiKey;
     }
 
     public void setupContentBlock(ContentBlockType2 cb2) {
-        mYoutubeVideoCode = getVideoId(cb2.getVideoUrl());
-
         mTitleTextView.setVisibility(View.VISIBLE);
         if(cb2.getTitle() != null)
             mTitleTextView.setText(cb2.getTitle());
@@ -461,10 +461,32 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
             mTitleTextView.setVisibility(View.GONE);
         }
 
+        if(getVideoId(cb2.getVideoUrl()) != null) {
+            setupYoutube(cb2);
+        } else {
+            setupHTMLPlayer(cb2);
+        }
+    }
+
+    public void setupHTMLPlayer(final ContentBlockType2 cb2) {
+        mVideoWebView.loadUrl(cb2.getVideoUrl());
+
+        mWebViewOverlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(cb2.getVideoUrl()));
+                intent.setDataAndType(Uri.parse(cb2.getVideoUrl()), "video/mp4");
+                mFragment.getActivity().startActivity(intent);
+            }
+        });
+    }
+
+    public void setupYoutube(ContentBlockType2 cb2) {
+        mYoutubeVideoCode = getVideoId(cb2.getVideoUrl());
         try {
             if(youTubePlayerSupportFragmentFragment == null) {
                 youTubePlayerSupportFragmentFragment = new YouTubePlayerSupportFragment();
-                mFragment.getChildFragmentManager().beginTransaction().add(R.id.youtubePlayerFrameLayout, youTubePlayerSupportFragmentFragment).commit();
+                mFragment.getChildFragmentManager().beginTransaction().add(R.id.videoPlayerFrameLayout, youTubePlayerSupportFragmentFragment).commit();
                 youTubePlayerSupportFragmentFragment.initialize(mYoutubeApiKey, new YouTubePlayer.OnInitializedListener() {
                     @Override
                     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
@@ -474,14 +496,12 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
 
                     @Override
                     public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
-
                     }
                 });
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public static String getVideoId(String videoUrl) {
