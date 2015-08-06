@@ -235,6 +235,11 @@ public class ArtistListFragment extends Fragment {
                 mImageView = (ImageView) view.findViewById(R.id.artistListItemImageView);
                 mTextView = (TextView) view.findViewById(R.id.artistListItemTextView);
                 mOverlayImageView = (ImageView) view.findViewById(R.id.artistListItemOverlayImageView);
+
+                int width = (mContext.getResources().getDisplayMetrics().widthPixels) - (int)(2*mContext.getResources().getDimension(R.dimen.halfFrameLayoutPadding));
+
+                Log.v("pingeborg","Width: " + width);
+                mView.setMinimumHeight((int)(width/2.632));
             }
 
             @Override
@@ -281,7 +286,6 @@ public class ArtistListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-
             if (holder.getItemViewType() == VIEW_ITEM) {
                 //save content for later use
                 holder.mBoundContent = mContentList.get(position);
@@ -294,7 +298,7 @@ public class ArtistListFragment extends Fragment {
                 if(Global.getInstance().getSavedArtists().contains(holder.mBoundContent.getContentId())) {
                     Glide.with(mContext)
                             .load(holder.mBoundContent.getImagePublicUrl())
-                            .crossFade()
+                            .dontAnimate()
                             .into(holder.mImageView);
 
                     holder.mOverlayImageView.setVisibility(View.GONE);
@@ -302,7 +306,7 @@ public class ArtistListFragment extends Fragment {
                 } else {
                     Glide.with(mContext)
                             .load(holder.mBoundContent.getImagePublicUrl())
-                            .crossFade()
+                            .dontAnimate()
                             .bitmapTransform(new GrayscaleTransformation(pool))
                             .into(holder.mImageView);
 
@@ -312,6 +316,7 @@ public class ArtistListFragment extends Fragment {
                     if (position == 0) {
                         Glide.with(mContext)
                                 .load(R.drawable.discoverable)
+                                .dontAnimate()
                                 .dontTransform() //or the alpha will be ignored
                                 .into(holder.mOverlayImageView);
                     }
