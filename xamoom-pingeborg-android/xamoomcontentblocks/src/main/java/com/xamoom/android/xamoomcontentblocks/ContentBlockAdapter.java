@@ -21,14 +21,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,8 +54,10 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubeIntents;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.xamoom.android.APICallback;
@@ -435,11 +436,13 @@ class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
 class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
 
     final static String reg = "(?:youtube(?:-nocookie)?\\.com\\/(?:[^\\/\\n\\s]+\\/\\S+\\/|(?:v|e(?:mbed)?)\\/|\\S*?[?&]v=)|youtu\\.be\\/)([a-zA-Z0-9_-]{11})";
-
+    private static int mFrameId = 169147;
+    private int mUniqueFrameId;
     private Fragment mFragment;
     private TextView mTitleTextView;
     private WebView mVideoWebView;
     private View mWebViewOverlay;
+    private FrameLayout mVideoFrameLayout;
     private String mYoutubeVideoCode;
     private String mYoutubeApiKey;
     private YouTubePlayerSupportFragment youTubePlayerSupportFragmentFragment;
@@ -450,7 +453,11 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mVideoWebView = (WebView) itemView.findViewById(R.id.videoWebView);
         mWebViewOverlay = (View) itemView.findViewById(R.id.webViewOverlay);
+        mVideoFrameLayout = (FrameLayout) itemView.findViewById(R.id.videoPlayerFrameLayout);
         mYoutubeApiKey = youtubeApiKey;
+
+        WebSettings webSettings = mVideoWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
     }
 
     public void setupContentBlock(ContentBlockType2 cb2) {
@@ -460,6 +467,13 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
         else {
             mTitleTextView.setVisibility(View.GONE);
         }
+
+        mTitleTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("pingeborg","Youtube FrameLayout: " + mVideoFrameLayout);
+            }
+        });
 
         if(getVideoId(cb2.getVideoUrl()) != null) {
             setupYoutube(cb2);
@@ -483,25 +497,17 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
 
     public void setupYoutube(ContentBlockType2 cb2) {
         mYoutubeVideoCode = getVideoId(cb2.getVideoUrl());
-        try {
-            if(youTubePlayerSupportFragmentFragment == null) {
-                youTubePlayerSupportFragmentFragment = new YouTubePlayerSupportFragment();
-                mFragment.getChildFragmentManager().beginTransaction().add(R.id.videoPlayerFrameLayout, youTubePlayerSupportFragmentFragment).commit();
-                youTubePlayerSupportFragmentFragment.initialize(mYoutubeApiKey, new YouTubePlayer.OnInitializedListener() {
-                    @Override
-                    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-                        youTubePlayer.setFullscreenControlFlags(0);
-                        youTubePlayer.cueVideo(mYoutubeVideoCode);
-                    }
 
-                    @Override
-                    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
-                    }
-                });
+        String html = "<iframe src=\"https://www.youtube.com/embed/"+mYoutubeVideoCode+"\" frameborder=\"0\" allowfullscreen></iframe>";
+        mVideoWebView.loadData(html, "text/html", "utf-8");
+
+        mWebViewOverlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = YouTubeIntents.createPlayVideoIntent(mFragment.getActivity(), mYoutubeVideoCode);
+                mFragment.getActivity().startActivity(intent);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     public static String getVideoId(String videoUrl) {
@@ -515,7 +521,6 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
             return matcher.group(1);
         return null;
     }
-
 }
 
 /**
@@ -1174,7 +1179,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
                             } else {
                                 View v;
 
-                                if(mFragment.isAdded()) {
+                                if (mFragment.isAdded()) {
                                     v = mFragment.getActivity().getLayoutInflater().inflate(R.layout.info_window, null);
                                 } else {
                                     return null;
@@ -1203,7 +1208,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
 
                                 //display the distance from user to spot
                                 float distance = 0;
-                                if(mUserLocation != null) {
+                                if (mUserLocation != null) {
                                     Location spotLocation = new Location("xamoom-api");
                                     spotLocation.setLatitude(spot.getLocation().getLat());
                                     spotLocation.setLongitude(spot.getLocation().getLon());

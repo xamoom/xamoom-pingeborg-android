@@ -238,7 +238,6 @@ public class ArtistListFragment extends Fragment {
 
                 int width = (mContext.getResources().getDisplayMetrics().widthPixels) - (int)(2*mContext.getResources().getDimension(R.dimen.halfFrameLayoutPadding));
 
-                Log.v("pingeborg","Width: " + width);
                 mView.setMinimumHeight((int)(width/2.632));
             }
 

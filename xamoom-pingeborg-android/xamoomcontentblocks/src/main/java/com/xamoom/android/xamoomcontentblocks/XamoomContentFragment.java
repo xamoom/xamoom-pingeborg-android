@@ -117,14 +117,13 @@ public class XamoomContentFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.v("pingeborg.xamoom.com", "onDestroy");
-        mContent = null;
-        mContentBlocks.clear();
-        mContentBlockAdapter.notifyDataSetChanged();
-        mContentBlockAdapter = null;
-        mRecyclerView.setAdapter(null);
-        mRecyclerView = null;
-        mContentBlocks = null;
+        //mContent = null;
+        //mContentBlocks.clear();
+        //mContentBlockAdapter.notifyDataSetChanged();
+        //mContentBlockAdapter = null;
+        //mRecyclerView.setAdapter(null);
+        //mRecyclerView = null;
+        //mContentBlocks = null;
     }
 
     @Override
@@ -134,7 +133,10 @@ public class XamoomContentFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_xamoom_content, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.contentBlocksRecycler);
-        addContentTitleAndImage();
+
+        if(mContent != null)
+            addContentTitleAndImage();
+
         return view;
     }
 
@@ -179,19 +181,25 @@ public class XamoomContentFragment extends Fragment {
     }
 
     private void addContentTitleAndImage() {
-        ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, mContent.getImagePublicUrl(), 0);
-        ContentBlockType0 cb0 = new ContentBlockType0(mContent.getTitle(), true, 0, mContent.getDescriptionOfContent());
-
         mContentBlocks = new LinkedList<ContentBlock>();
         mContentBlocks.addAll(mContent.getContentBlocks());
-        mContentBlocks.add(0, cb3);
+
+        ContentBlockType0 cb0 = new ContentBlockType0(mContent.getTitle(), true, 0, mContent.getDescriptionOfContent());
         mContentBlocks.add(0, cb0);
+
+        if(mContent.getImagePublicUrl() != "" && mContent.getImagePublicUrl() != null) {
+            ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, mContent.getImagePublicUrl(), 0);
+            mContentBlocks.add(0, cb3);
+        }
 
         if(!isStoreLinksActivated)
             mContentBlocks = removeStoreLinks(mContentBlocks);
     }
 
     private void setupRecyclerView() {
+        if(mContent == null)
+            return;
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity().getApplicationContext()));
 
         //DISPLAY DATA
