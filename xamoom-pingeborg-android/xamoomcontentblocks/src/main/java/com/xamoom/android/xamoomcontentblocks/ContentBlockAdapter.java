@@ -102,13 +102,11 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private Fragment mFragment;
     private List<ContentBlock> mContentBlocks;
-    private String mYoutubeApiKey;
     private String mLinkColor;
 
-    public ContentBlockAdapter(Fragment fragment, List<ContentBlock> contentBlocks, String youtubeApiKey, String linkColor) {
+    public ContentBlockAdapter(Fragment fragment, List<ContentBlock> contentBlocks, String linkColor) {
         mFragment = fragment;
         mContentBlocks = contentBlocks;
-        mYoutubeApiKey = youtubeApiKey;
         mLinkColor = linkColor;
     }
 
@@ -136,7 +134,7 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 2:
                 View view2 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_2_layout, parent, false);
-                return new ContentBlock2ViewHolder(view2, mFragment, mYoutubeApiKey);
+                return new ContentBlock2ViewHolder(view2, mFragment);
             case 3:
                 View view3 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_3_layout, parent, false);
@@ -436,25 +434,18 @@ class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
 class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
 
     final static String reg = "(?:youtube(?:-nocookie)?\\.com\\/(?:[^\\/\\n\\s]+\\/\\S+\\/|(?:v|e(?:mbed)?)\\/|\\S*?[?&]v=)|youtu\\.be\\/)([a-zA-Z0-9_-]{11})";
-    private static int mFrameId = 169147;
-    private int mUniqueFrameId;
     private Fragment mFragment;
     private TextView mTitleTextView;
     private WebView mVideoWebView;
     private View mWebViewOverlay;
-    private FrameLayout mVideoFrameLayout;
     private String mYoutubeVideoCode;
-    private String mYoutubeApiKey;
-    private YouTubePlayerSupportFragment youTubePlayerSupportFragmentFragment;
 
-    public ContentBlock2ViewHolder(View itemView, Fragment activity, String youtubeApiKey) {
+    public ContentBlock2ViewHolder(View itemView, Fragment activity) {
         super(itemView);
         mFragment = activity;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mVideoWebView = (WebView) itemView.findViewById(R.id.videoWebView);
         mWebViewOverlay = (View) itemView.findViewById(R.id.webViewOverlay);
-        mVideoFrameLayout = (FrameLayout) itemView.findViewById(R.id.videoPlayerFrameLayout);
-        mYoutubeApiKey = youtubeApiKey;
 
         WebSettings webSettings = mVideoWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -467,13 +458,6 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
         else {
             mTitleTextView.setVisibility(View.GONE);
         }
-
-        mTitleTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.v("pingeborg","Youtube FrameLayout: " + mVideoFrameLayout);
-            }
-        });
 
         if(getVideoId(cb2.getVideoUrl()) != null) {
             setupYoutube(cb2);
@@ -1075,6 +1059,10 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mRootLayout = (LinearLayout) itemView.findViewById(R.id.rootLayout);
         mMapFragment = new SupportMapFragment().newInstance();
+
+
+
+
         mFragment.getFragmentManager().beginTransaction().replace(R.id.map, mMapFragment).commit();
     }
 
