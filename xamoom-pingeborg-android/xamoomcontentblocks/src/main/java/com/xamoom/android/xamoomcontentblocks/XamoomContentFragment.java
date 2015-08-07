@@ -203,7 +203,7 @@ public class XamoomContentFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity().getApplicationContext()));
 
         //DISPLAY DATA
-        mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mYoutubeApiKey, mLinkColor);
+        mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mLinkColor);
         mRecyclerView.setAdapter(mContentBlockAdapter);
     }
 
