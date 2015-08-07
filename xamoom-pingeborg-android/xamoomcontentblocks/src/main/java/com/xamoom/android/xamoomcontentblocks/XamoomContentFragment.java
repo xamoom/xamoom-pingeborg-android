@@ -77,10 +77,9 @@ public class XamoomContentFragment extends Fragment {
      * @param linkColor LinkColor as hex (e.g. "00F"), will be blue if null
      * @return XamoomContentFragment Returns an Instance of XamoomContentFragment
      */
-    public static XamoomContentFragment newInstance(String youtubeApiKey, String linkColor) {
+    public static XamoomContentFragment newInstance(String linkColor) {
         XamoomContentFragment fragment = new XamoomContentFragment();
         Bundle args = new Bundle();
-        args.putString(YOUTUBE_API_KEY, youtubeApiKey);
 
         if(linkColor == null)
             linkColor = "00F";

@@ -10,7 +10,6 @@ import java.util.ResourceBundle;
  */
 public class Global {
     public static final String DEBUG_TAG = "pingeborg";
-    public static final String YOUTUBE_API_KEY = "AIzaSyD5PVVHQ8QIDAqPuk47mN90WBPuQdxGnUU";
 
     private static final String SAVED_ARTISTS_KEY = "savedArtists.android.xamoom.at";
     private static final String IS_FIRST_START_KEY = "checkFirstStart.android.xamoom.at";

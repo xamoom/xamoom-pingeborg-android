@@ -159,7 +159,7 @@ public class ArtistListFragment extends Fragment {
     }
 
     public void openArtistDetails(Content mBoundContent) {
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Global.YOUTUBE_API_KEY, Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
         fragment.setContent(mBoundContent);
 
         getActivity().getSupportFragmentManager()
