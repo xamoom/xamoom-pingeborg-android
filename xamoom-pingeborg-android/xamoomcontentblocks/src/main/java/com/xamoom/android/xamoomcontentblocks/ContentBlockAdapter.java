@@ -1063,6 +1063,7 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
         mRootLayout = (LinearLayout) itemView.findViewById(R.id.rootLayout);
         mMapFragment = new SupportMapFragment().newInstance();
 
+        //setting up map fragment
         FrameLayout parentFrameLayout = (FrameLayout) itemView.findViewById(R.id.map);
 
         mUniqueFrameId = mFrameId;

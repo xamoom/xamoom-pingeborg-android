@@ -189,7 +189,7 @@ public class XamoomContentFragment extends Fragment {
 
         if(mContent.getImagePublicUrl() != "" && mContent.getImagePublicUrl() != null) {
             ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, mContent.getImagePublicUrl(), 0);
-            mContentBlocks.add(0, cb3);
+            mContentBlocks.add(1, cb3);
         }
 
         if(!isStoreLinksActivated)
