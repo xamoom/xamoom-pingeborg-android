@@ -1053,6 +1053,9 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
     private BestLocationProvider mBestLocationProvider;
     private Location mUserLocation;
 
+    private static int mFrameId = 169147;
+    private int mUniqueFrameId;
+
     public ContentBlock9ViewHolder(View itemView, Fragment fragment) {
         super(itemView);
         mFragment = fragment;
@@ -1060,10 +1063,17 @@ class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapRe
         mRootLayout = (LinearLayout) itemView.findViewById(R.id.rootLayout);
         mMapFragment = new SupportMapFragment().newInstance();
 
+        FrameLayout parentFrameLayout = (FrameLayout) itemView.findViewById(R.id.map);
 
+        mUniqueFrameId = mFrameId;
+        mFrameId++;
 
+        FrameLayout uniqueFrameLayout = new FrameLayout(mFragment.getActivity());
+        uniqueFrameLayout.setId(mUniqueFrameId);
 
-        mFragment.getFragmentManager().beginTransaction().replace(R.id.map, mMapFragment).commit();
+        parentFrameLayout.addView(uniqueFrameLayout);
+
+        mFragment.getFragmentManager().beginTransaction().replace(uniqueFrameLayout.getId(), mMapFragment).commit();
     }
 
     public void setupContentBlock(ContentBlockType9 cb9) {
