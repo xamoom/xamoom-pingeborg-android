@@ -66,7 +66,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
         final String locationIdentifier= myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
 
         mProgressbar = (ProgressBar) findViewById(R.id.artistDetailLoadingIndicator);
-git 
+
         //load data
         if (contentId != null) {
             if(Global.getInstance().getSavedArtists().contains(contentId)) {
