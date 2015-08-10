@@ -62,9 +62,6 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         //setup Global
         Global.getInstance().setActivity(this);
         Global.getInstance().setCurrentSystem(0);
-        if (Global.getInstance().checkFirstStart()) {
-            Log.v(Global.DEBUG_TAG, "First time starting the app");
-        }
 
         //setup navigation drawer
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);

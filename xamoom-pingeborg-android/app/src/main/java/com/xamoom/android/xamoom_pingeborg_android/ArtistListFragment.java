@@ -123,6 +123,7 @@ public class ArtistListFragment extends Fragment {
 
             //add loading indicator
             mContentList.add(null);
+
             mRecyclerView.getAdapter().notifyItemInserted(mContentList.size() - 1);
 
             XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getContentList(null, PAGE_SIZE, mCursor, new String[]{"artists"}, new APICallback<ContentList>() {
@@ -130,7 +131,7 @@ public class ArtistListFragment extends Fragment {
                 public void finished(final ContentList result) {
 
                     //save 3 artists as present for the user
-                    if (Global.getInstance().getIsFirstStart()) {
+                    if (Global.getInstance().checkFirstStart()) {
                         for (int i = 1; i < 4; i++) {
                             Content c = result.getItems().get(i);
                             Global.getInstance().saveArtist(c.getContentId());

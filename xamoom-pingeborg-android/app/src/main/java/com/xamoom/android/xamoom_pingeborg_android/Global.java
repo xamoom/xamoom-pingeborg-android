@@ -87,10 +87,8 @@ public class Global {
      */
     public boolean checkFirstStart() {
         if(mSharedPreferences.getBoolean(IS_FIRST_START_KEY, false)) {
-            mIsFirstStart = false;
             return false;
         } else {
-            mIsFirstStart = true;
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.putBoolean(IS_FIRST_START_KEY, true);
             editor.apply();
@@ -128,9 +126,5 @@ public class Global {
             default:
                 return mContext.getString(R.string.pingeborg_carinthia_system_name);
         }
-    }
-
-    public Boolean getIsFirstStart() {
-        return mIsFirstStart;
     }
 }
