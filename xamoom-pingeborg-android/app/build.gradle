@@ -8,8 +8,8 @@ android {
         applicationId "com.xamoom.android.xamoom_pingeborg_android"
         minSdkVersion 18
         targetSdkVersion 21
-        versionCode 1
-        versionName "0.2"
+        versionCode 2
+        versionName "0.2.1"
     }
     buildTypes {
         release {
@@ -21,10 +21,10 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.android.support:design:22.2.0'
-    compile 'com.android.support:recyclerview-v7:22.2.0'
-    compile 'com.android.support:cardview-v7:21.0.3'
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.android.support:design:22.2.1'
+    compile 'com.android.support:recyclerview-v7:22.2.1'
+    compile 'com.android.support:cardview-v7:22.2.1'
     compile 'com.github.bumptech.glide:glide:3.6.0'
     compile 'com.google.android.gms:play-services:7.5.0'
     compile 'jp.wasabeef:glide-transformations:1.0.6@aar'

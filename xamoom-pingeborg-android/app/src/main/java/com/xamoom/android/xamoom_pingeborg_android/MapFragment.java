@@ -11,6 +11,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.util.ArrayMap;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Base64;
 import android.util.Log;
@@ -100,8 +102,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         if (mViewPager != null) {
             setupViewPager(mViewPager);
-            TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabs);
-            tabLayout.setupWithViewPager(mViewPager);
+            final TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabs);
+
+            if (ViewCompat.isLaidOut(tabLayout)) {
+                tabLayout.setupWithViewPager(mViewPager);
+            } else {
+                tabLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
+                        tabLayout.setupWithViewPager(mViewPager);
+
+                        tabLayout.removeOnLayoutChangeListener(this);
+                    }
+                });
+            }
         }
         setupLocation();
 

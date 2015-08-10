@@ -202,17 +202,17 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                         switch (menuItem.getItemId()) {
                             case R.id.nav_home:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to artist list fragment", "User navigated to the artist list fragment");
-                                mQRScannerFAB.setVisibility(View.VISIBLE);
+                                mQRScannerFAB.show();
                                 mMainFragment = ArtistListFragment.newInstance();
                                 break;
                             case R.id.nav_map:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to map fragment", "User navigated to the map fragment");
-                                mQRScannerFAB.setVisibility(View.GONE);
+                                mQRScannerFAB.hide();
                                 mMainFragment = MapFragment.newInstance();
                                 break;
                             case R.id.nav_about:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to about fragment", "User navigated to the about fragment");
-                                mQRScannerFAB.setVisibility(View.GONE);
+                                mQRScannerFAB.hide();
                                 mMainFragment = AboutFragment.newInstance();
                                 break;
                         }
