@@ -1,15 +1,10 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.NavUtils;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,18 +14,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
 import com.xamoom.android.mapping.Content;
-import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
-import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
-import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
 import com.xamoom.android.mapping.ContentById;
 import com.xamoom.android.mapping.ContentByLocationIdentifier;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
-import java.util.List;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import retrofit.RetrofitError;
 
@@ -38,6 +32,8 @@ import retrofit.RetrofitError;
 public class ArtistDetailActivity extends ActionBarActivity implements XamoomContentFragment.OnXamoomContentFragmentInteractionListener {
 
     private ProgressBar mProgressbar;
+    private String mContentId;
+    private String mLocationIdentifier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,17 +56,65 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle(Global.getInstance().getCurrentSystemName());
 
-        //get contentId or locationIdentifier from intent
+        //get mContentId or mLocationIdentifier from intent
         Intent myIntent = getIntent();
-        final String contentId = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_CONTENT_ID);
-        final String locationIdentifier= myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
+        mContentId = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_CONTENT_ID);
+        mLocationIdentifier = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
 
         mProgressbar = (ProgressBar) findViewById(R.id.artistDetailLoadingIndicator);
 
+        if(getIntent() != null) {
+            onNewIntent(getIntent());
+        } else {
+            loadData(mContentId, mLocationIdentifier);
+        }
+    }
+
+    protected void onNewIntent(Intent intent) {
+        final String[] url = {intent.getDataString()};
+
+        if(url[0].contains("pingeb.org")) {
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        //get the url redirected
+                        URL url2 = new URL(url[0]);
+                        HttpURLConnection ucon = (HttpURLConnection) url2.openConnection();
+                        ucon.setInstanceFollowRedirects(false);
+                        final String newUrl = ucon.getHeaderField("Location");
+                        ucon.disconnect();
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                url[0] = newUrl;
+
+                                Uri mUri = Uri.parse(url[0]);
+                                mLocationIdentifier = mUri.getLastPathSegment();
+
+                                loadData(mContentId, mLocationIdentifier);
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(), getString(R.string.old_pingeborg_sticker_redirect_failure), Toast.LENGTH_LONG).show();
+                    }
+                }
+            };
+            thread.start();
+        } else {
+            Uri mUri = Uri.parse(url[0]);
+            mLocationIdentifier = mUri.getLastPathSegment();
+            loadData(mContentId, mLocationIdentifier);
+        }
+    }
+
+    private void loadData(final String contentId, final String locationIdentifier) {
         //load data
         if (contentId != null) {
             if(Global.getInstance().getSavedArtists().contains(contentId)) {
-                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with contentId: " + contentId);
+                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mContentId: " + contentId);
                 XamoomEndUserApi.getInstance(this.getApplicationContext()).getContentbyIdFull(contentId, false, false, null, true, new APICallback<ContentById>() {
                     @Override
                     public void finished(ContentById result) {
@@ -84,7 +128,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
                     }
                 });
             } else {
-                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with contentId: " + contentId);
+                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mContentId: " + contentId);
                 XamoomEndUserApi.getInstance(this.getApplicationContext()).getContentbyIdFull(contentId, false, false, null, false, new APICallback<ContentById>() {
                     @Override
                     public void finished(ContentById result) {
@@ -99,7 +143,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
                 });
             }
         } else if (locationIdentifier != null) {
-            Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with locationIdentifier: " + locationIdentifier);
+            Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
             XamoomEndUserApi.getInstance(this.getApplicationContext()).getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
                 @Override
                 public void finished(ContentByLocationIdentifier result) {
@@ -116,7 +160,7 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
                 }
             });
         } else {
-            Log.w(Global.DEBUG_TAG, "There is no contentId or locationIdentifier");
+            Log.w(Global.DEBUG_TAG, "There is no mContentId or mLocationIdentifier");
             finish();
         }
     }
@@ -163,10 +207,14 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
     public void openInBrowser(String contentId, String locationIdentifier) {
         Intent browserIntent;
         if(contentId != null) {
-            browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.xm.gl/content/" + contentId));
+            browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://xm.gl/content/" + contentId));
         } else {
-             browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.xm.gl/" + locationIdentifier));
+            browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://xm.gl/" + locationIdentifier));
         }
+        //finish this activity
+        finish();
+
+        //open url in browser
         startActivity(browserIntent);
     }
 
@@ -189,12 +237,16 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
     @Override
     public void clickedContentBlock(Content content) {
         //also discover this artist
-        //TODO: Add clickedContentBlock
-        /*Global.getInstance().saveArtist(contentId);
+        Global.getInstance().saveArtist(content.getContentId());
 
-        Intent intent = new Intent(ArtistDetailActivity.this, ArtistDetailActivity.class);
-        intent.putExtra(XamoomContentFragment.XAMOOM_CONTENT_ID,contentId);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);*/
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
+        fragment.setContent(content);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.bottom_swipe_in, 0, 0, R.anim.bottom_swipe_out)
+                .add(R.id.XamoomContentFrameLayout, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

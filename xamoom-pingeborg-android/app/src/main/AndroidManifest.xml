@@ -51,10 +51,22 @@
         </activity>
         <activity
             android:name=".ArtistDetailActivity"
-            android:label="@string/title_activity_artist_detail"
+            android:label="@string/app_name"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             >
+
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="http"
+                    android:host="xm.gl" />
+                <data android:scheme="http"
+                    android:host="pingeb.org" />
+                <data android:scheme="http"
+                    android:host="*.pingeb.org" />
+            </intent-filter>
+
         </activity>
         <activity
             android:name=".QRCodeScannerActivity"
