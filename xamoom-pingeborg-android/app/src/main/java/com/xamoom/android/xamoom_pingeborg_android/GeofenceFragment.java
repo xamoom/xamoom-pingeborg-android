@@ -249,11 +249,12 @@ public class GeofenceFragment extends android.support.v4.app.Fragment {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             //open artist in artistDetailActivity and save to savedArtists (unlock)
+            Global.getInstance().saveArtist(mContentId);
+
             Context context = mCardView.getContext();
             Intent intent = new Intent(context, ArtistDetailActivity.class);
             intent.putExtra(XamoomContentFragment.XAMOOM_CONTENT_ID, mContentId);
             context.startActivity(intent);
-            Global.getInstance().saveArtist(mContentId);
             mListener.closeGeofenceFragment();
             return super.onSingleTapConfirmed(e);
         }

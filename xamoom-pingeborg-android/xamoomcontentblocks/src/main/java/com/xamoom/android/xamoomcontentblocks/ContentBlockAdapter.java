@@ -503,6 +503,7 @@ class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
 
         if (matcher.find())
             return matcher.group(1);
+
         return null;
     }
 }

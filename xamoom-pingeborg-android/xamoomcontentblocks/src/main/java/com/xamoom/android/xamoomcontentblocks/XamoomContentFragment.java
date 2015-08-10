@@ -13,12 +13,16 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import com.xamoom.android.APICallback;
+import com.xamoom.android.XamoomEndUserApi;
 import com.xamoom.android.mapping.Content;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlock;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType3;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType4;
 import com.xamoom.android.mapping.ContentBlocks.ContentBlockType6;
+import com.xamoom.android.mapping.ContentById;
+import com.xamoom.android.mapping.ContentByLocationIdentifier;
 import com.xamoom.android.mapping.Menu;
 import com.xamoom.android.mapping.Style;
 
@@ -26,6 +30,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import retrofit.RetrofitError;
 
 
 /**
@@ -50,17 +56,17 @@ public class XamoomContentFragment extends Fragment {
     public static final String XAMOOM_CONTENT_ID = "xamoomContentId";
     public static final String XAMOOM_LOCATION_IDENTIFIER = "xamoomLocationIdentifier";
 
-    private static final String YOUTUBE_API_KEY = "youtubeApiKeyParam";
     private static final String LINK_COLOR_KEY = "LinkColorKeyParam";
 
     private RecyclerView mRecyclerView;
     private ContentBlockAdapter mContentBlockAdapter;
 
+    private String mContentId;
+    private String mLocationIdentifier;
     private Content mContent;
     private List<ContentBlock> mContentBlocks;
     private Style mStyle;
     private Menu mMenu;
-    private String mYoutubeApiKey;
     private String mLinkColor;
 
     private boolean isStoreLinksActivated = false;
@@ -73,7 +79,6 @@ public class XamoomContentFragment extends Fragment {
      * You also need a youtube api to display youtube videos.
      * You can set a special linkcolor as hex. (e.g. "00F")
      *
-     * @param youtubeApiKey Youtube API key from the google play store.
      * @param linkColor LinkColor as hex (e.g. "00F"), will be blue if null
      * @return XamoomContentFragment Returns an Instance of XamoomContentFragment
      */
@@ -108,7 +113,6 @@ public class XamoomContentFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mYoutubeApiKey = getArguments().getString(YOUTUBE_API_KEY);
             mLinkColor = getArguments().getString(LINK_COLOR_KEY);
         }
     }
@@ -128,6 +132,11 @@ public class XamoomContentFragment extends Fragment {
 
         if(mContent != null)
             addContentTitleAndImage();
+        else if(mContentId != null) {
+            loadDataWithContentId(mContentId);
+        } else if(mLocationIdentifier != null) {
+            loadDateWithLocationIdentifier(mLocationIdentifier);
+        }
 
         return view;
     }
@@ -142,7 +151,6 @@ public class XamoomContentFragment extends Fragment {
 
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-
         if (nextAnim != 0) {
             isAnimated = true;
             Animation anim = AnimationUtils.loadAnimation(getActivity(), nextAnim);
@@ -170,6 +178,36 @@ public class XamoomContentFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+
+    private void loadDataWithContentId(final String mContentId) {
+        XamoomEndUserApi.getInstance(this.getActivity()).getContentbyIdFull(mContentId, false, false, null, true, new APICallback<ContentById>() {
+            @Override
+            public void finished(ContentById result) {
+                mContent = result.getContent();
+                addContentTitleAndImage();
+                setupRecyclerView();
+            }
+
+            @Override
+            public void error(RetrofitError error) {
+            }
+        });
+    }
+
+    private void loadDateWithLocationIdentifier(String mLocationIdentifier) {
+        XamoomEndUserApi.getInstance(this.getActivity()).getContentByLocationIdentifier(mLocationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
+            @Override
+            public void finished(ContentByLocationIdentifier result) {
+                mContent = result.getContent();
+                addContentTitleAndImage();
+                setupRecyclerView();
+            }
+
+            @Override
+            public void error(RetrofitError error) {
+            }
+        });
     }
 
     private void addContentTitleAndImage() {
@@ -236,6 +274,14 @@ public class XamoomContentFragment extends Fragment {
         this.isStoreLinksActivated = isStoreLinksActivated;
     }
 
+    public void setContentId(String mContentId) {
+        this.mContentId = mContentId;
+    }
+
+    public void setLocationIdentifier(String mLocationIdentifier) {
+        this.mLocationIdentifier = mLocationIdentifier;
+    }
+
     /**
      * Implement OnXamoomContentFragmentInteractionListener and override
      * <code>clickedContentBlock(String)</code>.
@@ -252,4 +298,3 @@ public class XamoomContentFragment extends Fragment {
         mListener.clickedContentBlock(content);
     }
 }
-

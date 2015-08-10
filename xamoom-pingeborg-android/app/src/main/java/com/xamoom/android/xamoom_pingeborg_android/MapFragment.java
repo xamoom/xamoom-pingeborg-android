@@ -104,6 +104,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             setupViewPager(mViewPager);
             final TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabs);
 
+            //workaround broken TabLayout
             if (ViewCompat.isLaidOut(tabLayout)) {
                 tabLayout.setupWithViewPager(mViewPager);
             } else {

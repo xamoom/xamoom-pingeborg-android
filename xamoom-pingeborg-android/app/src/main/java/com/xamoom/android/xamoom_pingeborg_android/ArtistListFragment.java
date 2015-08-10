@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -23,7 +22,6 @@ import com.xamoom.android.mapping.Content;
 import com.xamoom.android.mapping.ContentList;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -79,6 +77,7 @@ public class ArtistListFragment extends Fragment {
 
         if(mContentList.size() > 0) {
             setupContentList();
+            mRecyclerView.getAdapter().notifyDataSetChanged();
         } else {
             downloadArtists();
             setupContentList();
@@ -160,7 +159,13 @@ public class ArtistListFragment extends Fragment {
 
     public void openArtistDetails(Content mBoundContent) {
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
-        fragment.setContent(mBoundContent);
+        ;
+
+        if(Global.getInstance().getSavedArtists().contains(mBoundContent.getContentId())) {
+            fragment.setContentId(mBoundContent.getContentId());
+        } else {
+            fragment.setContent(mBoundContent);
+        }
 
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
