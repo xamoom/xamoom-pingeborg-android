@@ -63,10 +63,10 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
 
         mProgressbar = (ProgressBar) findViewById(R.id.artistDetailLoadingIndicator);
 
-        if(getIntent() != null) {
-            onNewIntent(getIntent());
-        } else {
+        if(mContentId != null || mLocationIdentifier != null) {
             loadData(mContentId, mLocationIdentifier);
+        } else {
+            onNewIntent(getIntent());
         }
     }
 
