@@ -116,13 +116,6 @@ public class XamoomContentFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //mContent = null;
-        //mContentBlocks.clear();
-        //mContentBlockAdapter.notifyDataSetChanged();
-        //mContentBlockAdapter = null;
-        //mRecyclerView.setAdapter(null);
-        //mRecyclerView = null;
-        //mContentBlocks = null;
     }
 
     @Override

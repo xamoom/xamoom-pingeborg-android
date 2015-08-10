@@ -75,12 +75,14 @@ public class QRCodeScannerActivity extends ActionBarActivity implements QRCodeRe
     }
 
     private void checkUrl(final String url) {
+        //check for "old" pingeb.org urls
         if(url.contains("pingeb.org")) {
             Log.v(Global.DEBUG_TAG, "pingeb.org URL");
             Thread thread = new Thread() {
                 @Override
                 public void run() {
                     try {
+                        //get the url redirected
                         URL url2 = new URL(url);
                         HttpURLConnection ucon = (HttpURLConnection) url2.openConnection();
                         ucon.setInstanceFollowRedirects(false);
@@ -113,6 +115,7 @@ public class QRCodeScannerActivity extends ActionBarActivity implements QRCodeRe
         Uri mUri = Uri.parse(url);
         String locationIdentifier = mUri.getLastPathSegment();
 
+        //start artist detail activity
         Intent returnIntent = new Intent();
         returnIntent.putExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER, locationIdentifier);
         setResult(RESULT_OK, returnIntent);
