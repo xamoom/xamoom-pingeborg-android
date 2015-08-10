@@ -3,6 +3,7 @@ package com.xamoom.android.xamoom_pingeborg_android;
 import android.content.Intent;
 import android.graphics.PointF;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -41,6 +43,12 @@ public class QRCodeScannerActivity extends ActionBarActivity implements QRCodeRe
         ab.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle(getString(R.string.scan_qr_text));
+
+        //set statusbar color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.setStatusBarColor(getResources().getColor(R.color.pingeborg_dark_yellow));
+        }
     }
 
     @Override
