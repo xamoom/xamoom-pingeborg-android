@@ -52,7 +52,6 @@ import retrofit.RetrofitError;
  */
 public class XamoomContentFragment extends Fragment {
 
-
     public static final String XAMOOM_CONTENT_ID = "xamoomContentId";
     public static final String XAMOOM_LOCATION_IDENTIFIER = "xamoomLocationIdentifier";
 
@@ -95,18 +94,6 @@ public class XamoomContentFragment extends Fragment {
 
     public XamoomContentFragment() {
         // Required empty public constructor
-    }
-
-    public void setContent(Content content) {
-        this.mContent = content;
-    }
-
-    public void setMenu(Menu mMenu) {
-        this.mMenu = mMenu;
-    }
-
-    public void setStyle(Style mStyle) {
-        this.mStyle = mStyle;
     }
 
     @Override
@@ -268,6 +255,18 @@ public class XamoomContentFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void setContent(Content content) {
+        this.mContent = content;
+    }
+
+    public void setMenu(Menu mMenu) {
+        this.mMenu = mMenu;
+    }
+
+    public void setStyle(Style mStyle) {
+        this.mStyle = mStyle;
     }
 
     public void setIsStoreLinksActivated(boolean isStoreLinksActivated) {
