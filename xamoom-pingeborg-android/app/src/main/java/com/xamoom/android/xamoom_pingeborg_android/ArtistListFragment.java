@@ -130,7 +130,7 @@ public class ArtistListFragment extends Fragment {
                 @Override
                 public void finished(final ContentList result) {
 
-                    //save 3 artists as present for the user
+                    //save 3 artists as a present for the user
                     if (Global.getInstance().checkFirstStart()) {
                         for (int i = 1; i < 4; i++) {
                             Content c = result.getItems().get(i);
@@ -303,6 +303,7 @@ public class ArtistListFragment extends Fragment {
                 if(Global.getInstance().getSavedArtists().contains(holder.mBoundContent.getContentId())) {
                     Glide.with(mContext)
                             .load(holder.mBoundContent.getImagePublicUrl())
+                            .placeholder(R.drawable.placeholder)
                             .dontAnimate()
                             .into(holder.mImageView);
 
@@ -311,6 +312,7 @@ public class ArtistListFragment extends Fragment {
                 } else {
                     Glide.with(mContext)
                             .load(holder.mBoundContent.getImagePublicUrl())
+                            .placeholder(R.drawable.placeholder)
                             .dontAnimate()
                             .bitmapTransform(new GrayscaleTransformation(pool))
                             .into(holder.mImageView);
