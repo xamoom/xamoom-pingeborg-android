@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Image;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
@@ -27,7 +28,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.xamoom.android.mapping.Content;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
@@ -85,6 +88,8 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
             }
         });
 
+        checkPingeborgSystem();
+
         checkNFC();
 
         //setup artistListFragment
@@ -107,7 +112,7 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
 
                 @Override
                 public void onDrawerClosed(View drawerView) {
-                    if(mMainFragment != null)
+                    if (mMainFragment != null)
                         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
                 }
 
@@ -152,6 +157,13 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                 startActivity(intent);
             }
         }
+    }
+
+    private void checkPingeborgSystem() {
+        ImageView imagView = (ImageView) this.findViewById(R.id.nav_drawer_image);
+        Glide.with(this.getApplicationContext())
+                .load(R.drawable.header_image_carinthia)
+                .into(imagView);
     }
 
     private void checkNFC() {
