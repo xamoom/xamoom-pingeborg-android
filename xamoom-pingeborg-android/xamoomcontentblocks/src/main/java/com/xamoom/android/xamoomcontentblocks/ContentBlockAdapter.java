@@ -44,9 +44,9 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     /**
      * Constructor for the Adapter.
      *
-     * @param fragment
-     * @param contentBlocks
-     * @param linkColor
+     * @param fragment Fragment with the recyclerView in it.
+     * @param contentBlocks ContentBlocks to display.
+     * @param linkColor LinkColor as hex (e.g. "00F"), will be blue if null
      */
     public ContentBlockAdapter(Fragment fragment, List<ContentBlock> contentBlocks, String linkColor) {
         mFragment = fragment;
@@ -117,54 +117,54 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ContentBlock cb = mContentBlocks.get(position);
 
-        switch (holder.getClass().toString()) {
-            case "class com.xamoom.android.xamoomcontentblocks.ViewHolders.ContentBlock0ViewHolder":
+        switch (cb.getContentBlockType()) {
+            case 0:
                 ContentBlockType0 cb0 = (ContentBlockType0)cb;
                 ContentBlock0ViewHolder newHolder = (ContentBlock0ViewHolder) holder;
                 newHolder.setLinkColor(mLinkColor);
                 newHolder.setupContentBlock(cb0);
                 break;
-            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock1ViewHolder":
+            case 1:
                 ContentBlockType1 cb1 = (ContentBlockType1)cb;
                 ContentBlock1ViewHolder newHolder1 = (ContentBlock1ViewHolder) holder;
                 newHolder1.setupContentBlock(cb1);
                 break;
-            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock2ViewHolder":
+            case 2:
                 ContentBlockType2 cb2 = (ContentBlockType2)cb;
                 ContentBlock2ViewHolder newHolder2 = (ContentBlock2ViewHolder) holder;
                 newHolder2.setupContentBlock(cb2);
                 break;
-            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock3ViewHolder":
+            case 3:
                 ContentBlockType3 cb3 = (ContentBlockType3)cb;
                 ContentBlock3ViewHolder newHolder3 = (ContentBlock3ViewHolder) holder;
                 newHolder3.setupContentBlock(cb3);
                 break;
-            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock4ViewHolder":
+            case 4:
                 ContentBlockType4 cb4 = (ContentBlockType4) cb;
                 ContentBlock4ViewHolder newHolder4 = (ContentBlock4ViewHolder) holder;
                 newHolder4.setupContentBlock(cb4);
                 break;
-            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock5ViewHolder":
+            case 5:
                 ContentBlockType5 cb5 = (ContentBlockType5) cb;
                 ContentBlock5ViewHolder newHolder5 = (ContentBlock5ViewHolder) holder;
                 newHolder5.setupContentBlock(cb5);
                 break;
-            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock6ViewHolder":
+            case 6:
                 ContentBlockType6 cb6 = (ContentBlockType6) cb;
                 ContentBlock6ViewHolder newHolder6 = (ContentBlock6ViewHolder) holder;
                 newHolder6.setupContentBlock(cb6);
                 break;
-            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock7ViewHolder":
+            case 7:
                 ContentBlockType7 cb7 = (ContentBlockType7) cb;
                 ContentBlock7ViewHolder newHolder7 = (ContentBlock7ViewHolder) holder;
                 newHolder7.setupContentBlock(cb7);
                 break;
-            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock8ViewHolder":
+            case 8:
                 ContentBlockType8 cb8 = (ContentBlockType8) cb;
                 ContentBlock8ViewHolder newHolder8 = (ContentBlock8ViewHolder) holder;
                 newHolder8.setupContentBlock(cb8);
                 break;
-            case "class com.xamoom.android.xamoomcontentblocks.ContentBlock9ViewHolder":
+            case 9:
                 ContentBlockType9 cb9 = (ContentBlockType9) cb;
                 ContentBlock9ViewHolder newHolder9 = (ContentBlock9ViewHolder) holder;
                 newHolder9.setupContentBlock(cb9);
