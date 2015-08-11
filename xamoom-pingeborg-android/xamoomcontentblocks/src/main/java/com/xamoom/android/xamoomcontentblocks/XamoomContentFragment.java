@@ -1,12 +1,10 @@
 package com.xamoom.android.xamoomcontentblocks;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +24,6 @@ import com.xamoom.android.mapping.ContentByLocationIdentifier;
 import com.xamoom.android.mapping.Menu;
 import com.xamoom.android.mapping.Style;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,8 +39,12 @@ import retrofit.RetrofitError;
  * In your app you can display the contentBlocks like you want, we decided to display them
  * like on our website (https://www.xm.gl).
  *
- * To get started with the XamoomContentFragment create a new Instance via {@link #newInstance(String, String)}.
- * You also have to implement {@link com.xamoom.android.xamoomcontentblocks.XamoomContentFragment.OnXamoomContentFragmentInteractionListener}.
+ * To get started with the XamoomContentFragment create a new Instance via {@link #newInstance(String)}.
+ * You also have to adapt {@link com.xamoom.android.xamoomcontentblocks.XamoomContentFragment.OnXamoomContentFragmentInteractionListener}.
+ *
+ * There are two ways to use this class.
+ * You can set an identifier (contentId or locationIdentifier), this fragment will download it and display it, when added to an activity.
+ * Or you can set the content and the fragment will display that.
  *
  * @author Raphael Seher
  *
@@ -63,19 +64,20 @@ public class XamoomContentFragment extends Fragment {
     private String mContentId;
     private String mLocationIdentifier;
     private Content mContent;
+
     private List<ContentBlock> mContentBlocks;
     private Style mStyle;
     private Menu mMenu;
     private String mLinkColor;
 
-    private boolean isStoreLinksActivated = false;
+    private boolean loadFullContent = true;
+    private boolean displayAllStoreLinks = false;
     private boolean isAnimated = false;
 
     private OnXamoomContentFragmentInteractionListener mListener;
 
     /**
      * Use this factory method to create a new instance.
-     * You also need a youtube api to display youtube videos.
      * You can set a special linkcolor as hex. (e.g. "00F")
      *
      * @param linkColor LinkColor as hex (e.g. "00F"), will be blue if null
@@ -117,6 +119,7 @@ public class XamoomContentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_xamoom_content, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.contentBlocksRecycler);
 
+        //check what to to
         if(mContent != null)
             addContentTitleAndImage();
         else if(mContentId != null) {
@@ -131,11 +134,29 @@ public class XamoomContentFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        //if there is no animation, the recyclerview will be setup here
         if(!isAnimated) {
             setupRecyclerView();
         }
     }
 
+    /**
+     * Setup the recyclerview.
+     */
+    private void setupRecyclerView() {
+        if(mContent == null)
+            return;
+
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity().getApplicationContext()));
+
+        mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mLinkColor);
+        mRecyclerView.setAdapter(mContentBlockAdapter);
+    }
+
+    /**
+     * If you animate this fragment, it will show the data when the animation is finished.
+     */
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
         if (nextAnim != 0) {
@@ -152,6 +173,7 @@ public class XamoomContentFragment extends Fragment {
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
+                    //if there is an animation, the recyclerview will be setup here
                     setupRecyclerView();
                 }
             });
@@ -167,8 +189,17 @@ public class XamoomContentFragment extends Fragment {
         super.onDestroyView();
     }
 
+    /**
+     * Load the data from xamoom cloud with a contentId.
+     * It will load the full content.
+     *
+     * If you want to just load "synced" content from xamoom cloud,
+     * you have to set {@link #loadFullContent} to true.
+     *
+     * @param mContentId ContentId from xamoom cloud content
+     */
     private void loadDataWithContentId(final String mContentId) {
-        XamoomEndUserApi.getInstance(this.getActivity()).getContentbyIdFull(mContentId, false, false, null, true, new APICallback<ContentById>() {
+        XamoomEndUserApi.getInstance(this.getActivity()).getContentbyIdFull(mContentId, false, false, null, loadFullContent, new APICallback<ContentById>() {
             @Override
             public void finished(ContentById result) {
                 mContent = result.getContent();
@@ -182,6 +213,12 @@ public class XamoomContentFragment extends Fragment {
         });
     }
 
+    /**
+     * Load the data from xamoom cloud with a locationIdentifier.
+     * It wil always load the full content.
+     * 
+     * @param mLocationIdentifier
+     */
     private void loadDateWithLocationIdentifier(String mLocationIdentifier) {
         XamoomEndUserApi.getInstance(this.getActivity()).getContentByLocationIdentifier(mLocationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
             @Override
@@ -197,6 +234,16 @@ public class XamoomContentFragment extends Fragment {
         });
     }
 
+    /**
+     * There should always be the contents text, description and image
+     * on top of the other contentBlocks.
+     * 
+     * Here it creates a text and an image contentBlock and adds them
+     * to achieve this.
+     * 
+     * When you want to have all link ContentBlocks displayed for all
+     * stores (to promote your app), you have to set {@link #displayAllStoreLinks} to true.
+     */
     private void addContentTitleAndImage() {
         mContentBlocks = new LinkedList<ContentBlock>();
         mContentBlocks.addAll(mContent.getContentBlocks());
@@ -209,23 +256,22 @@ public class XamoomContentFragment extends Fragment {
             mContentBlocks.add(1, cb3);
         }
 
-        if(!isStoreLinksActivated)
+        if(!displayAllStoreLinks)
             mContentBlocks = removeStoreLinks(mContentBlocks);
     }
 
-    private void setupRecyclerView() {
-        if(mContent == null)
-            return;
-
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity().getApplicationContext()));
-
-        //DISPLAY DATA
-        mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mLinkColor);
-        mRecyclerView.setAdapter(mContentBlockAdapter);
-    }
-
+    /**
+     * The default behaviour is that there are only Google Play Store link ContentBlocks
+     * are shown.
+     *
+     * All others will get removed here. Except you set {@link #displayAllStoreLinks} to true.
+     *
+     * @param contentBlocks ContentBlocks List to manipulate
+     * @return Manipulated contetnBlocks List
+     */
     private List<ContentBlock> removeStoreLinks(List<ContentBlock> contentBlocks) {
         ArrayList<ContentBlock> cbToRemove = new ArrayList<ContentBlock>();
+
         for (ContentBlock contentBlock : contentBlocks) {
             if (contentBlock.getContentBlockType() == 4) {
                 ContentBlockType4 cb4 = (ContentBlockType4)contentBlock;
@@ -235,9 +281,39 @@ public class XamoomContentFragment extends Fragment {
             }
         }
 
+        //remove all found linkBlocks with other Stores
         contentBlocks.removeAll(cbToRemove);
 
         return contentBlocks;
+    }
+
+    //setters
+    public void setContent(Content content) {
+        this.mContent = content;
+    }
+
+    public void setMenu(Menu mMenu) {
+        this.mMenu = mMenu;
+    }
+
+    public void setLoadFullContent(boolean loadFullContent) {
+        this.loadFullContent = loadFullContent;
+    }
+
+    public void setStyle(Style mStyle) {
+        this.mStyle = mStyle;
+    }
+
+    public void setIsStoreLinksActivated(boolean isStoreLinksActivated) {
+        this.displayAllStoreLinks = isStoreLinksActivated;
+    }
+
+    public void setContentId(String mContentId) {
+        this.mContentId = mContentId;
+    }
+
+    public void setLocationIdentifier(String mLocationIdentifier) {
+        this.mLocationIdentifier = mLocationIdentifier;
     }
 
     @Override
@@ -255,30 +331,6 @@ public class XamoomContentFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    public void setContent(Content content) {
-        this.mContent = content;
-    }
-
-    public void setMenu(Menu mMenu) {
-        this.mMenu = mMenu;
-    }
-
-    public void setStyle(Style mStyle) {
-        this.mStyle = mStyle;
-    }
-
-    public void setIsStoreLinksActivated(boolean isStoreLinksActivated) {
-        this.isStoreLinksActivated = isStoreLinksActivated;
-    }
-
-    public void setContentId(String mContentId) {
-        this.mContentId = mContentId;
-    }
-
-    public void setLocationIdentifier(String mLocationIdentifier) {
-        this.mLocationIdentifier = mLocationIdentifier;
     }
 
     /**
