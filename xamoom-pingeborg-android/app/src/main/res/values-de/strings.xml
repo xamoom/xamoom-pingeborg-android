@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">pingeb.org</string>
+
+    <string name="title_activity_artist_detail">ArtistDetailActivity</string>
+    <string name="title_activity_map">MapActivity</string>
+    <string name="title_activity_qrcode_scanner">QRCodeScannerActivity</string>
+
+    <string name="pingeborg_carinthia_system_name">pingeb.org Kärnten</string>
+
+    <string name="action_refresh">Aktualisieren</string>
+    <string name="menu_item_artists_name">Künstler</string>
+    <string name="menu_item_map_name">Map</string>
+    <string name="menu_item_about_name">Über pingeb.org</string>
+    <string name="menu_item_settings_name">Einstellungen</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="activate_text">Aktivieren</string>
+    <string name="cancel_text">Abbrechen</string>
+    <string name="nfc_enable_text">Hey, du hast NFC, aber es nicht aktiviert. Aktiviere es und entdecke damit pingeb.org Sticker.</string>
+    <string name="scanned_false_qr_code">Du hast keinen xamoom QR-Code gescannt.</string>
+    <string name="old_pingeborg_sticker_redirect_failure">Fehler beim Scannen.</string>
+    <string name="scan_qr_text">Scanne Sticker!</string>
+    <string name="nfc_dialog_title">NFC Aktivieren?</string>
+    <string name="distanceLabel">Entfernung:</string>
+    <string name="meterLabel">Meter</string>
+</resources>
