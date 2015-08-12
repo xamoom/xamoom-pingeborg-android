@@ -148,6 +148,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     Log.i("pingeborg", "onLocationUpdate TYPE:" + type + " Location:" + mBestLocationProvider.locationToString(location));
                     mUserLocation = location;
                     setupGeofencing(location);
+                    mBestLocationProvider.stopLocationUpdates();
                 }
             }
         };
@@ -202,21 +203,24 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     public void setupGeofencing(Location location) {
-        XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getContentByLocation(location.getLatitude(), location.getLongitude(), null, new APICallback<ContentByLocation>() {
-            @Override
-            public void finished(ContentByLocation result) {
-                //open geofence when there is at least on item (you can only get one geofence at a time - the nearest)
-                if (result.getItems().size() > 0) {
-                    mBestLocationProvider.stopLocationUpdates();
-                    openGeofenceFragment(result.getItems().get(0));
+        if(this.getActivity().getApplicationContext() != null) {
+            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getContentByLocation(location.getLatitude(), location.getLongitude(), null, new APICallback<ContentByLocation>() {
+                @Override
+                public void finished(ContentByLocation result) {
+                    //open geofence when there is at least on item (you can only get one geofence at a time - the nearest)
+                    if (result.getItems().size() > 0) {
+                        mBestLocationProvider.stopLocationUpdates();
+                        openGeofenceFragment(result.getItems().get(0));
+                    }
                 }
-            }
 
-            @Override
-            public void error(RetrofitError error) {
-                Log.e(Global.DEBUG_TAG, "Error:" + error);
-            }
-        });
+                @Override
+                public void error(RetrofitError error) {
+                    Log.e(Global.DEBUG_TAG, "Error:" + error);
+                }
+            });
+        }
+
     }
 
     public void openGeofenceFragment(ContentByLocationItem content) {
