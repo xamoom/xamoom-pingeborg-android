@@ -12,32 +12,22 @@
         android:textSize="@dimen/contentblock_title_size"
         android:textColor="@color/black"/>
 
-    <FrameLayout
-        android:id="@+id/videoPlayerFrameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/contentblock_children_margin"
-        android:background="@color/material_blue_grey_800"/>
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp">
+        android:layout_height="170dp">
 
         <WebView
             android:id="@+id/videoWebView"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:background="@color/youtube_linkblock_background_color"/>
+            android:layout_height="match_parent"/>
 
         <View
             android:id="@+id/webViewOverlay"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             />
 
     </RelativeLayout>
+
 </LinearLayout>

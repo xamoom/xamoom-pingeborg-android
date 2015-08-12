@@ -3,12 +3,6 @@
     android:layout_height="match_parent"
     tools:context="com.xamoom.android.xamoom_pingeborg_android.AboutFragment">
 
-    <ProgressBar
-        android:id="@+id/aboutLoadingIndicator"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_marginTop="50dp" />
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

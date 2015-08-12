@@ -25,8 +25,6 @@ import retrofit.RetrofitError;
  */
 public class AboutFragment extends android.support.v4.app.Fragment {
 
-    private ProgressBar mProgressbar;
-
     /**
      * Use this factory method to create a new instance of
      * this fragment.
@@ -53,28 +51,14 @@ public class AboutFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_about, container, false);
-        mProgressbar = (ProgressBar) view.findViewById(R.id.aboutLoadingIndicator);
         setupXamoomContentFragment();
         return view;
     }
 
     public void setupXamoomContentFragment () {
         //load content with contentId
-        XamoomEndUserApi.getInstance(this.getActivity()).getContentbyIdFull(Global.getInstance().getAboutPage(), false, false, null, true, new APICallback<ContentById>() {
-            @Override
-            public void finished(ContentById result) {
-                mProgressbar.setVisibility(View.GONE);
-
-                //Create XamoomContentFragment
-                XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)));
-                fragment.setContent(result.getContent());
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.aboutContentFrameLayout, fragment).commit();
-            }
-
-            @Override
-            public void error(RetrofitError error) {
-                Log.e(Global.DEBUG_TAG, "Error:" + error);
-            }
-        });
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)));
+        fragment.setContentId(Global.getInstance().getAboutPage());
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.aboutContentFrameLayout, fragment).commit();
     }
 }

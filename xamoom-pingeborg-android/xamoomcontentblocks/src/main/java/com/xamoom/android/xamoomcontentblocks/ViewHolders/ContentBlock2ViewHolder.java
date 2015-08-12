@@ -1,13 +1,20 @@
 package com.xamoom.android.xamoomcontentblocks.ViewHolders;
 
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.youtube.player.YouTubeIntents;
@@ -58,20 +65,21 @@ public class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
     public void setupHTMLPlayer(final ContentBlockType2 cb2) {
         mVideoWebView.loadUrl(cb2.getVideoUrl());
 
-        mWebViewOverlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(cb2.getVideoUrl()));
-                intent.setDataAndType(Uri.parse(cb2.getVideoUrl()), "video/mp4");
-                mFragment.getActivity().startActivity(intent);
-            }
-        });
+       mWebViewOverlay.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(cb2.getVideoUrl()));
+               intent.setDataAndType(Uri.parse(cb2.getVideoUrl()), "video/mp4");
+               mFragment.getActivity().startActivity(intent);
+           }
+       });
     }
 
     public void setupYoutube(ContentBlockType2 cb2) {
         mYoutubeVideoCode = getVideoId(cb2.getVideoUrl());
+        int webViewWidth = (int)((mFragment.getResources().getDisplayMetrics().widthPixels / mFragment.getResources().getDisplayMetrics().density) - ((mFragment.getResources().getDimension(R.dimen.fragment_margin)) / mFragment.getResources().getDisplayMetrics().density));
 
-        String html = "<iframe src=\"https://www.youtube.com/embed/"+mYoutubeVideoCode+"\" frameborder=\"0\" allowfullscreen></iframe>";
+        String html = "<iframe style=\"display:block; margin:auto;\" src=\"https://www.youtube.com/embed/"+mYoutubeVideoCode+"\" frameborder=\"0\" allowfullscreen></iframe>";
         mVideoWebView.loadData(html, "text/html", "utf-8");
 
         mWebViewOverlay.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +89,7 @@ public class ContentBlock2ViewHolder extends RecyclerView.ViewHolder {
                 mFragment.getActivity().startActivity(intent);
             }
         });
+
     }
 
     public static String getVideoId(String videoUrl) {
