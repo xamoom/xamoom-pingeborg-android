@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CC000000">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/instruction_view_close_phrase"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/tapToCloseTapView" />
+
+    <TextView
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="@string/overlay_disocver_new_artists"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="10dp"
+        android:id="@+id/discoverNewArtistsTextView"/>
+
+    <TextView
+        android:id="@+id/numberUnlockedArtistsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/overlay_artist_number"
+        android:textSize="38sp"
+        android:textColor="@color/white"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/unlockedArtistsTextView" />
+
+    <TextView
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="@string/overlay_unlocked_artists"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:id="@+id/unlockedArtistsTextView"
+        android:layout_marginStart="5dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:src="@drawable/arrow_bended"
+        android:layout_marginTop="30dp"
+        android:layout_alignTop="@+id/discoverNewArtistsTextView"
+        android:layout_alignEnd="@+id/discoverNewArtistsTextView" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView2"
+        android:src="@drawable/three_arrows_bended"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/numberUnlockedArtistsTextView" />
+
+</RelativeLayout>

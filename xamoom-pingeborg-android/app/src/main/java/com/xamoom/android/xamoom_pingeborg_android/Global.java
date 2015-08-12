@@ -13,6 +13,7 @@ public class Global {
 
     private static final String SAVED_ARTISTS_KEY = "savedArtists.android.xamoom.at";
     private static final String IS_FIRST_START_KEY = "checkFirstStart.android.xamoom.at";
+    private static final String FIRST_START_INSTRUCTION_KEY = "checkFirstStartInstruction.android.xamoom.at";
 
     private static Global mInstance;
 
@@ -91,6 +92,21 @@ public class Global {
         } else {
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.putBoolean(IS_FIRST_START_KEY, true);
+            editor.apply();
+
+            return true;
+        }
+    }
+
+    /**
+     * TODO
+     */
+    public boolean checkFirstStartInstruction() {
+        if(mSharedPreferences.getBoolean(FIRST_START_INSTRUCTION_KEY, false)) {
+            return false;
+        } else {
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putBoolean(FIRST_START_INSTRUCTION_KEY, true);
             editor.apply();
 
             return true;

@@ -27,8 +27,10 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.xamoom.android.mapping.Content;
@@ -49,10 +51,6 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        Uri data = intent.getData();
 
         getSupportFragmentManager().addOnBackStackChangedListener(this);
 
@@ -91,6 +89,10 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         checkPingeborgSystem();
 
         checkNFC();
+
+        //show instruction on first start
+        if(Global.getInstance().checkFirstStartInstruction())
+            showInstructionView();
 
         //setup artistListFragment
         setupArtistListFragment();
@@ -326,5 +328,21 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
         // You can change this duration to more closely match that of the default animation.
         anim.setDuration(300);
         anim.start();
+    }
+
+    public void showInstructionView() {
+        LayoutInflater inflater = getLayoutInflater();
+        View v = inflater.inflate(R.layout.artistlist_overlay_layout, null);
+
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((ViewGroup) v.getParent()).removeView(v);
+            }
+        });
+
+        getWindow().addContentView(v, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT));
+
     }
 }

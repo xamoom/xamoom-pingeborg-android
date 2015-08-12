@@ -24,4 +24,9 @@
     <string name="nfc_dialog_title">NFC Aktivieren?</string>
     <string name="distanceLabel">Entfernung:</string>
     <string name="meterLabel">Meter</string>
+    <string name="instruction_view_close_phrase">Berühren zum Schließen</string>
+    <string name="overlay_disocver_new_artists">Scanne jede Woche einen pingeb.org-Sticker, um den neuesten Künstler freizuschalten</string>
+    <string name="overlay_artist_number">3</string>
+    <string name="overlay_unlocked_artists">Künstler haben wir für dich schon freigeschalten</string>
+
 </resources>
