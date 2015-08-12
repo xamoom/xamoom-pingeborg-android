@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ProgressBar;
 
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
@@ -59,6 +60,7 @@ public class XamoomContentFragment extends Fragment {
     private static final String LINK_COLOR_KEY = "LinkColorKeyParam";
 
     private RecyclerView mRecyclerView;
+    private ProgressBar mProgressbar;
     private ContentBlockAdapter mContentBlockAdapter;
 
     private String mContentId;
@@ -118,6 +120,7 @@ public class XamoomContentFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_xamoom_content, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.contentBlocksRecycler);
+        mProgressbar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         //check what to to
         if(mContent != null)
@@ -199,12 +202,15 @@ public class XamoomContentFragment extends Fragment {
      * @param mContentId ContentId from xamoom cloud content
      */
     private void loadDataWithContentId(final String mContentId) {
+        mProgressbar.setVisibility(View.VISIBLE);
+
         XamoomEndUserApi.getInstance(this.getActivity()).getContentbyIdFull(mContentId, false, false, null, loadFullContent, new APICallback<ContentById>() {
             @Override
             public void finished(ContentById result) {
                 mContent = result.getContent();
                 addContentTitleAndImage();
                 setupRecyclerView();
+                mProgressbar.setVisibility(View.GONE);
             }
 
             @Override
@@ -220,12 +226,15 @@ public class XamoomContentFragment extends Fragment {
      * @param mLocationIdentifier
      */
     private void loadDateWithLocationIdentifier(String mLocationIdentifier) {
+        mProgressbar.setVisibility(View.VISIBLE);
+
         XamoomEndUserApi.getInstance(this.getActivity()).getContentByLocationIdentifier(mLocationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
             @Override
             public void finished(ContentByLocationIdentifier result) {
                 mContent = result.getContent();
                 addContentTitleAndImage();
                 setupRecyclerView();
+                mProgressbar.setVisibility(View.GONE);
             }
 
             @Override
