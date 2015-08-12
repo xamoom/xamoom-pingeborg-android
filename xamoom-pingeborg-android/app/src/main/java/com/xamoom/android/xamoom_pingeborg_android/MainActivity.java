@@ -220,6 +220,10 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to map fragment", "User navigated to the map fragment");
                                 mQRScannerFAB.hide();
                                 mMainFragment = MapFragment.newInstance();
+
+                                if (Global.getInstance().checkFirstStartMapInstruction())
+                                    showMapInstructionView();
+
                                 break;
                             case R.id.nav_about:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to about fragment", "User navigated to the about fragment");
@@ -343,6 +347,20 @@ public class MainActivity extends ActionBarActivity implements ArtistListFragmen
 
         getWindow().addContentView(v, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT));
+    }
 
+    public void showMapInstructionView() {
+        LayoutInflater inflater = getLayoutInflater();
+        View v = inflater.inflate(R.layout.map_overlay_layout, null);
+
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((ViewGroup) v.getParent()).removeView(v);
+            }
+        });
+
+        getWindow().addContentView(v, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT));
     }
 }

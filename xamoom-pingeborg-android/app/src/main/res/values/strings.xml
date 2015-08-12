@@ -28,5 +28,6 @@
     <string name="overlay_disocver_new_artists">Scan every week a pingeb.org-sticker to discover new artists</string>
     <string name="overlay_artist_number">3</string>
     <string name="overlay_unlocked_artists">artists are already unlocked for you</string>
+    <string name="map_instruction_text">When you are near a pingeb.org-sticker, you can also discover it here.</string>
 
 </resources>

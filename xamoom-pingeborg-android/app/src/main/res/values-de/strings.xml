@@ -28,5 +28,6 @@
     <string name="overlay_disocver_new_artists">Scanne jede Woche einen pingeb.org-Sticker, um den neuesten Künstler freizuschalten</string>
     <string name="overlay_artist_number">3</string>
     <string name="overlay_unlocked_artists">Künstler haben wir für dich schon freigeschalten</string>
+    <string name="map_instruction_text">Du bist in der Nähe eines pingeb.org-Stickers? Dann kannst du diesen auch hier entdecken!</string>
 
 </resources>
