@@ -14,7 +14,7 @@ import com.xamoom.android.mapping.ContentBlocks.ContentBlockType0;
 import com.xamoom.android.xamoomcontentblocks.R;
 
 /**
- * TODO
+ * Displays the text ContentBlock.
  */
 public class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
 
@@ -28,6 +28,7 @@ public class ContentBlock0ViewHolder extends RecyclerView.ViewHolder {
         mWebView = (WebView) itemView.findViewById(R.id.webView);
         mWebView.setBackgroundColor(Color.TRANSPARENT);
 
+        //override to open links in Webbrowser
         mWebView.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.getContext().startActivity(

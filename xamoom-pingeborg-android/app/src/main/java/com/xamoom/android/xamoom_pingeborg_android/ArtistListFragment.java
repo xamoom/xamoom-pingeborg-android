@@ -313,7 +313,7 @@ public class ArtistListFragment extends Fragment {
                     Glide.with(mContext)
                             .load(holder.mBoundContent.getImagePublicUrl())
                             .placeholder(R.drawable.placeholder)
-                            .dontAnimate()
+                            .crossFade()
                             .bitmapTransform(new GrayscaleTransformation(pool))
                             .into(holder.mImageView);
 
@@ -323,7 +323,7 @@ public class ArtistListFragment extends Fragment {
                     if (position == 0) {
                         Glide.with(mContext)
                                 .load(R.drawable.discoverable)
-                                .dontAnimate()
+                                .crossFade()
                                 .dontTransform() //or the alpha will be ignored
                                 .into(holder.mOverlayImageView);
                     }
