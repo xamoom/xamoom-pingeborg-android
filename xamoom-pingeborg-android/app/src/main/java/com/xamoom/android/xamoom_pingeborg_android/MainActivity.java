@@ -4,12 +4,9 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.Image;
-import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -18,7 +15,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -36,9 +32,6 @@ import android.widget.RelativeLayout;
 import com.bumptech.glide.Glide;
 import com.xamoom.android.mapping.Content;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
-
-import java.util.LinkedList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ArtistListFragment.OnFragmentInteractionListener, GeofenceFragment.OnGeofenceFragmentInteractionListener, XamoomContentFragment.OnXamoomContentFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
 
@@ -204,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements ArtistListFragmen
 
     private void setupArtistListFragment() {
         Log.v(Global.DEBUG_TAG, "setupArtistListFragment");
-        mMainFragment = ArtistListFragment.newInstance();
+        mMainFragment = ArtistListFragment.getInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
     }
 
@@ -219,12 +212,12 @@ public class MainActivity extends AppCompatActivity implements ArtistListFragmen
                             case R.id.nav_home:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to artist list fragment", "User navigated to the artist list fragment");
                                 mQRScannerFAB.show();
-                                mNewFragment = ArtistListFragment.newInstance();
+                                mNewFragment = ArtistListFragment.getInstance();
                                 break;
                             case R.id.nav_map:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to map fragment", "User navigated to the map fragment");
                                 mQRScannerFAB.hide();
-                                mNewFragment = MapFragment.newInstance();
+                                mNewFragment = MapFragment.getInstance();
 
                                 if (Global.getInstance().checkFirstStartMapInstruction())
                                     showMapInstructionView();
@@ -237,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements ArtistListFragmen
                                 break;
                         }
 
+                        //popBackStack when there is a XamoomContentFragment on BackStack
                         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                             getSupportFragmentManager().popBackStack();
                         }

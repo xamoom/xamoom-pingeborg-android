@@ -51,7 +51,7 @@ public class ArtistListFragment extends Fragment {
      *
      * @return A new instance of fragment ArtistListFragment.
      */
-    public static ArtistListFragment newInstance() {
+    public static ArtistListFragment getInstance() {
         if(mInstance == null) {
             mInstance = new ArtistListFragment();
         }
@@ -160,7 +160,6 @@ public class ArtistListFragment extends Fragment {
 
     public void openArtistDetails(Content mBoundContent) {
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
-        ;
 
         if(Global.getInstance().getSavedArtists().contains(mBoundContent.getContentId())) {
             fragment.setContentId(mBoundContent.getContentId());

@@ -73,7 +73,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     /**
      * TODO
      */
-    public static MapFragment newInstance() {
+    public static MapFragment getInstance() {
         if(mInstance == null) {
             mInstance = new MapFragment();
         }
