@@ -231,7 +231,13 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
 
                         //popBackStack when there is a XamoomContentFragment on BackStack
                         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                            getSupportFragmentManager().popBackStack();
+                            int backStackCount = getSupportFragmentManager().getBackStackEntryCount();
+
+                            //close all fragments in backstack
+                            while (backStackCount > 0) {
+                                getSupportFragmentManager().popBackStack();
+                                backStackCount--;
+                            }
                         }
 
                         mDrawerLayout.closeDrawers();
