@@ -3,38 +3,27 @@ package com.xamoom.android.xamoom_pingeborg_android;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.xamoom.android.mapping.ContentByLocationItem;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
-import org.w3c.dom.Text;
-
 import jp.wasabeef.glide.transformations.GrayscaleTransformation;
 
-
 /**
- * TODO
+ * Fragment displayed, when receiving and geofence from xamoom cloud.
  */
 public class GeofenceFragment extends android.support.v4.app.Fragment {
     private static final String ARG_PARAM1 = "contentTitleParam";
@@ -62,9 +51,12 @@ public class GeofenceFragment extends android.support.v4.app.Fragment {
 
     /**
      * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * GeofenceFragment using the provided parameters.
      *
-     * TODO
+     * @param title Title of content
+     * @param imageUrl Url of image
+     * @param contentId contentId from xamoom cloud
+     * @return
      */
     public static GeofenceFragment newInstance(String title, String imageUrl, String contentId) {
         GeofenceFragment fragment = new GeofenceFragment();
@@ -98,12 +90,15 @@ public class GeofenceFragment extends android.support.v4.app.Fragment {
 
         mCardView = (CardView) view.findViewById(R.id.card_view);
         TextView textView = (TextView) view.findViewById(R.id.geofenceTextView);
-        textView.setText(mContentTitle);
         ImageView imageView = (ImageView) view.findViewById(R.id.geofenceImage);
         ImageView overlayImageView = (ImageView) view.findViewById(R.id.geofenceOverlayImageView);
 
-        //check if already a unlocked artist
+        //set title
+        textView.setText(mContentTitle);
+
+        //set image
         if(!Global.getInstance().getSavedArtists().contains(mContentId)) {
+            //image in grayscale and with overlay, when not unlocked
             Glide.with(mCardView.getContext())
                     .load(mContentImageUrl)
                     .crossFade()
@@ -124,23 +119,28 @@ public class GeofenceFragment extends android.support.v4.app.Fragment {
                     .into(imageView);
         }
 
+        //create fling gesture to fling away geofence fragment
+        setupFlingGesture(view);
+
+        return view;
+    }
+
+    public void setupFlingGesture(View view) {
         //create gestureDetector/Listener to make the geofence "fling" able
-        gestureDetector = new GestureDetector(getActivity(), new MyGestureDetector());
+        gestureDetector = new GestureDetector(getActivity(), new FlingGestureDetector());
         gestureListener = new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == 1 && mCardView.getVisibility() == View.VISIBLE) {
-                    //reset if not flinged
+                    //reset if not flinged out enough
                     RelativeLayout.LayoutParams parms = (RelativeLayout.LayoutParams) mCardView.getLayoutParams();
-                    parms.leftMargin = 16;
-                    parms.rightMargin = 16;
+                    parms.leftMargin = 0;
+                    parms.rightMargin = 0;
                     mCardView.setLayoutParams(parms);
                 }
                 return gestureDetector.onTouchEvent(event);
             }
         };
         view.setOnTouchListener(gestureListener);
-
-        return view;
     }
 
     @Override
@@ -161,23 +161,25 @@ public class GeofenceFragment extends android.support.v4.app.Fragment {
     }
 
     /**
-     * TODO
+     * closeGeofenceFragment must be implemented to remove the fragment from activity.
      */
     public interface OnGeofenceFragmentInteractionListener {
         public void closeGeofenceFragment();
     }
 
     /**
-     * TODO
+     * FlingGestureDetector is used to remove the fragment from activity.
+     * When you flinged/swiped the fragment enough to the right or left
+     * it will automatically animated out and closed.
      */
-    class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
+    class FlingGestureDetector extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             try {
                 if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
                     return false;
 
-                // right to left swipe
+                // close geofenceFragment when flinged to right or left
                 if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                     int[] viewLocation = new int[2];
                     mCardView.getLocationInWindow(viewLocation);
@@ -251,11 +253,13 @@ public class GeofenceFragment extends android.support.v4.app.Fragment {
             //open artist in artistDetailActivity and save to savedArtists (unlock)
             Global.getInstance().saveArtist(mContentId);
 
+            //open ArtistDetail on click
             Context context = mCardView.getContext();
             Intent intent = new Intent(context, ArtistDetailActivity.class);
             intent.putExtra(XamoomContentFragment.XAMOOM_CONTENT_ID, mContentId);
             context.startActivity(intent);
             mListener.closeGeofenceFragment();
+
             return super.onSingleTapConfirmed(e);
         }
 

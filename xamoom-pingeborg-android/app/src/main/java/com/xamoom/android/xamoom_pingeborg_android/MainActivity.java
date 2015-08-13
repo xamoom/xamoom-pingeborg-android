@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
 
                 @Override
                 public void onDrawerClosed(View drawerView) {
-                    if (mMainFragment != mNewFragment) {
+                    if (mMainFragment != mNewFragment && mNewFragment != null) {
                         mMainFragment = mNewFragment;
                         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
                     }
@@ -246,7 +246,6 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
                     }
                 });
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
