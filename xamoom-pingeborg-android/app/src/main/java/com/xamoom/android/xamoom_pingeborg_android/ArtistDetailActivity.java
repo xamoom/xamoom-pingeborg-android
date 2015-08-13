@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -29,7 +30,7 @@ import java.net.URL;
 import retrofit.RetrofitError;
 
 
-public class ArtistDetailActivity extends ActionBarActivity implements XamoomContentFragment.OnXamoomContentFragmentInteractionListener {
+public class ArtistDetailActivity extends AppCompatActivity implements XamoomContentFragment.OnXamoomContentFragmentInteractionListener {
 
     private ProgressBar mProgressbar;
     private String mContentId;
@@ -52,9 +53,11 @@ public class ArtistDetailActivity extends ActionBarActivity implements XamoomCon
 
         //setup actionbar
         final ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
-        ab.setDisplayHomeAsUpEnabled(true);
-        ab.setTitle(Global.getInstance().getCurrentSystemName());
+        if (ab != null) {
+            ab.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
+            ab.setDisplayHomeAsUpEnabled(true);
+            ab.setTitle(Global.getInstance().getCurrentSystemName());
+        }
 
         //get mContentId or mLocationIdentifier from intent
         Intent myIntent = getIntent();

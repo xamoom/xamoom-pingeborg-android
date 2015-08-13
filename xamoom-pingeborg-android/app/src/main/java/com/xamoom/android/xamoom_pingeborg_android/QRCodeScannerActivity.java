@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -22,7 +23,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-public class QRCodeScannerActivity extends ActionBarActivity implements QRCodeReaderView.OnQRCodeReadListener {
+public class QRCodeScannerActivity extends AppCompatActivity implements QRCodeReaderView.OnQRCodeReadListener {
 
     private QRCodeReaderView mydecoderview;
     boolean isScanned = false;
@@ -40,9 +41,11 @@ public class QRCodeScannerActivity extends ActionBarActivity implements QRCodeRe
         setSupportActionBar(toolbar);
 
         final ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
-        ab.setDisplayHomeAsUpEnabled(true);
-        ab.setTitle(getString(R.string.scan_qr_text));
+        if(ab != null) {
+            ab.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
+            ab.setDisplayHomeAsUpEnabled(true);
+            ab.setTitle(getString(R.string.scan_qr_text));
+        }
 
         //set statusbar color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
