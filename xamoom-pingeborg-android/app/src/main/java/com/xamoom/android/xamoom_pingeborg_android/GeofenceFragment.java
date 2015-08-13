@@ -33,15 +33,9 @@ public class GeofenceFragment extends android.support.v4.app.Fragment {
     private static final int SWIPE_MAX_OFF_PATH = 250;
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
-    private static ContentByLocationItem mSavedGeofence;
-
     private CardView mCardView;
     private GestureDetector gestureDetector;
     View.OnTouchListener gestureListener;
-
-    public static void setSavedGeofence(ContentByLocationItem mSavedGeofence) {
-        GeofenceFragment.mSavedGeofence = mSavedGeofence;
-    }
 
     private OnGeofenceFragmentInteractionListener mListener;
 

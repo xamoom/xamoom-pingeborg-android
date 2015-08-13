@@ -4,16 +4,14 @@ import android.content.Intent;
 import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
@@ -77,6 +75,20 @@ public class QRCodeScannerActivity extends AppCompatActivity implements QRCodeRe
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Checks the scanned urls.
+     *
+     * When it is an old pingeb.org-sticker, the url contains "pingeb.org".
+     * Can also have a subdomain like "villach.pingeb-org.at". These urls
+     * gets redirected and to normal xm.gl urls. After redirecting the locationIdentifier
+     * will be used to display the content.
+     * Normal xm.gl urls will used to display the content.
+     * Opens an {@link ArtistDetailActivity} to display the content.
+     *
+     * Error Toast when trying to scan any other QRs.
+     *
+     * @param url String url.
+     */
     private void checkUrl(final String url) {
         //check for "old" pingeb.org urls
         if(url.contains("pingeb.org")) {
@@ -113,6 +125,11 @@ public class QRCodeScannerActivity extends AppCompatActivity implements QRCodeRe
         }
     }
 
+    /**
+     * Starts a ArtistDetailActivity with an url.
+     *
+     * @param url String url of xm.gl.
+     */
     private void startDetailActivityWithXamoomUrl(String url) {
         //get locationIdentifier
         Uri mUri = Uri.parse(url);

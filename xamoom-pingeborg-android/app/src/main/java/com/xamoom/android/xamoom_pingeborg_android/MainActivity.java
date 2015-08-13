@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -36,6 +37,7 @@ import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 public class MainActivity extends AppCompatActivity implements GeofenceFragment.OnGeofenceFragmentInteractionListener, XamoomContentFragment.OnXamoomContentFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
 
     public final static int LOCATION_IDENTIFIER_REQUEST_CODE = 0001;
+
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private FloatingActionButton mQRScannerFAB;
@@ -48,9 +50,6 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         setContentView(R.layout.activity_main);
 
         getSupportFragmentManager().addOnBackStackChangedListener(this);
-
-        //Strict Policy
-        //StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyFlashScreen().build());
 
         //analytics
         Analytics.getInstance(this).sendEvent("App", "Start", "User starts the app");
@@ -93,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         setupArtistListFragment();
     }
 
+
     public void setupNavigationDrawer(NavigationView navigationView) {
         if (navigationView != null) {
             setupDrawerContent(navigationView);
@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
 
                 @Override
                 public void onDrawerClosed(View drawerView) {
+                    //replace fragment when it changed and is not null
                     if (mMainFragment != mNewFragment && mNewFragment != null) {
                         mMainFragment = mNewFragment;
                         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
@@ -123,6 +124,9 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         }
     }
 
+    /**
+     * Setup actionbar with title and drawerToggle.
+     */
     public void setupActionBar() {
         final ActionBar ab = getSupportActionBar();
         if (ab != null) {
@@ -145,6 +149,13 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         }
     }
 
+    /**
+     * Starts ArtistDetailActivity on QR-Scan.
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LOCATION_IDENTIFIER_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
@@ -158,6 +169,9 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         }
     }
 
+    /**
+     * Check the pingeborg system
+     */
     private void checkPingeborgSystem() {
         ImageView imagView = (ImageView) this.findViewById(R.id.nav_drawer_image);
         Glide.with(this.getApplicationContext())
@@ -165,6 +179,11 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
                 .into(imagView);
     }
 
+    /**
+     * Checks if the user has NFC and if it is enabled.
+     *
+     * If it is not enabled, {@link #openNFCDialog()} gets called.
+     */
     private void checkNFC() {
         NfcManager manager = (NfcManager) getApplicationContext().getSystemService(Context.NFC_SERVICE);
         NfcAdapter adapter = manager.getDefaultAdapter();
@@ -176,6 +195,12 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         }
     }
 
+    /**
+     * Opens a dialog to inform the user, that he can turn on NFC
+     * to discover pingeb.org-stickers.
+     *
+     * On positiveButton automatically sends him to NFC Settings.
+     */
     private void openNFCDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -195,6 +220,9 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         builder.create().show();
     }
 
+    /**
+     * Creates a ArtistListFragment and displays it.
+     */
     private void setupArtistListFragment() {
         mMainFragment = ArtistListFragment.getInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
@@ -218,9 +246,9 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
                                 mQRScannerFAB.hide();
                                 mNewFragment = MapFragment.getInstance();
 
+                                //display first time map instruction view
                                 if (Global.getInstance().checkFirstStartMapInstruction())
                                     showMapInstructionView();
-
                                 break;
                             case R.id.nav_about:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to about fragment", "User navigated to the about fragment");
@@ -268,6 +296,9 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         return true;
     }
 
+    /**
+     * Close the geofenceFragment.
+     */
     @Override
     public void closeGeofenceFragment() {
         if(mMainFragment.getClass().equals(MapFragment.class)) {
@@ -276,6 +307,11 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         }
     }
 
+    /**
+     * Add new XamoomContentFragment when a content contentBlock is clicked.
+     *
+     * @param content A {@link com.xamoom.android.mapping.Content}
+     */
     @Override
     public void clickedContentBlock(Content content) {
         //also discover this artist
@@ -297,6 +333,9 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         shouldDisplayHomeUp();
     }
 
+    /**
+     * Check when to display home button or back-arrow.
+     */
     public void shouldDisplayHomeUp(){
         if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
             mQRScannerFAB.setVisibility(View.GONE);

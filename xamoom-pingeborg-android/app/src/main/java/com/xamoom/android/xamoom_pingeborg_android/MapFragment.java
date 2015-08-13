@@ -8,10 +8,9 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.util.ArrayMap;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Base64;
@@ -71,7 +70,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private Bitmap mMarkerIcon;
 
     /**
-     * TODO
+     * Returns a MapFragment Singleton.
+     *
+     * @return A MapFragment.
      */
     public static MapFragment getInstance() {
         if(mInstance == null) {
@@ -104,7 +105,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             setupViewPager(mViewPager);
             final TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabs);
 
-            //workaround broken TabLayout
+            //workaround broken TabLayout in appcompat 22.2.1
             if (ViewCompat.isLaidOut(tabLayout)) {
                 tabLayout.setupWithViewPager(mViewPager);
             } else {
@@ -123,6 +124,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return view;
     }
 
+    /**
+     * Setups a BestLocationProvider and BestLocationProvider to get the users location.
+     */
     private void setupLocation() {
         mBestLocationProvider = new BestLocationProvider(getActivity(), true, true, 1000, 1000, 5, 10);
         mBestLocationListener = new BestLocationListener() {
@@ -145,7 +149,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onLocationUpdate(Location location, BestLocationProvider.LocationType type, boolean isFresh) {
                 if(isFresh) {
-                    Log.i("pingeborg", "onLocationUpdate TYPE:" + type + " Location:" + mBestLocationProvider.locationToString(location));
                     mUserLocation = location;
                     setupGeofencing(location);
                     mBestLocationProvider.stopLocationUpdates();
@@ -162,6 +165,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onDestroyView();
     }
 
+    /**
+     * Setup the viewpager with a supportMapFragment and a SpotListFragment.
+     *
+     * @param viewPager A ViewPager.
+     */
     private void setupViewPager(ViewPager viewPager) {
         mSupportMapFragment = SupportMapFragment.newInstance();
 
@@ -179,9 +187,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         //hide mapAddition when changing tabs
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
             @Override
             public void onPageSelected(int position) {
@@ -191,17 +197,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
+            public void onPageScrollStateChanged(int state) {}
         });
         mSupportMapFragment.getMapAsync(this);
     }
 
+    /**
+     * Starts updating the location.
+     */
     public void startLocationUpdating() {
         mBestLocationProvider.startLocationUpdatesWithListener(mBestLocationListener);
     }
 
+    /**
+     * Calls xamoom cloud to get a geofence, when near a pingeb.org-sticker.
+     *
+     * @param location
+     */
     public void setupGeofencing(Location location) {
         if(this.getActivity().getApplicationContext() != null) {
             XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getContentByLocation(location.getLatitude(), location.getLongitude(), null, new APICallback<ContentByLocation>() {
@@ -223,6 +235,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
+    /**
+     * Opens a GeofenceFragment.
+     *
+     * @param content A {@link com.xamoom.android.mapping.Content}.
+     */
     public void openGeofenceFragment(ContentByLocationItem content) {
         try {
             FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -230,13 +247,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 fragmentTransaction.setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom);
 
             mGeofenceFragment = GeofenceFragment.newInstance(content.getContentName(), content.getImagePublicUrl(), content.getContentId());
-            mGeofenceFragment.setSavedGeofence(content);
             fragmentTransaction.replace(R.id.geofenceFrameLayout, mGeofenceFragment).commit();
         } catch (NullPointerException e) {
             Log.v(Global.DEBUG_TAG, "Exception: Geofencefragment is null.");
         }
     }
 
+    /**
+     * Closes a GeofenceFragment.
+     */
     public void closeGeofenceFragment() {
         try {
             getActivity().getSupportFragmentManager().beginTransaction().remove(mGeofenceFragment).commit();
@@ -245,6 +264,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    /**
+     * Setup mapOnClickListener and onMarkerClickListener.
+     * Start to add mapMarkers.
+     *
+     * @param googleMap A GoogleMap object.
+     */
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
 
@@ -276,6 +301,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         googleMap.setMyLocationEnabled(true);
     }
 
+    /**
+     * Opens a mapAdditionFragment on clicking a marker.
+     * @param spot
+     */
     private void openMapAdditionFragment(Spot spot) {
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         if(mMapAdditionFragment == null)
@@ -293,6 +322,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         fragmentTransaction.replace(R.id.mapAdditionFrameLayout, mMapAdditionFragment).commit();
     }
 
+    /**
+     * Closes the active MapAdditionFragment.
+     */
     private void closeMapAdditionFragment() {
         if(mMapAdditionFragment != null) {
             getActivity().getSupportFragmentManager()
@@ -305,9 +337,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    /**
+     * Loads the MapMarkers.
+     *
+     * @param googleMap A GoogleMap Object.
+     * @param markerMap ArrayMap with Markers and Spots
+     */
     private void setupMapMarkers(final GoogleMap googleMap, final ArrayMap<Marker, Spot> markerMap) {
         if (!markerMap.isEmpty()) {
-            Log.v("pingeborg.xamoom.com","MarkerMap is not empty");
+            Log.v(Global.DEBUG_TAG,"MarkerMap is not empty");
             googleMap.clear();
             addMarkersToMap();
         } else {
@@ -326,6 +364,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    /**
+     * Adds Makers to map with the right mapMarker.
+     *
+     * @param result Result of {@link com.xamoom.android.XamoomEndUserApi#getSpotMap(String, String[], String, APICallback)}
+     */
     public void getDataFromSpotMap(SpotMap result) {
         //get the icon for the mapMarker (drawable image (eg. png) or SVG
         if (result.getStyle().getCustomMarker() != null) {
@@ -351,6 +394,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         zoomMapAcordingToMarkers();
     }
 
+    /**
+     * Adds mapMarker to map, when alreay loaded.
+     */
     public void addMarkersToMap() {
         ArrayMap<Marker, Spot> newMarkerMap = new ArrayMap<Marker, Spot>();
 
@@ -374,6 +420,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         zoomMapAcordingToMarkers();
     }
 
+    /**
+     * Zooms map to display all markers.
+     */
     public void zoomMapAcordingToMarkers() {
         //zoom to display all markers
         LatLngBounds.Builder builder = new LatLngBounds.Builder();

@@ -1,11 +1,9 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
-import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xamoom.android.request.Location;
-
-import org.w3c.dom.Text;
 
 
 /**
@@ -42,12 +37,14 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
     private float mDistance;
 
     /**
-     * TODO
-     * @param name
-     * @param description
-     * @param imageUrl
-     * @param location
-     * @return
+     * Create a new Instance of MapAdditionFragment.
+     *
+     * @param name Name of the spot.
+     * @param description Description of the spot.
+     * @param imageUrl Url of the image.
+     * @param location Location of the spot.
+     * @param distance Distance from user to spot.
+     * @return A MapAdditionFragment.
      */
     public static MapAdditionFragment newInstance(String name, String description, String imageUrl, Location location, float distance) {
         MapAdditionFragment fragment = new MapAdditionFragment();
@@ -87,14 +84,19 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map_addition, container, false);
         TextView tx = (TextView) view.findViewById(R.id.spotDescriptionTextView);
+
+        //set the description
         tx.setText(mSpotDescription);
 
+        //set the title
         TextView titleTextView = (TextView) view.findViewById(R.id.spotTitleTextView);
         titleTextView.setText(mSpotName);
 
+        //set the distance
         TextView distanceTextView = (TextView) view.findViewById(R.id.spotDistanceTextView);
         distanceTextView.setText(String.format("%.0f %s", mDistance, getString(R.string.meterLabel)));
 
+        //load the image
         final ImageView imageView = (ImageView) view.findViewById(R.id.backdrop);
         Glide.with(this)
                 .load(mSpotImageUrl)

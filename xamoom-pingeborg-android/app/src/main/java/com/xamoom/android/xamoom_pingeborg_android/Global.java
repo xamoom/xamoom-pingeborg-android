@@ -20,6 +20,7 @@ public class Global {
 
     private SharedPreferences mSharedPreferences;
     private String mAboutPage;
+    private String mSystemName;
     private int mCurrentSystem;
     private Activity mContext;
 
@@ -27,7 +28,7 @@ public class Global {
     }
 
     /**
-     * TODO
+     * Returns a Global singleton.
      *
      * @return Global
      */
@@ -39,7 +40,10 @@ public class Global {
     }
 
     /**
-     * TODO
+     * Setter for activity.
+     * Directly saves an instance of preferences.
+     *
+     * @param activity
      */
     public void setActivity(Activity activity) {
         mContext = activity;
@@ -47,7 +51,10 @@ public class Global {
     }
 
     /**
-     * TODO
+     * Save a string to shared preferences with key.
+     *
+     * @param key String Key
+     * @param value String value
      */
     public void saveStringToSharedPref (String key, String value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
@@ -56,14 +63,19 @@ public class Global {
     }
 
     /**
-     * TODO
+     * Get a value saved to shared preferences with key.
+     *
+     * @param key String key
+     * @return String result
      */
     public String getStringFromSharedPref (String key) {
        return mSharedPreferences.getString(key, "");
     }
 
     /**
-     * TODO
+     * Saves an artists contentId (unlock).
+     *
+     * @param contentId ContentId to save.
      */
     public void saveArtist(String contentId) {
         String savedArtists = getStringFromSharedPref(SAVED_ARTISTS_KEY);
@@ -77,14 +89,18 @@ public class Global {
     }
 
     /**
-     * TODO
+     * Returns all saved artists.
+     *
+     * @return Comma seprateted string of all artists.
      */
     public String getSavedArtists() {
         return getStringFromSharedPref(SAVED_ARTISTS_KEY);
     }
 
     /**
-     * TODO
+     * Check if this is the first start of the app.
+     *
+     * @return true if first start, else false.
      */
     public boolean checkFirstStart() {
         if(mSharedPreferences.getBoolean(IS_FIRST_START_KEY, false)) {
@@ -99,7 +115,9 @@ public class Global {
     }
 
     /**
-     * TODO
+     * Check if the first Start Instruction are displayed.
+     *
+     * @return True if not shown, else false.
      */
     public boolean checkFirstStartInstruction() {
         if(mSharedPreferences.getBoolean(FIRST_START_INSTRUCTION_KEY, false)) {
@@ -114,7 +132,9 @@ public class Global {
     }
 
     /**
-     * TODO
+     * Check if first Map Start Instruction are displayed.
+     *
+     * @return True if not shown, else false.
      */
     public boolean checkFirstStartMapInstruction() {
         if(mSharedPreferences.getBoolean(FIRST_START_MAP_INSTRUCTION_KEY, false)) {
@@ -128,34 +148,43 @@ public class Global {
         }
     }
 
+    /**
+     * Returns the systems about page.
+     *
+     * @return ContentId of the about page from xamoom cloud.
+     */
     public String getAboutPage() {
         return mAboutPage;
     }
 
     /**
-     * TODO
+     * Set another system, to get the right systemName and aboutPage.
+     *
+     * 0 = Carinthia
+     * Default = Carinthia
+     *
+     * @param id
      */
     public void setCurrentSystem(int id) {
         switch (id) {
             case 0:
                 mAboutPage = mContext.getString(R.string.pingeborg_carinthia_about_page_id);
+                mSystemName = mContext.getString(R.string.pingeborg_carinthia_system_name);
                 break;
             default:
                 mAboutPage = mContext.getString(R.string.pingeborg_carinthia_about_page_id);
+                mSystemName = mContext.getString(R.string.pingeborg_carinthia_system_name);
                 break;
         }
         mCurrentSystem = id;
     }
 
     /**
-     * TODO
+     * Returns the current systemName.
+     *
+     * @return String systemName.
      */
     public String getCurrentSystemName() {
-        switch (mCurrentSystem) {
-            case 0:
-                return mContext.getString(R.string.pingeborg_carinthia_system_name);
-            default:
-                return mContext.getString(R.string.pingeborg_carinthia_system_name);
-        }
+        return mSystemName;
     }
 }
