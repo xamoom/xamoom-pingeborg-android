@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements ArtistListFragmen
     private ActionBarDrawerToggle mDrawerToggle;
     private FloatingActionButton mQRScannerFAB;
     private Fragment mMainFragment;
+    private Fragment mNewFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,8 +116,10 @@ public class MainActivity extends AppCompatActivity implements ArtistListFragmen
 
                 @Override
                 public void onDrawerClosed(View drawerView) {
-                    if (mMainFragment != null)
+                    if (mMainFragment != mNewFragment) {
+                        mMainFragment = mNewFragment;
                         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
+                    }
                 }
 
                 @Override
@@ -201,7 +204,8 @@ public class MainActivity extends AppCompatActivity implements ArtistListFragmen
 
     private void setupArtistListFragment() {
         Log.v(Global.DEBUG_TAG, "setupArtistListFragment");
-        getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, ArtistListFragment.newInstance()).commit();
+        mMainFragment = ArtistListFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -215,12 +219,12 @@ public class MainActivity extends AppCompatActivity implements ArtistListFragmen
                             case R.id.nav_home:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to artist list fragment", "User navigated to the artist list fragment");
                                 mQRScannerFAB.show();
-                                mMainFragment = ArtistListFragment.newInstance();
+                                mNewFragment = ArtistListFragment.newInstance();
                                 break;
                             case R.id.nav_map:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to map fragment", "User navigated to the map fragment");
                                 mQRScannerFAB.hide();
-                                mMainFragment = MapFragment.newInstance();
+                                mNewFragment = MapFragment.newInstance();
 
                                 if (Global.getInstance().checkFirstStartMapInstruction())
                                     showMapInstructionView();
@@ -229,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements ArtistListFragmen
                             case R.id.nav_about:
                                 Analytics.getInstance(getApplication()).sendEvent("Navigation", "Navigated to about fragment", "User navigated to the about fragment");
                                 mQRScannerFAB.hide();
-                                mMainFragment = AboutFragment.newInstance();
+                                mNewFragment = AboutFragment.newInstance();
                                 break;
                         }
 
