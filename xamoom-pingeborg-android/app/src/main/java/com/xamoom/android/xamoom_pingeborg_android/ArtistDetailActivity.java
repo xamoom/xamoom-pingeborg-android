@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -29,7 +28,12 @@ import java.net.URL;
 
 import retrofit.RetrofitError;
 
-
+/**
+ * ArtistDetailActivity can be used to display content from the xamoom cloud.
+ *
+ * We use it to display content discovered with NFC.
+ *
+ */
 public class ArtistDetailActivity extends AppCompatActivity implements XamoomContentFragment.OnXamoomContentFragmentInteractionListener {
 
     private ProgressBar mProgressbar;
@@ -73,8 +77,15 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         }
     }
 
+    /**
+     * Get from an NFC scan the URL and display the data.
+     *
+     * @param intent Intent send from system when scanning NFC
+     */
     protected void onNewIntent(Intent intent) {
         final String[] url = {intent.getDataString()};
+
+        Analytics.getInstance(this).sendEvent("App", "NFC Scan in App", "User scanned an NFC Sticker");
 
         if(url[0].contains("pingeb.org")) {
             Thread thread = new Thread() {
@@ -207,6 +218,12 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         return true;
     }
 
+    /**
+     * Opens the browser with a xamoom content.
+     *
+     * @param contentId ContentId from xamoom cloud
+     * @param locationIdentifier LocationIdentifier from xamoom cloud
+     */
     public void openInBrowser(String contentId, String locationIdentifier) {
         Intent browserIntent;
         if(contentId != null) {
@@ -237,6 +254,15 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Override the handling of content ContentBlocks.
+     * These are links to a contentBlock {@link com.xamoom.android.mapping.ContentBlocks.ContentBlockType6}
+     * and should be handled like you handle other contents.
+     *
+     * We add a new XamoomContentFragment to the activity.
+     *
+     * @param content
+     */
     @Override
     public void clickedContentBlock(Content content) {
         //also discover this artist

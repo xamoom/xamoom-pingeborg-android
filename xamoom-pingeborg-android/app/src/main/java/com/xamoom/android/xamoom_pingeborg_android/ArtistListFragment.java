@@ -37,7 +37,6 @@ public class ArtistListFragment extends Fragment {
     private final static int PAGE_SIZE = 7;
 
     private static ArtistListFragment mInstance;
-    private OnFragmentInteractionListener mListener;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private List<Content> mContentList = new LinkedList<Content>();
@@ -46,10 +45,9 @@ public class ArtistListFragment extends Fragment {
     private boolean isLoading = false;
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment.
+     * Returns a ArtistListFragment Singleton.
      *
-     * @return A new instance of fragment ArtistListFragment.
+     * @return ArtistListFragment Singleton.
      */
     public static ArtistListFragment getInstance() {
         if(mInstance == null) {
@@ -75,6 +73,7 @@ public class ArtistListFragment extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.artistListRecyclerView);
         setupRecyclerView(mRecyclerView);
 
+        //check if the contentList is already loaded
         if(mContentList.size() > 0) {
             setupContentList();
             mRecyclerView.getAdapter().notifyDataSetChanged();
@@ -100,6 +99,7 @@ public class ArtistListFragment extends Fragment {
                 super.onScrollStateChanged(recyclerView, newState);
             }
 
+            //load on scroll implementation
             @Override
             public void onScrolled(final RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -117,20 +117,22 @@ public class ArtistListFragment extends Fragment {
         });
     }
 
+    /**
+     * Download contentList from xamoom cloud and add them to recyclerView.
+     */
     public void downloadArtists() {
         if(isMore && !isLoading) {
             isLoading = true;
 
             //add loading indicator
             mContentList.add(null);
-
             mRecyclerView.getAdapter().notifyItemInserted(mContentList.size() - 1);
 
             XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getContentList(null, PAGE_SIZE, mCursor, new String[]{"artists"}, new APICallback<ContentList>() {
                 @Override
                 public void finished(final ContentList result) {
 
-                    //save 3 artists as a present for the user
+                    //unlock 3 artists as a present for the user
                     if (Global.getInstance().checkFirstStart()) {
                         for (int i = 1; i < 4; i++) {
                             Content c = result.getItems().get(i);
@@ -138,6 +140,7 @@ public class ArtistListFragment extends Fragment {
                         }
                     }
 
+                    //remove loading indicator
                     mContentList.remove(mContentList.size() - 1);
                     mRecyclerView.getAdapter().notifyItemInserted(mContentList.size());
 
@@ -158,9 +161,15 @@ public class ArtistListFragment extends Fragment {
         }
     }
 
+    /**
+     * Add XammomContentFragment to View to display the artist.
+     *
+     * @param mBoundContent A {@link com.xamoom.android.mapping.Content} to display
+     */
     public void openArtistDetails(Content mBoundContent) {
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
 
+        //use contentId, when artist is alreay unlocked
         if(Global.getInstance().getSavedArtists().contains(mBoundContent.getContentId())) {
             fragment.setContentId(mBoundContent.getContentId());
         } else {
@@ -175,47 +184,10 @@ public class ArtistListFragment extends Fragment {
                 .commit();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(String contentId) {
-        if (mListener != null) {
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-    }
-
-    /**
+     * Adapter for recyclerView to display the artistList.
      *
-     *
-     *
-     *
+     * Can display artists (image and text) or a progressBar.
      */
     public class SimpleStringRecyclerViewAdapter extends RecyclerView.Adapter<SimpleStringRecyclerViewAdapter.ViewHolder> {
         private final static int VIEW_ITEM = 1;
@@ -275,11 +247,13 @@ public class ArtistListFragment extends Fragment {
 
             switch (viewType) {
                 case 1:
+                    //display artist
                     View view = LayoutInflater.from(parent.getContext())
                             .inflate(R.layout.artist_list_item, parent, false);
                     view.setBackgroundResource(mBackground);
                     return new ViewHolder(view);
                 case 0:
+                    //display progressBar
                     View progressView = LayoutInflater.from(parent.getContext())
                             .inflate(R.layout.progress_layout, parent, false);
                     return new ViewHolder(progressView);
@@ -298,8 +272,10 @@ public class ArtistListFragment extends Fragment {
                 holder.mTextView.setText(holder.mBoundContent.getTitle());
 
                 BitmapPool pool = Glide.get(mContext).getBitmapPool();
+
                 //download and set image via Glide
                 if(Global.getInstance().getSavedArtists().contains(holder.mBoundContent.getContentId())) {
+                    //set image normal
                     Glide.with(mContext)
                             .load(holder.mBoundContent.getImagePublicUrl())
                             .placeholder(R.drawable.placeholder)
@@ -309,6 +285,7 @@ public class ArtistListFragment extends Fragment {
                     holder.mOverlayImageView.setVisibility(View.GONE);
 
                 } else {
+                    //set image grayscale, and overlayed
                     Glide.with(mContext)
                             .load(holder.mBoundContent.getImagePublicUrl())
                             .placeholder(R.drawable.placeholder)
@@ -319,6 +296,8 @@ public class ArtistListFragment extends Fragment {
                     holder.mOverlayImageView.setVisibility(View.VISIBLE);
 
                     holder.mOverlayImageView.setImageResource(android.R.color.transparent);
+
+                    //display "discover me"/"Entdecke mich" image
                     if (position == 0) {
                         Glide.with(mContext)
                                 .load(R.drawable.discoverable)

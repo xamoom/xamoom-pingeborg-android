@@ -33,7 +33,7 @@ import com.bumptech.glide.Glide;
 import com.xamoom.android.mapping.Content;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
-public class MainActivity extends AppCompatActivity implements ArtistListFragment.OnFragmentInteractionListener, GeofenceFragment.OnGeofenceFragmentInteractionListener, XamoomContentFragment.OnXamoomContentFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
+public class MainActivity extends AppCompatActivity implements GeofenceFragment.OnGeofenceFragmentInteractionListener, XamoomContentFragment.OnXamoomContentFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
 
     public final static int LOCATION_IDENTIFIER_REQUEST_CODE = 0001;
     private DrawerLayout mDrawerLayout;
@@ -196,7 +196,6 @@ public class MainActivity extends AppCompatActivity implements ArtistListFragmen
     }
 
     private void setupArtistListFragment() {
-        Log.v(Global.DEBUG_TAG, "setupArtistListFragment");
         mMainFragment = ArtistListFragment.getInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrameLayout, mMainFragment).commit();
     }

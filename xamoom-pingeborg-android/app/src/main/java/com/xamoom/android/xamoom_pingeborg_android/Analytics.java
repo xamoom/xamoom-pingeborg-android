@@ -29,7 +29,7 @@ public class Analytics {
         mAnalytics = GoogleAnalytics.getInstance(context);
         mAnalytics.setDryRun(true); //TODO REMOVE
         mTracker = mAnalytics.newTracker("UA-57427460-3");
-        //mTracker.enableExceptionReporting(true);
+        //mTracker.enableExceptionReporting(true); //TODO ENABLE
         mTracker.enableAdvertisingIdCollection(true);
     }
 
