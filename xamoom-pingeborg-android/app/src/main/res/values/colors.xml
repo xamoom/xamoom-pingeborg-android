@@ -4,5 +4,6 @@
     <color name="pingeborg_dark_yellow">#B5A900</color>
     <color name="pingeborg_green">#7C9F36</color>
     <color name="artist_list_text_background">#80000000</color>
+    <color name="artist_list_text_background_lighter">#60000000</color>
     <color name="artist_list_text">#FFFFFF</color>
 </resources>

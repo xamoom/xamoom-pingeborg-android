@@ -13,9 +13,13 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
 import com.xamoom.android.mapping.ContentList;
@@ -38,7 +42,6 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
     private LinearLayoutManager mLayoutManager;
     private BestLocationProvider mBestLocationProvider;
     final List<Spot> mSpotList = new LinkedList<Spot>();
-    private MapAdditionFragment mMapAdditionFragment;
     static Location mUserLocation = null;
 
     /**
@@ -117,7 +120,7 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
         final boolean[] isLoading = {false};
 
         if(this.isAdded()) {
-            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getClosestSpots(location.getLatitude(), location.getLongitude(), null, 2000, 100, new APICallback<SpotMap>() {
+            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getClosestSpots(location.getLatitude(), location.getLongitude(), null, 2000, 20, new APICallback<SpotMap>() {
                 @Override
                 public void finished(final SpotMap result) {
                     mProgressBar.setVisibility(View.GONE);
@@ -159,14 +162,18 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
             public Spot mBoundContent;
 
             public final View mView;
+            public final LinearLayout mTextOverlay;
             public final TextView mTitleTextView;
             public final TextView mDistanceTextView;
+            public final ImageView mImageView;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
+                mTextOverlay = (LinearLayout) view.findViewById(R.id.spotListTextOverlay);
                 mTitleTextView = (TextView) view.findViewById(R.id.spotNameTextView);
                 mDistanceTextView = (TextView) view.findViewById(R.id.spotDistanceTextView);
+                mImageView = (ImageView) view.findViewById(R.id.spotListImageView);
             }
 
             @Override
@@ -203,7 +210,6 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-
             if (holder.getItemViewType() == VIEW_ITEM) {
                 //save content for later use
                 holder.mBoundContent = mSpotList.get(position);
@@ -211,11 +217,31 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
                 //set text
                 holder.mTitleTextView.setText(holder.mBoundContent.getDisplayName());
 
+                //display distance
                 Location spotLocation = new Location("");
                 spotLocation.setLatitude(holder.mBoundContent.getLocation().getLat());
                 spotLocation.setLongitude(holder.mBoundContent.getLocation().getLon());
                 float distance = mUserLocation.distanceTo(spotLocation);
                 holder.mDistanceTextView.setText(String.valueOf(Math.round(distance)) + " Meter");
+
+                //holder.mImageView.setImageURI(null);
+
+                //add Image
+                if(holder.mBoundContent.getImage() != null) {
+                    Glide.with(mContext)
+                            .load(holder.mBoundContent.getImage())
+                            .dontTransform()
+                            .crossFade()
+                            .into(holder.mImageView);
+                }
+                else {
+                    holder.mImageView.setImageResource(0);
+                   if(position%2 == 1) {
+                       holder.mTextOverlay.setBackgroundColor(mContext.getResources().getColor(R.color.artist_list_text_background_lighter));
+                   } else {
+                       holder.mTextOverlay.setBackgroundColor(mContext.getResources().getColor(R.color.artist_list_text_background));
+                   }
+                }
             }
         }
 
