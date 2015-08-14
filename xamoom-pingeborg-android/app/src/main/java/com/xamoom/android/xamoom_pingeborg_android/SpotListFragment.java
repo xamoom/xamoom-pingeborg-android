@@ -1,5 +1,6 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
+import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
@@ -43,6 +44,8 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
     private BestLocationProvider mBestLocationProvider;
     final List<Spot> mSpotList = new LinkedList<Spot>();
     static Location mUserLocation = null;
+
+    private OnSpotListFragmentInteractionListener mListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -143,13 +146,37 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
         recyclerView.setAdapter(new SpotListRecyclerViewAdapter(getActivity(), mSpotList));
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnSpotListFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnSpotListFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    /**
+     * closeGeofenceFragment must be implemented to remove the fragment from activity.
+     */
+    public interface OnSpotListFragmentInteractionListener {
+        public void clickedSpot(Spot spot);
+    }
+
     /**
      *
      *
      *
      *
      */
-    public static class SpotListRecyclerViewAdapter extends RecyclerView.Adapter<SpotListRecyclerViewAdapter.ViewHolder> {
+    public class SpotListRecyclerViewAdapter extends RecyclerView.Adapter<SpotListRecyclerViewAdapter.ViewHolder> {
         private final static int VIEW_ITEM = 1;
         private final static int VIEW_PROG = 0;
 
@@ -158,7 +185,7 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
         private int mBackground;
         private List<Spot> mSpotList;
 
-        public static class ViewHolder extends RecyclerView.ViewHolder {
+        public class ViewHolder extends RecyclerView.ViewHolder {
             public Spot mBoundContent;
 
             public final View mView;
@@ -242,6 +269,13 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
                        holder.mTextOverlay.setBackgroundColor(mContext.getResources().getColor(R.color.artist_list_text_background));
                    }
                 }
+
+                holder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mListener.clickedSpot(holder.mBoundContent);
+                    }
+                });
             }
         }
 

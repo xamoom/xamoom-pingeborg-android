@@ -3,8 +3,10 @@ package com.xamoom.android.xamoom_pingeborg_android;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -26,6 +28,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -43,6 +46,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import retrofit.RetrofitError;
 
@@ -55,6 +59,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private static MapFragment mInstance;
 
+    private CoordinatorLayout mCoordinaterLayout;
     private ViewPager mViewPager;
     private SupportMapFragment mSupportMapFragment;
     private MapAdditionFragment mMapAdditionFragment;
@@ -99,6 +104,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         mProgressBar = (ProgressBar) view.findViewById(R.id.mapProgressBar);
+        mCoordinaterLayout = (CoordinatorLayout)view.findViewById(R.id.main_content_map);
 
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         if (mViewPager != null) {
@@ -187,7 +193,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         //hide mapAddition when changing tabs
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             @Override
             public void onPageSelected(int position) {
@@ -197,7 +204,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+            }
         });
         mSupportMapFragment.getMapAsync(this);
     }
@@ -275,13 +283,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public boolean onMarkerClick(Marker marker) {
+            public boolean onMarkerClick(final Marker marker) {
                 if (marker == mActiveMarker)
                     return true;
 
                 try {
                     mActiveMarker = marker;
                     openMapAdditionFragment(markerMap.get(marker));
+                    mCoordinaterLayout.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            zoomMapToMarker(marker);
+                        }
+                    });
                 } catch (Exception e) {
                     Log.e(Global.DEBUG_TAG, "Pressing on many Spot-Markers at the same time. (Stacked Spots in one Place)");
                 }
@@ -438,6 +452,49 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         //remove progressBar
         mProgressBar.setVisibility(View.GONE);
+    }
+
+    /**
+     * Zooms the map to a marker, so that it will be above
+     * the MapAdditionFragment.
+     *
+     * @param marker A Marker from a GoogleMap.
+     */
+    public void zoomMapToMarker(Marker marker) {
+        //move camera to display marker above the mapAddtionFragment
+        Projection projection = mGoogleMap.getProjection();
+
+        LatLng markerLatLng = new LatLng(marker.getPosition().latitude,
+                marker.getPosition().longitude);
+        Point markerScreenPosition = projection.toScreenLocation(markerLatLng);
+        Point pointHalfScreenAbove = new Point(markerScreenPosition.x,
+                markerScreenPosition.y + (this.getResources().getDisplayMetrics().heightPixels / 5));
+
+        LatLng aboveMarkerLatLng = projection
+                .fromScreenLocation(pointHalfScreenAbove);
+
+        marker.showInfoWindow();
+        CameraUpdate center = CameraUpdateFactory.newLatLng(aboveMarkerLatLng);
+        mGoogleMap.animateCamera(center);
+    }
+
+    /**
+     * Displays a marker connected to a spot.
+     *
+     * @param spot A {@link com.xamoom.android.mapping.Spot}.
+     */
+    public void displayMarker(Spot spot) {
+        Set<Marker> markerSet = markerMap.keySet();
+
+        for (Marker marker : markerSet) {
+            if(marker.getTitle().equalsIgnoreCase(spot.getDisplayName())) {
+                mViewPager.setCurrentItem(0);
+                marker.showInfoWindow();
+                openMapAdditionFragment(spot);
+
+                zoomMapToMarker(marker);
+            }
+        }
     }
 
     /**

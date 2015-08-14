@@ -32,9 +32,10 @@ import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.xamoom.android.mapping.Content;
+import com.xamoom.android.mapping.Spot;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
-public class MainActivity extends AppCompatActivity implements GeofenceFragment.OnGeofenceFragmentInteractionListener, XamoomContentFragment.OnXamoomContentFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
+public class MainActivity extends AppCompatActivity implements GeofenceFragment.OnGeofenceFragmentInteractionListener, XamoomContentFragment.OnXamoomContentFragmentInteractionListener, FragmentManager.OnBackStackChangedListener, SpotListFragment.OnSpotListFragmentInteractionListener {
 
     public final static int LOCATION_IDENTIFIER_REQUEST_CODE = 0001;
 
@@ -404,5 +405,12 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
 
         getWindow().addContentView(v, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT));
+    }
+
+    @Override
+    public void clickedSpot(Spot spot) {
+        Log.v(Global.DEBUG_TAG, "MainActivity: ClickedSpot");
+        MapFragment mapFragment = (MapFragment) mMainFragment;
+        mapFragment.displayMarker(spot);
     }
 }
