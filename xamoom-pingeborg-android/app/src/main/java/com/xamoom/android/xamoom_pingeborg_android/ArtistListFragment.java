@@ -85,6 +85,11 @@ public class ArtistListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
     public void setupRecyclerView(final RecyclerView recyclerView) {
         mLayoutManager = new LinearLayoutManager(recyclerView.getContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -179,7 +184,7 @@ public class ArtistListFragment extends Fragment {
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.anim.bottom_swipe_in, 0, 0, R.anim.bottom_swipe_out)
-                .add(R.id.mainFrameLayout, fragment)
+                .replace(R.id.mainFrameLayout, fragment)
                 .addToBackStack(null)
                 .commit();
     }
