@@ -167,7 +167,6 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
                 @Override
                 public void finished(ContentByLocationIdentifier result) {
                     //save artist
-                    Log.v(Global.DEBUG_TAG, "ArtistDetailActivity - getContentByLocationIdentifier finished");
                     Global.getInstance().saveArtist(result.getContent().getContentId());
                     setupXamoomContentFrameLayout(result.getContent());
                 }
@@ -185,10 +184,6 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
     }
 
     private void setupXamoomContentFrameLayout(Content content) {
-        //hide loading indicator
-
-        Log.v(Global.DEBUG_TAG, "ArtistDetailActivity - APIKey: " + getResources().getString(R.string.apiKey));
-
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
         fragment.setContent(content);
 
