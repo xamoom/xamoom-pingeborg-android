@@ -58,6 +58,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
 
         //setup Global
         Global.getInstance().setActivity(this);
+        Global.getInstance().setCurrentSystem(0);
 
         //setup actionbar
         final ActionBar ab = getSupportActionBar();
