@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,7 @@ public class XamoomContentFragment extends Fragment {
     public static final String XAMOOM_LOCATION_IDENTIFIER = "xamoomLocationIdentifier";
 
     private static final String LINK_COLOR_KEY = "LinkColorKeyParam";
+    private static final String API_KEY_KEY = "ApiKeyKeyParam";
 
     private RecyclerView mRecyclerView;
     private ProgressBar mProgressbar;
@@ -71,6 +73,7 @@ public class XamoomContentFragment extends Fragment {
     private Style mStyle;
     private Menu mMenu;
     private String mLinkColor;
+    private String mApiKey;
 
     private boolean loadFullContent = true;
     private boolean displayAllStoreLinks = false;
@@ -85,13 +88,14 @@ public class XamoomContentFragment extends Fragment {
      * @param linkColor LinkColor as hex (e.g. "00F"), will be blue if null
      * @return XamoomContentFragment Returns an Instance of XamoomContentFragment
      */
-    public static XamoomContentFragment newInstance(String linkColor) {
+    public static XamoomContentFragment newInstance(String linkColor, String apiKey) {
         XamoomContentFragment fragment = new XamoomContentFragment();
         Bundle args = new Bundle();
 
         if(linkColor == null)
             linkColor = "00F";
         args.putString(LINK_COLOR_KEY, linkColor);
+        args.putString(API_KEY_KEY, apiKey);
         fragment.setArguments(args);
         return fragment;
     }
@@ -105,6 +109,7 @@ public class XamoomContentFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mLinkColor = getArguments().getString(LINK_COLOR_KEY);
+            mApiKey = getArguments().getString(API_KEY_KEY);
         }
     }
 
@@ -137,6 +142,7 @@ public class XamoomContentFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        Log.v("pingeborg","XamoomContentBlocks - onStart");
 
         //if there is no animation, the recyclerview will be setup here
         if(!isAnimated) {
@@ -153,7 +159,7 @@ public class XamoomContentFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity().getApplicationContext()));
 
-        mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mLinkColor);
+        mContentBlockAdapter = new ContentBlockAdapter(this, mContentBlocks, mLinkColor, mApiKey);
         mRecyclerView.setAdapter(mContentBlockAdapter);
     }
 
@@ -204,7 +210,7 @@ public class XamoomContentFragment extends Fragment {
     private void loadDataWithContentId(final String mContentId) {
         mProgressbar.setVisibility(View.VISIBLE);
 
-        XamoomEndUserApi.getInstance(this.getActivity()).getContentbyIdFull(mContentId, false, false, null, loadFullContent, new APICallback<ContentById>() {
+        XamoomEndUserApi.getInstance(this.getActivity(), mApiKey).getContentbyIdFull(mContentId, false, false, null, loadFullContent, new APICallback<ContentById>() {
             @Override
             public void finished(ContentById result) {
                 mContent = result.getContent();
@@ -228,7 +234,7 @@ public class XamoomContentFragment extends Fragment {
     private void loadDateWithLocationIdentifier(String mLocationIdentifier) {
         mProgressbar.setVisibility(View.VISIBLE);
 
-        XamoomEndUserApi.getInstance(this.getActivity()).getContentByLocationIdentifier(mLocationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
+        XamoomEndUserApi.getInstance(this.getActivity(), mApiKey).getContentByLocationIdentifier(mLocationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
             @Override
             public void finished(ContentByLocationIdentifier result) {
                 mContent = result.getContent();

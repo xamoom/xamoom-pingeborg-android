@@ -48,6 +48,7 @@ import retrofit.RetrofitError;
  */
 public class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
     private Fragment mFragment;
+    private String mApiKey;
     private TextView mTitleTextView;
     private SupportMapFragment mMapFragment;
     private ContentBlockType9 mContentBlock;
@@ -59,9 +60,10 @@ public class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements 
     private static int mFrameId = 169147;
     private int mUniqueFrameId;
 
-    public ContentBlock9ViewHolder(View itemView, Fragment fragment) {
+    public ContentBlock9ViewHolder(View itemView, Fragment fragment, String apiKey) {
         super(itemView);
         mFragment = fragment;
+        mApiKey = apiKey;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mRootLayout = (LinearLayout) itemView.findViewById(R.id.rootLayout);
         mMapFragment = new SupportMapFragment().newInstance();
@@ -99,7 +101,7 @@ public class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements 
 
         final ArrayMap<Marker, Spot> mMarkerArray = new ArrayMap<Marker, Spot>();
 
-        XamoomEndUserApi.getInstance(mFragment.getActivity().getApplicationContext()).getSpotMap(null, mContentBlock.getSpotMapTag().split(","), null, new APICallback<SpotMap>() {
+        XamoomEndUserApi.getInstance(mFragment.getActivity().getApplicationContext(), mApiKey).getSpotMap(null, mContentBlock.getSpotMapTag().split(","), null, new APICallback<SpotMap>() {
             @Override
             public void finished(SpotMap result) {
                 if (mMapFragment.isAdded()) {

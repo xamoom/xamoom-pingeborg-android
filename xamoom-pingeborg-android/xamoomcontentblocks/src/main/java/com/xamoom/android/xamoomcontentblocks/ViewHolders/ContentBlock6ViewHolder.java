@@ -27,6 +27,7 @@ import retrofit.RetrofitError;
  */
 public class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
     private Fragment mFragment;
+    private String mApiKey;
     private TextView mTitleTextView;
     private TextView mDescriptionTextView;
     private LinearLayout mRootLayout;
@@ -36,14 +37,15 @@ public class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
     private static HashMap<String,ContentById> mSavedContentContentBlock = new HashMap<String,ContentById>();
 
 
-    public ContentBlock6ViewHolder(View itemView, Fragment fragment) {
+    public ContentBlock6ViewHolder(View itemView, Fragment fragment, String apiKey) {
         super(itemView);
+        mFragment = fragment;
+        mApiKey = apiKey;
         mTitleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
         mDescriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
         mRootLayout = (LinearLayout) itemView.findViewById(R.id.contentBlockLinearLayout);
         mContentThumbnailImageView = (ImageView) itemView.findViewById(R.id.contentThumbnailImageView);
         mProgressBar = (ProgressBar) itemView.findViewById(R.id.contentProgressBar);
-        mFragment = fragment;
     }
 
     public void setupContentBlock(final ContentBlockType6 cb6) {
@@ -77,7 +79,7 @@ public class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
                 }
             });
         } else {
-            XamoomEndUserApi.getInstance(mFragment.getActivity().getApplicationContext()).getContentbyIdFull(cb6.getContentId(), false, false, null, false, new APICallback<ContentById>() {
+            XamoomEndUserApi.getInstance(mFragment.getActivity().getApplicationContext(), mApiKey).getContentbyIdFull(cb6.getContentId(), false, false, null, false, new APICallback<ContentById>() {
                 @Override
                 public void finished(final ContentById result) {
                     //save result

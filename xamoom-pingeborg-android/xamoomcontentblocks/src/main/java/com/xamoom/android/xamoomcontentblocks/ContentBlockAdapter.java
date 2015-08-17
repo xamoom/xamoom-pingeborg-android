@@ -40,6 +40,7 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private Fragment mFragment;
     private List<ContentBlock> mContentBlocks;
     private String mLinkColor;
+    private String mApiKey;
 
     /**
      * Constructor for the Adapter.
@@ -48,10 +49,11 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      * @param contentBlocks ContentBlocks to display.
      * @param linkColor LinkColor as hex (e.g. "00F"), will be blue if null
      */
-    public ContentBlockAdapter(Fragment fragment, List<ContentBlock> contentBlocks, String linkColor) {
+    public ContentBlockAdapter(Fragment fragment, List<ContentBlock> contentBlocks, String linkColor, String apiKey) {
         mFragment = fragment;
         mContentBlocks = contentBlocks;
         mLinkColor = linkColor;
+        mApiKey = apiKey;
     }
 
     @Override
@@ -94,7 +96,7 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 6:
                 View view6 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_6_layout, parent, false);
-                return new ContentBlock6ViewHolder(view6, mFragment);
+                return new ContentBlock6ViewHolder(view6, mFragment, mApiKey);
             case 7:
                 View view7 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_7_layout, parent, false);
@@ -106,7 +108,7 @@ public class ContentBlockAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 9:
                 View view9 = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_block_9_layout, parent, false);
-                return new ContentBlock9ViewHolder(view9, mFragment);
+                return new ContentBlock9ViewHolder(view9, mFragment, mApiKey);
             default:
                 View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_layout, parent, false);
                 return new ViewHolder(v);
