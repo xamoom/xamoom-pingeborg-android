@@ -47,7 +47,7 @@ public class ContentBlock8ViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(cb8.getFileId()));
-                mFragment.startActivity(i);
+                mFragment.getActivity().startActivity(i);
             }
         });
 

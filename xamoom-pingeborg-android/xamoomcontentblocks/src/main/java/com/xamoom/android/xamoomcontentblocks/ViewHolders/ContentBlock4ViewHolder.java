@@ -48,7 +48,7 @@ public class ContentBlock4ViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(cb4.getLinkUrl()));
-                mFragment.startActivity(i);
+                mFragment.getActivity().startActivity(i);
             }
         });
 

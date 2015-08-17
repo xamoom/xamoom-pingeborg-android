@@ -117,7 +117,7 @@ public class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(cb3.getLinkUrl()));
-                    mFragment.startActivity(intent);
+                    mFragment.getActivity().startActivity(intent);
                 }
             });
         }
