@@ -79,7 +79,7 @@ public class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements 
 
         parentFrameLayout.addView(uniqueFrameLayout);
 
-        mFragment.getFragmentManager().beginTransaction().replace(uniqueFrameLayout.getId(), mMapFragment).commit();
+        mFragment.getChildFragmentManager().beginTransaction().replace(uniqueFrameLayout.getId(), mMapFragment).commit();
     }
 
     public void setupContentBlock(ContentBlockType9 cb9) {
