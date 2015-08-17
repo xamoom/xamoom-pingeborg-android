@@ -36,7 +36,6 @@ import retrofit.RetrofitError;
  */
 public class ArtistDetailActivity extends AppCompatActivity implements XamoomContentFragment.OnXamoomContentFragmentInteractionListener {
 
-    private ProgressBar mProgressbar;
     private String mContentId;
     private String mLocationIdentifier;
 
@@ -44,6 +43,8 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_detail);
+
+        Log.v(Global.DEBUG_TAG, "ArtistDetailActivity - onCreate");
 
         //set statusbar color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -54,6 +55,9 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         //setup toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //setup Global
+        Global.getInstance().setActivity(this);
 
         //setup actionbar
         final ActionBar ab = getSupportActionBar();
@@ -68,8 +72,6 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         mContentId = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_CONTENT_ID);
         mLocationIdentifier = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
 
-        mProgressbar = (ProgressBar) findViewById(R.id.artistDetailLoadingIndicator);
-
         if(mContentId != null || mLocationIdentifier != null) {
             loadData(mContentId, mLocationIdentifier);
         } else {
@@ -83,6 +85,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
      * @param intent Intent send from system when scanning NFC
      */
     protected void onNewIntent(Intent intent) {
+        Log.v(Global.DEBUG_TAG, "ArtistDetailActivity - onNewIntent");
         final String[] url = {intent.getDataString()};
 
         Analytics.getInstance(this).sendEvent("App", "NFC Scan in App", "User scanned an NFC Sticker");
@@ -125,6 +128,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
     }
 
     private void loadData(final String contentId, final String locationIdentifier) {
+        Log.v(Global.DEBUG_TAG, "ArtistDetailActivity - loadData");
         //load data
         if (contentId != null) {
             if(Global.getInstance().getSavedArtists().contains(contentId)) {
@@ -162,8 +166,8 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
                 @Override
                 public void finished(ContentByLocationIdentifier result) {
                     //save artist
+                    Log.v(Global.DEBUG_TAG, "ArtistDetailActivity - getContentByLocationIdentifier finished");
                     Global.getInstance().saveArtist(result.getContent().getContentId());
-
                     setupXamoomContentFrameLayout(result.getContent());
                 }
 
@@ -181,7 +185,8 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
 
     private void setupXamoomContentFrameLayout(Content content) {
         //hide loading indicator
-        mProgressbar.setVisibility(View.GONE);
+
+        Log.v(Global.DEBUG_TAG, "ArtistDetailActivity - APIKey: " + getResources().getString(R.string.apiKey));
 
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
         fragment.setContent(content);
