@@ -142,7 +142,9 @@ public class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements 
                         deviceWidth = mFragment.getResources().getDisplayMetrics().widthPixels;
 
                     LatLngBounds bounds = builder.build();
+                    bounds = adjustBoundsForMaxZoomLevel(bounds);
                     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, deviceWidth, deviceWidth, 70);
+
                     googleMap.moveCamera(cu);
 
                     //click listener to move camera to spot and show the complete infowindow
@@ -235,6 +237,28 @@ public class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements 
                 Log.e("xamoom-android-sdk", "Error:" + error);
             }
         });
+    }
+
+    private LatLngBounds adjustBoundsForMaxZoomLevel(LatLngBounds bounds) {
+        LatLng sw = bounds.southwest;
+        LatLng ne = bounds.northeast;
+        double deltaLat = Math.abs(sw.latitude - ne.latitude);
+        double deltaLon = Math.abs(sw.longitude - ne.longitude);
+
+        final double zoomN = 0.001; // minimum zoom coefficient
+
+        if (deltaLat < zoomN) {
+            sw = new LatLng(sw.latitude - (zoomN - deltaLat / 2), sw.longitude);
+            ne = new LatLng(ne.latitude + (zoomN - deltaLat / 2), ne.longitude);
+            bounds = new LatLngBounds(sw, ne);
+        }
+        else if (deltaLon < zoomN) {
+            sw = new LatLng(sw.latitude, sw.longitude - (zoomN - deltaLon / 2));
+            ne = new LatLng(ne.latitude, ne.longitude + (zoomN - deltaLon / 2));
+            bounds = new LatLngBounds(sw, ne);
+        }
+
+        return bounds;
     }
 
     /**
