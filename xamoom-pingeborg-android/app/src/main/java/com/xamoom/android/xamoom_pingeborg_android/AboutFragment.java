@@ -14,6 +14,8 @@ import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
  */
 public class AboutFragment extends android.support.v4.app.Fragment {
 
+    XamoomContentFragment mFragment;
+
     /**
      * Use this factory method to create a new instance of
      * AboutFragment.
@@ -57,9 +59,8 @@ public class AboutFragment extends android.support.v4.app.Fragment {
      */
     public void setupXamoomContentFragment () {
         Log.v(Global.DEBUG_TAG, "AboutFragment - setupXamoomContentFragment");
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)), getResources().getString(R.string.apiKey));
-        fragment.setContentId(Global.getInstance().getAboutPage());
-
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.aboutContentFrameLayout, fragment).commit();
+        mFragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)), getResources().getString(R.string.apiKey));
+        mFragment.setContentId(Global.getInstance().getAboutPage());
+        this.getChildFragmentManager().beginTransaction().replace(R.id.aboutContentFrameLayout, mFragment).commit();
     }
 }
