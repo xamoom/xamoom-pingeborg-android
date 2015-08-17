@@ -129,7 +129,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         if (contentId != null) {
             if(Global.getInstance().getSavedArtists().contains(contentId)) {
                 Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mContentId: " + contentId);
-                XamoomEndUserApi.getInstance(this.getApplicationContext()).getContentbyIdFull(contentId, false, false, null, true, new APICallback<ContentById>() {
+                XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentbyIdFull(contentId, false, false, null, true, new APICallback<ContentById>() {
                     @Override
                     public void finished(ContentById result) {
                         setupXamoomContentFrameLayout(result.getContent());
@@ -143,7 +143,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
                 });
             } else {
                 Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mContentId: " + contentId);
-                XamoomEndUserApi.getInstance(this.getApplicationContext()).getContentbyIdFull(contentId, false, false, null, false, new APICallback<ContentById>() {
+                XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentbyIdFull(contentId, false, false, null, false, new APICallback<ContentById>() {
                     @Override
                     public void finished(ContentById result) {
                         setupXamoomContentFrameLayout(result.getContent());
@@ -158,7 +158,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
             }
         } else if (locationIdentifier != null) {
             Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
-            XamoomEndUserApi.getInstance(this.getApplicationContext()).getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
+            XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
                 @Override
                 public void finished(ContentByLocationIdentifier result) {
                     //save artist
@@ -183,7 +183,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         //hide loading indicator
         mProgressbar.setVisibility(View.GONE);
 
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
         fragment.setContent(content);
 
         try {
@@ -268,7 +268,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         //also discover this artist
         Global.getInstance().saveArtist(content.getContentId());
 
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
         fragment.setContent(content);
 
         getSupportFragmentManager()

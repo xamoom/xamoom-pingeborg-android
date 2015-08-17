@@ -123,7 +123,7 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
         final boolean[] isLoading = {false};
 
         if(this.isAdded()) {
-            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getClosestSpots(location.getLatitude(), location.getLongitude(), null, 2000, 20, new APICallback<SpotMap>() {
+            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext(), getResources().getString(R.string.apiKey)).getClosestSpots(location.getLatitude(), location.getLongitude(), null, 2000, 20, new APICallback<SpotMap>() {
                 @Override
                 public void finished(final SpotMap result) {
                     mProgressBar.setVisibility(View.GONE);

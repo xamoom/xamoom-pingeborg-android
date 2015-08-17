@@ -1,6 +1,7 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ public class AboutFragment extends android.support.v4.app.Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.v(Global.DEBUG_TAG, "AboutFragment - onCreate");
         super.onCreate(savedInstanceState);
     }
 
@@ -37,9 +39,16 @@ public class AboutFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.v(Global.DEBUG_TAG, "AboutFragment - onCreateView");
         View view = inflater.inflate(R.layout.fragment_about, container, false);
-        setupXamoomContentFragment();
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.v(Global.DEBUG_TAG, "AboutFragment - onStart");
+        setupXamoomContentFragment();
     }
 
     /**
@@ -47,7 +56,8 @@ public class AboutFragment extends android.support.v4.app.Fragment {
      * After displaying the fragment will load the content and display it.
      */
     public void setupXamoomContentFragment () {
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)));
+        Log.v(Global.DEBUG_TAG, "AboutFragment - setupXamoomContentFragment");
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)), getResources().getString(R.string.apiKey));
         fragment.setContentId(Global.getInstance().getAboutPage());
 
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.aboutContentFrameLayout, fragment).commit();

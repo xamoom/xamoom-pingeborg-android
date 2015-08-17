@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.v(Global.DEBUG_TAG, "onCreate");
+
         setContentView(R.layout.activity_main);
 
         getSupportFragmentManager().addOnBackStackChangedListener(this);
@@ -92,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         //setup artistListFragment
         setupArtistListFragment();
     }
-
 
     public void setupNavigationDrawer(NavigationView navigationView) {
         if (navigationView != null) {
@@ -318,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         //also discover this artist
         Global.getInstance().saveArtist(content.getContentId());
 
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
         fragment.setContent(content);
 
         getSupportFragmentManager()

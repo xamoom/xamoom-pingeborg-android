@@ -128,7 +128,7 @@ public class ArtistListFragment extends Fragment {
             mContentList.add(null);
             mRecyclerView.getAdapter().notifyItemInserted(mContentList.size() - 1);
 
-            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getContentList(null, PAGE_SIZE, mCursor, new String[]{"artists"}, new APICallback<ContentList>() {
+            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext(), getResources().getString(R.string.apiKey)).getContentList(null, PAGE_SIZE, mCursor, new String[]{"artists"}, new APICallback<ContentList>() {
                 @Override
                 public void finished(final ContentList result) {
 
@@ -167,7 +167,7 @@ public class ArtistListFragment extends Fragment {
      * @param mBoundContent A {@link com.xamoom.android.mapping.Content} to display
      */
     public void openArtistDetails(Content mBoundContent) {
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2));
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
 
         //use contentId, when artist is alreay unlocked
         if(Global.getInstance().getSavedArtists().contains(mBoundContent.getContentId())) {

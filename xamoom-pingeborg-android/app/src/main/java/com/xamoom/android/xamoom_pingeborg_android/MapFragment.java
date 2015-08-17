@@ -224,7 +224,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     public void setupGeofencing(Location location) {
         if(this.getActivity().getApplicationContext() != null) {
-            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getContentByLocation(location.getLatitude(), location.getLongitude(), null, new APICallback<ContentByLocation>() {
+            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext(), getResources().getString(R.string.apiKey)).getContentByLocation(location.getLatitude(), location.getLongitude(), null, new APICallback<ContentByLocation>() {
                 @Override
                 public void finished(ContentByLocation result) {
                     //open geofence when there is at least on item (you can only get one geofence at a time - the nearest)
@@ -363,7 +363,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             googleMap.clear();
             addMarkersToMap();
         } else {
-            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext()).getSpotMap(null, new String[]{"showAllTheSpots"}, null, new APICallback<SpotMap>() {
+            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext(), getResources().getString(R.string.apiKey)).getSpotMap(null, new String[]{"showAllTheSpots"}, null, new APICallback<SpotMap>() {
                 @Override
                 public void finished(SpotMap result) {
                     getDataFromSpotMap(result);
