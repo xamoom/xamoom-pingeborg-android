@@ -18,7 +18,7 @@ public class SvgDecoder implements ResourceDecoder<InputStream, SVG> {
         try {
             SVG svg = SVG.getFromInputStream(source);
             //Log.v("pingeborg.xamoom.at", "SVG width:" + svg + " height: " + svg.getDocumentHeight());
-            return new SimpleResource<SVG>(svg);
+            return new SimpleResource<>(svg);
         } catch (SVGParseException ex) {
             throw new IOException("Cannot load SVG from stream", ex);
         }

@@ -3,8 +3,6 @@ package com.xamoom.android.xamoom_pingeborg_android;
 import android.app.Activity;
 import android.content.SharedPreferences;
 
-import java.util.ResourceBundle;
-
 /**
  * Global is used for everything that is used globally.
  */
@@ -43,7 +41,7 @@ public class Global {
      * Setter for activity.
      * Directly saves an instance of preferences.
      *
-     * @param activity
+     * @param activity Activity for Context.
      */
     public void setActivity(Activity activity) {
         mContext = activity;
@@ -163,7 +161,7 @@ public class Global {
      * 0 = Carinthia
      * Default = Carinthia
      *
-     * @param id
+     * @param id Selected system id.
      */
     public void setCurrentSystem(int id) {
         switch (id) {

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -37,7 +36,7 @@ import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 public class MainActivity extends AppCompatActivity implements GeofenceFragment.OnGeofenceFragmentInteractionListener, XamoomContentFragment.OnXamoomContentFragmentInteractionListener, FragmentManager.OnBackStackChangedListener, SpotListFragment.OnSpotListFragmentInteractionListener {
 
-    public final static int LOCATION_IDENTIFIER_REQUEST_CODE = 0001;
+    public final static int LOCATION_IDENTIFIER_REQUEST_CODE = 1;
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -154,9 +153,9 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
     /**
      * Starts ArtistDetailActivity on QR-Scan.
      *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * @param requestCode Intent RequestCode.
+     * @param resultCode Intent ResultCode.
+     * @param data Intent
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LOCATION_IDENTIFIER_REQUEST_CODE) {

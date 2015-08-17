@@ -28,7 +28,7 @@ public class SvgDrawableTranscoder implements ResourceTranscoder<SVG, PictureDra
         }
 
         PictureDrawable drawable = new PictureDrawable(picture);
-        return new SimpleResource<PictureDrawable>(drawable);
+        return new SimpleResource<>(drawable);
     }
 
     public void setmDeviceWidth(int mDeviceWidth) {

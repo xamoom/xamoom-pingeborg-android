@@ -23,8 +23,7 @@ public class AboutFragment extends android.support.v4.app.Fragment {
      * @return A new instance of fragment AboutFragment.
      */
     public static AboutFragment newInstance() {
-        AboutFragment fragment = new AboutFragment();
-        return fragment;
+        return new AboutFragment();
     }
 
     public AboutFragment() {

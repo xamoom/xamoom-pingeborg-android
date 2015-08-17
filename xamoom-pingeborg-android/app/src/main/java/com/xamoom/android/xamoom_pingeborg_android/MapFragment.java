@@ -55,7 +55,7 @@ import retrofit.RetrofitError;
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    private final ArrayMap<Marker, Spot> markerMap = new ArrayMap<Marker, Spot>();
+    private final ArrayMap<Marker, Spot> markerMap = new ArrayMap<>();
 
     private static MapFragment mInstance;
 
@@ -220,7 +220,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     /**
      * Calls xamoom cloud to get a geofence, when near a pingeb.org-sticker.
      *
-     * @param location
+     * @param location UserLocation for Geofencing.
      */
     public void setupGeofencing(Location location) {
         if(this.getActivity().getApplicationContext() != null) {
@@ -317,7 +317,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     /**
      * Opens a mapAdditionFragment on clicking a marker.
-     * @param spot
+     * @param spot Spot to open MapAdditionFragment from.
      */
     private void openMapAdditionFragment(Spot spot) {
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -412,7 +412,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * Adds mapMarker to map, when alreay loaded.
      */
     public void addMarkersToMap() {
-        ArrayMap<Marker, Spot> newMarkerMap = new ArrayMap<Marker, Spot>();
+        ArrayMap<Marker, Spot> newMarkerMap = new ArrayMap<>();
 
         for(int i = 0; i < markerMap.size(); i++) {
             Spot s = markerMap.valueAt(i);

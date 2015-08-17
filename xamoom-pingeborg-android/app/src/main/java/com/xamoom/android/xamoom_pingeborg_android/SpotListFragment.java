@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,10 +17,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xamoom.android.APICallback;
 import com.xamoom.android.XamoomEndUserApi;
-import com.xamoom.android.mapping.ContentList;
 import com.xamoom.android.mapping.Spot;
 import com.xamoom.android.mapping.SpotMap;
 
@@ -42,7 +37,7 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
     private ProgressBar mProgressBar;
     private LinearLayoutManager mLayoutManager;
     private BestLocationProvider mBestLocationProvider;
-    final List<Spot> mSpotList = new LinkedList<Spot>();
+    final List<Spot> mSpotList = new LinkedList<>();
     static Location mUserLocation = null;
 
     private OnSpotListFragmentInteractionListener mListener;
@@ -54,8 +49,7 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
      * @return A new instance of fragment SpotListFragment.
      */
     public static SpotListFragment newInstance() {
-        SpotListFragment fragment = new SpotListFragment();
-        return fragment;
+        return new SpotListFragment();
     }
 
     public SpotListFragment() {
@@ -120,8 +114,6 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
     }
 
     private void getClosesSpots(final Location location) {
-        final boolean[] isLoading = {false};
-
         if(this.isAdded()) {
             XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext(), getResources().getString(R.string.apiKey)).getClosestSpots(location.getLatitude(), location.getLongitude(), null, 2000, 20, new APICallback<SpotMap>() {
                 @Override
@@ -167,7 +159,7 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
      * closeGeofenceFragment must be implemented to remove the fragment from activity.
      */
     public interface OnSpotListFragmentInteractionListener {
-        public void clickedSpot(Spot spot);
+        void clickedSpot(Spot spot);
     }
 
     /**

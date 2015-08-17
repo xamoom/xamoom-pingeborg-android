@@ -4,5 +4,5 @@
     <string name="cannot_save_image">SVGs und GIFs können nicht gespeichert werden</string>
     <string name="distanceLabel">Entfernung</string>
     <string name="meterLabel">Meter</string>
-    <string name="noLocation">Location wird gesucht ...</string>
+    <string name="noLocation">Location wird gesucht &#8230;</string>
 </resources>

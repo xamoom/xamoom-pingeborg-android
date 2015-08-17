@@ -229,7 +229,7 @@ public class XamoomContentFragment extends Fragment {
      * Load the data from xamoom cloud with a locationIdentifier.
      * It wil always load the full content.
      * 
-     * @param mLocationIdentifier
+     * @param mLocationIdentifier LocationIdentifier to load data from xamoom cloud.
      */
     private void loadDateWithLocationIdentifier(String mLocationIdentifier) {
         mProgressbar.setVisibility(View.VISIBLE);
@@ -260,13 +260,13 @@ public class XamoomContentFragment extends Fragment {
      * stores (to promote your app), you have to set {@link #displayAllStoreLinks} to true.
      */
     private void addContentTitleAndImage() {
-        mContentBlocks = new LinkedList<ContentBlock>();
+        mContentBlocks = new LinkedList<>();
         mContentBlocks.addAll(mContent.getContentBlocks());
 
         ContentBlockType0 cb0 = new ContentBlockType0(mContent.getTitle(), true, 0, mContent.getDescriptionOfContent());
         mContentBlocks.add(0, cb0);
 
-        if(mContent.getImagePublicUrl() != "" && mContent.getImagePublicUrl() != null) {
+        if(!mContent.getImagePublicUrl().equalsIgnoreCase("") && mContent.getImagePublicUrl() != null) {
             ContentBlockType3 cb3 = new ContentBlockType3(null, true, 3, mContent.getImagePublicUrl(), 0);
             mContentBlocks.add(1, cb3);
         }
@@ -285,7 +285,7 @@ public class XamoomContentFragment extends Fragment {
      * @return Manipulated contetnBlocks List
      */
     private List<ContentBlock> removeStoreLinks(List<ContentBlock> contentBlocks) {
-        ArrayList<ContentBlock> cbToRemove = new ArrayList<ContentBlock>();
+        ArrayList<ContentBlock> cbToRemove = new ArrayList<>();
 
         for (ContentBlock contentBlock : contentBlocks) {
             if (contentBlock.getContentBlockType() == 4) {
@@ -357,7 +357,7 @@ public class XamoomContentFragment extends Fragment {
      * a new activity or update the XamoomContentFragment with the passed contentId.
      */
     public interface OnXamoomContentFragmentInteractionListener {
-        public void clickedContentBlock(Content content);
+        void clickedContentBlock(Content content);
     }
 
     public void contentBlockClick(Content content) {

@@ -59,7 +59,7 @@ public class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
                 .as(SVG.class)
                 .transcode(svgDrawableTranscoder, PictureDrawable.class)
                 .sourceEncoder(new StreamEncoder())
-                .cacheDecoder(new FileToStreamDecoder<SVG>(new SvgDecoder()))
+                .cacheDecoder(new FileToStreamDecoder<>(new SvgDecoder()))
                 .decoder(new SvgDecoder())
                 .listener(new SvgSoftwareLayerSetter<Uri>());
     }
@@ -112,7 +112,7 @@ public class ContentBlock3ViewHolder extends RecyclerView.ViewHolder {
             resizeImageViewWithScaling(mImageView, mFragment, scaleX);
         }
 
-        if(cb3.getLinkUrl() != "" && cb3.getLinkUrl() != null) {
+        if(!cb3.getLinkUrl().equalsIgnoreCase("") && cb3.getLinkUrl() != null) {
             mImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

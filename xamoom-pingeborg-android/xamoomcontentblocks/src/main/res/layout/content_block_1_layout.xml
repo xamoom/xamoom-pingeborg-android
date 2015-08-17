@@ -30,7 +30,7 @@
                     android:id="@+id/titleTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:textColor="#000"
                     />
 
@@ -43,7 +43,7 @@
                         android:id="@+id/artistTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="16dp"
+                        android:textSize="16sp"
                         android:textColor="#000"
                         />
 
@@ -51,8 +51,8 @@
                         android:id="@+id/remainingSongTimeTextView"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="16dp"
-                        android:layout_marginRight="8dp"
+                        android:textSize="16sp"
+                        android:layout_marginStart="8dp"
                         android:textColor="#000"
                         android:gravity="end"
                         />

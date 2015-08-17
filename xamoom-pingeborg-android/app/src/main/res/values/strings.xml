@@ -29,5 +29,7 @@
     <string name="overlay_artist_number">3</string>
     <string name="overlay_unlocked_artists">artists are already unlocked for you</string>
     <string name="map_instruction_text">When you are near a pingeb.org-sticker, you can also discover it here.</string>
+    <string name="discovered_pingeborg_geofence_message">pingeb.org discovered!</string>
+    <string name="pingeborg_cover_image_text">Pingeborg Cover Image</string>
 
 </resources>

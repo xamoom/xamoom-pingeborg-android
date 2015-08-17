@@ -11,9 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.xamoom.android.APICallback;
@@ -262,7 +260,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
      *
      * We add a new XamoomContentFragment to the activity.
      *
-     * @param content
+     * @param content Content you can pass to XamoomContentFragment
      */
     @Override
     public void clickedContentBlock(Content content) {

@@ -106,10 +106,6 @@ public class ContentBlock1ViewHolder extends RecyclerView.ViewHolder {
     }
 
     private String getTimeString(int milliseconds) {
-        long s = milliseconds % 60;
-        long m = (milliseconds / 60) % 60;
-        long h = (milliseconds / (60 * 60)) % 24;
-
         String output;
 
         if (TimeUnit.MILLISECONDS.toHours(milliseconds) > 0) {

@@ -1,6 +1,5 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -39,7 +38,7 @@ public class ArtistListFragment extends Fragment {
     private static ArtistListFragment mInstance;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
-    private List<Content> mContentList = new LinkedList<Content>();
+    private List<Content> mContentList = new LinkedList<>();
     private String mCursor;
     private boolean isMore = true;
     private boolean isLoading = false;

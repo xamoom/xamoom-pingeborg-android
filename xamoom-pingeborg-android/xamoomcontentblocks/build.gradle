@@ -29,7 +29,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:22.2.1'
     compile 'com.github.bumptech.glide:glide:3.6.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.google.android.gms:play-services:7.5.0'
+    compile 'com.google.android.gms:play-services:7.8.0'
     compile project(':xamoom-android-sdk-dev')
     compile files('libs/YouTubeAndroidPlayerApi.jar')
     compile files('libs/androidsvg-1.2.1.jar')

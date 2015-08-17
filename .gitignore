@@ -27,3 +27,5 @@ proguard/
 *.log
 
 xamoom-pingeborg-android/app/src/main/res/values-de/apikey.xml
+
+xamoom-pingeborg-android/app/src/main/res/values/apikey.xml

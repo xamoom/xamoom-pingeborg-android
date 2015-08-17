@@ -99,7 +99,7 @@ public class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements 
     public void onMapReady(final GoogleMap googleMap) {
         mGoogleMap = googleMap;
 
-        final ArrayMap<Marker, Spot> mMarkerArray = new ArrayMap<Marker, Spot>();
+        final ArrayMap<Marker, Spot> mMarkerArray = new ArrayMap<>();
 
         XamoomEndUserApi.getInstance(mFragment.getActivity().getApplicationContext(), mApiKey).getSpotMap(null, mContentBlock.getSpotMapTag().split(","), null, new APICallback<SpotMap>() {
             @Override

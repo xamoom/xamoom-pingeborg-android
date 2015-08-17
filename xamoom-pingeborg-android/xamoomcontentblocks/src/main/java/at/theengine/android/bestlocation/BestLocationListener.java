@@ -2,6 +2,7 @@ package at.theengine.android.bestlocation;
 
 import android.location.Location;
 import android.os.Bundle;
+
 import at.theengine.android.bestlocation.BestLocationProvider.LocationType;
 
 public abstract class BestLocationListener {

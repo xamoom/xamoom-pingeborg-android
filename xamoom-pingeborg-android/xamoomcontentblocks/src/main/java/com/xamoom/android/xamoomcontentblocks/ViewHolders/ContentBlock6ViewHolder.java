@@ -34,7 +34,7 @@ public class ContentBlock6ViewHolder extends RecyclerView.ViewHolder {
     private ImageView mContentThumbnailImageView;
     private ProgressBar mProgressBar;
 
-    private static HashMap<String,ContentById> mSavedContentContentBlock = new HashMap<String,ContentById>();
+    private static HashMap<String,ContentById> mSavedContentContentBlock = new HashMap<>();
 
 
     public ContentBlock6ViewHolder(View itemView, Fragment fragment, String apiKey) {

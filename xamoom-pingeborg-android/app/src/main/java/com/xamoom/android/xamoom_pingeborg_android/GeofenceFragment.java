@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.xamoom.android.mapping.ContentByLocationItem;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 import jp.wasabeef.glide.transformations.GrayscaleTransformation;
@@ -47,10 +46,10 @@ public class GeofenceFragment extends android.support.v4.app.Fragment {
      * Use this factory method to create a new instance of
      * GeofenceFragment using the provided parameters.
      *
-     * @param title Title of content
-     * @param imageUrl Url of image
-     * @param contentId contentId from xamoom cloud
-     * @return
+     * @param title Title of content.
+     * @param imageUrl Url of image.
+     * @param contentId contentId from xamoom cloud.
+     * @return GeofenceFragment Returning GeoFenceFragment.
      */
     public static GeofenceFragment newInstance(String title, String imageUrl, String contentId) {
         GeofenceFragment fragment = new GeofenceFragment();
@@ -158,7 +157,7 @@ public class GeofenceFragment extends android.support.v4.app.Fragment {
      * closeGeofenceFragment must be implemented to remove the fragment from activity.
      */
     public interface OnGeofenceFragmentInteractionListener {
-        public void closeGeofenceFragment();
+        void closeGeofenceFragment();
     }
 
     /**
@@ -179,7 +178,6 @@ public class GeofenceFragment extends android.support.v4.app.Fragment {
                     mCardView.getLocationInWindow(viewLocation);
 
                     //animation
-                    RelativeLayout.LayoutParams parms = (RelativeLayout.LayoutParams) mCardView.getLayoutParams();
                     TranslateAnimation ab = new TranslateAnimation( Animation.ABSOLUTE, viewLocation[0], Animation.ABSOLUTE, -1500, Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, 0.0f);
                     ab.setFillAfter(true);
                     ab.setDuration(200);
@@ -204,7 +202,6 @@ public class GeofenceFragment extends android.support.v4.app.Fragment {
                     mCardView.getLocationInWindow(viewLocation);
 
                     //animation
-                    RelativeLayout.LayoutParams parms = (RelativeLayout.LayoutParams) mCardView.getLayoutParams();
                     TranslateAnimation ab = new TranslateAnimation( Animation.ABSOLUTE, viewLocation[0], Animation.ABSOLUTE, 1500, Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, 0.0f);
                     ab.setFillAfter(true);
                     ab.setDuration(200);

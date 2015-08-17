@@ -1,19 +1,14 @@
 <resources>
     <string name="app_name">pingeb.org</string>
 
-    <string name="title_activity_artist_detail">ArtistDetailActivity</string>
-    <string name="title_activity_map">MapActivity</string>
     <string name="title_activity_qrcode_scanner">QRCodeScannerActivity</string>
 
     <string name="pingeborg_carinthia_system_name">pingeb.org Kärnten</string>
 
-    <string name="action_refresh">Aktualisieren</string>
     <string name="menu_item_artists_name">Künstler</string>
     <string name="menu_item_map_name">Map</string>
     <string name="menu_item_about_name">Über pingeb.org</string>
     <string name="menu_item_settings_name">Einstellungen</string>
-
-    <string name="action_settings">Settings</string>
 
     <string name="activate_text">Aktivieren</string>
     <string name="cancel_text">Abbrechen</string>
@@ -29,5 +24,6 @@
     <string name="overlay_artist_number">3</string>
     <string name="overlay_unlocked_artists">Künstler haben wir für dich schon freigeschalten</string>
     <string name="map_instruction_text">Du bist in der Nähe eines pingeb.org-Stickers? Dann kannst du diesen auch hier entdecken!</string>
+    <string name="discovered_pingeborg_geofence_message">pingeb.org entdeckt!</string>
 
 </resources>
