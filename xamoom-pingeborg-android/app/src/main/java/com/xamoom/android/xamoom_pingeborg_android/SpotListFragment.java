@@ -70,18 +70,8 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
         mProgressBar = (ProgressBar) view.findViewById(R.id.loadingSpotsProgressBar);
         mProgressBar.setVisibility(View.VISIBLE);
         setupRecyclerView(mRecyclerView);
-        return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
         setupLocation();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
+        return view;
     }
 
     private void setupLocation() {
