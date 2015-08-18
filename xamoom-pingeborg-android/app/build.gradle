@@ -36,6 +36,6 @@ dependencies {
     compile 'jp.wasabeef:glide-transformations:1.0.6@aar'
     compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.2.3@aar'
     compile 'com.dlazaro66.qrcodereaderview:qrcodereaderview:1.0.0'
-    compile project(':xamoomcontentblocks')
-    compile project(':xamoom-android-sdk-dev')
+    compile 'com.xamoom.android:xamoom-android-sdk:0.9.6'
+    compile 'com.xamoom.android:xamoomcontentblocks:0.9.1'
 }
