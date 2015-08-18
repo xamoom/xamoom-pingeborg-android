@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -125,8 +126,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 });
             }
         }
-        setupLocation();
-
         return view;
     }
 
@@ -134,7 +133,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * Setups a BestLocationProvider and BestLocationProvider to get the users location.
      */
     private void setupLocation() {
-        mBestLocationProvider = new BestLocationProvider(getActivity(), true, true, 1000, 1000, 5, 10);
+        Log.v(Global.DEBUG_TAG, "Started BestLocationProvider");
+        mBestLocationProvider = new BestLocationProvider(getActivity(), false, true, 1000, 1000, 5, 10);
         mBestLocationListener = new BestLocationListener() {
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -166,9 +166,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         startLocationUpdating();
     }
 
-    public void onDestroyView() {
+    @Override
+    public void onStart() {
+        super.onStart();
+        setupLocation();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.v(Global.DEBUG_TAG, "MapFragment - onStop");
         mBestLocationProvider.stopLocationUpdates();
-        super.onDestroyView();
+        mBestLocationProvider = null;
     }
 
     /**

@@ -359,7 +359,7 @@ public class ContentBlock9ViewHolder extends RecyclerView.ViewHolder implements 
     }
 
     private void setupLocation() {
-        mBestLocationProvider = new BestLocationProvider(mFragment.getActivity(), true, true, 1000, 1000, 5, 10);
+        mBestLocationProvider = new BestLocationProvider(mFragment.getActivity(), false, true, 1000, 1000, 5, 10);
         BestLocationListener mBestLocationListener = new BestLocationListener() {
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
