@@ -70,13 +70,22 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
         mProgressBar = (ProgressBar) view.findViewById(R.id.loadingSpotsProgressBar);
         mProgressBar.setVisibility(View.VISIBLE);
         setupRecyclerView(mRecyclerView);
-        setupLocation();
         return view;
     }
 
-    private void setupLocation() {
-        mBestLocationProvider = new BestLocationProvider(getActivity(), true, true, 10000, 10000, 10, 40);
+    @Override
+    public void onStart() {
+        super.onStart();
+        setupLocation();
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    private void setupLocation() {
+        mBestLocationProvider = new BestLocationProvider(getActivity(), false, true, 10000, 10000, 10, 40);
         BestLocationListener mBestLocationListener = new BestLocationListener() {
 
             @Override
@@ -105,6 +114,7 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
                     mUserLocation = location;
                     Log.i(Global.DEBUG_TAG, "onLocationUpdate TYPE:" + type + " Location:" + mBestLocationProvider.locationToString(location));
                     getClosesSpots(location);
+                    mBestLocationProvider.stopLocationUpdates();
                 }
             }
         };

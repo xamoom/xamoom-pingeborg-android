@@ -177,7 +177,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onStop();
         Log.v(Global.DEBUG_TAG, "MapFragment - onStop");
         mBestLocationProvider.stopLocationUpdates();
-        mBestLocationProvider = null;
     }
 
     /**
