@@ -319,7 +319,8 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         Global.getInstance().saveArtist(content.getContentId());
 
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
-        fragment.setContent(content);
+        fragment.setContentId(content.getContentId());
+        fragment.setLoadFullContent(true);
 
         getSupportFragmentManager()
                 .beginTransaction()

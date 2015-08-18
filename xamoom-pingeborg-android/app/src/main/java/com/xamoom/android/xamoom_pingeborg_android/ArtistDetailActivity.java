@@ -270,12 +270,13 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         Global.getInstance().saveArtist(content.getContentId());
 
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
-        fragment.setContent(content);
+        fragment.setContentId(content.getContentId());
+        fragment.setLoadFullContent(true);
 
         getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.anim.bottom_swipe_in, 0, 0, R.anim.bottom_swipe_out)
-                .add(R.id.XamoomContentFrameLayout, fragment)
+                .add(R.id.mainFrameLayout, fragment)
                 .addToBackStack(null)
                 .commit();
     }
