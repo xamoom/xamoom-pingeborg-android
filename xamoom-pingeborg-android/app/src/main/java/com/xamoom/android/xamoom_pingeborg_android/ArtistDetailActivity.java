@@ -55,7 +55,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         setSupportActionBar(toolbar);
 
         //setup Global
-        Global.getInstance().setActivity(this);
+        Global.getInstance().setContext(this.getApplicationContext());
         Global.getInstance().setCurrentSystem(0);
 
         //setup actionbar
@@ -166,6 +166,8 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
                 public void finished(ContentByLocationIdentifier result) {
                     //save artist
                     Global.getInstance().saveArtist(result.getContent().getContentId());
+                    Log.v(Global.DEBUG_TAG, "Scanned artist: " + result.getContent().getContentId());
+                    Log.v(Global.DEBUG_TAG, "Saved artists: " + Global.getInstance().getSavedArtists());
                     setupXamoomContentFrameLayout(result.getContent());
                 }
 

@@ -1,6 +1,7 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
@@ -9,6 +10,7 @@ import android.content.SharedPreferences;
 public class Global {
     public static final String DEBUG_TAG = "pingeborg";
 
+    public static final String PREFS_NAME = "PingeborgPrefsFile";
     private static final String SAVED_ARTISTS_KEY = "savedArtists.android.xamoom.at";
     private static final String IS_FIRST_START_KEY = "checkFirstStart.android.xamoom.at";
     private static final String FIRST_START_INSTRUCTION_KEY = "checkFirstStartInstruction.android.xamoom.at";
@@ -17,10 +19,11 @@ public class Global {
     private static Global mInstance;
 
     private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor mSharedPreferencesEditor;
     private String mAboutPage;
     private String mSystemName;
     private int mCurrentSystem;
-    private Activity mContext;
+    private Context mContext;
 
     public Global () {
     }
@@ -38,14 +41,14 @@ public class Global {
     }
 
     /**
-     * Setter for activity.
+     * Setter for context.
      * Directly saves an instance of preferences.
      *
-     * @param activity Activity for Context.
+     * @param context ApplicationContext for Context.
      */
-    public void setActivity(Activity activity) {
-        mContext = activity;
-        mSharedPreferences = activity.getPreferences(activity.getApplicationContext().MODE_PRIVATE);
+    public void setContext(Context context) {
+        mContext = context;
+        mSharedPreferences = context.getSharedPreferences(PREFS_NAME, 0);
     }
 
     /**
@@ -55,9 +58,9 @@ public class Global {
      * @param value String value
      */
     public void saveStringToSharedPref (String key, String value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putString(key, value);
-        editor.apply();
+        mSharedPreferencesEditor = mSharedPreferences.edit();
+        mSharedPreferencesEditor.putString(key, value);
+        mSharedPreferencesEditor.apply();
     }
 
     /**

@@ -85,8 +85,9 @@ public class ArtistListFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
+        mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
     public void setupRecyclerView(final RecyclerView recyclerView) {

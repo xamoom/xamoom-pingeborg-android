@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         Analytics.getInstance(this).sendEvent("App", "Start", "User starts the app");
 
         //setup Global
-        Global.getInstance().setActivity(this);
+        Global.getInstance().setContext(this.getApplicationContext());
         Global.getInstance().setCurrentSystem(0);
 
         //setup navigation drawer
