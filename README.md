@@ -24,10 +24,10 @@ The pingeb.org app has some features that are special:
 
 ## Screenshots
 
-![]()
-![]()
-![]()
-![]()
+![](https://github.com/xamoom/xamoom-pingeborg-android/blob/master/screenshots/1.png)
+![](https://github.com/xamoom/xamoom-pingeborg-android/blob/master/screenshots/2.png)
+![](https://github.com/xamoom/xamoom-pingeborg-android/blob/master/screenshots/3.png)
+![](https://github.com/xamoom/xamoom-pingeborg-android/blob/master/screenshots/4.png)
 
 ## Requirements
 
