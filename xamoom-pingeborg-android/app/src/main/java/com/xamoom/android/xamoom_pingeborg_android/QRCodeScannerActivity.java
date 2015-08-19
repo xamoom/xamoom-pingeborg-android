@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ import java.net.URL;
 public class QRCodeScannerActivity extends AppCompatActivity implements QRCodeReaderView.OnQRCodeReadListener {
 
     private QRCodeReaderView mydecoderview;
+    private Toast mToast;
     boolean isScanned = false;
 
     @Override
@@ -112,7 +114,7 @@ public class QRCodeScannerActivity extends AppCompatActivity implements QRCodeRe
                         });
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Toast.makeText(getApplicationContext(), getString(R.string.old_pingeborg_sticker_redirect_failure), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.old_pingeborg_sticker_redirect_failure), Toast.LENGTH_SHORT).show();
                     }
                 }
             };
@@ -120,7 +122,14 @@ public class QRCodeScannerActivity extends AppCompatActivity implements QRCodeRe
         } else if(url.contains("xm.gl")) {
             startDetailActivityWithXamoomUrl(url);
         } else {
-            Toast.makeText(getApplicationContext(), getString(R.string.scanned_false_qr_code), Toast.LENGTH_LONG).show();
+            if(mToast == null) {
+                mToast = Toast.makeText(getApplicationContext(), getString(R.string.scanned_false_qr_code), Toast.LENGTH_SHORT);
+            }
+
+            if(!mToast.getView().isShown()) {
+                mToast.show();
+            }
+
             isScanned = false;
         }
     }
