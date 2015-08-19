@@ -164,6 +164,11 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
             XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
                 @Override
                 public void finished(ContentByLocationIdentifier result) {
+
+                    if(!result.isHasSpot()) {
+                        openInBrowser(contentId, locationIdentifier);
+                    }
+
                     //save artist
                     Global.getInstance().saveArtist(result.getContent().getContentId());
                     Log.v(Global.DEBUG_TAG, "Scanned artist: " + result.getContent().getContentId());
