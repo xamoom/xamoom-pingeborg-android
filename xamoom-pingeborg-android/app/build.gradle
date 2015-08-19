@@ -9,19 +9,13 @@ android {
         minSdkVersion 18
         targetSdkVersion 22
         versionCode 3
-        versionName "0.2.2"
+        versionName "0.2.4"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
-}
-
-repositories {
-    maven {
-        url 'https://dl.bintray.com/xamoom/maven'
     }
 }
 
@@ -37,5 +31,5 @@ dependencies {
     compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.2.3@aar'
     compile 'com.dlazaro66.qrcodereaderview:qrcodereaderview:1.0.0'
     compile 'com.xamoom.android:xamoom-android-sdk:0.9.6'
-    compile 'com.xamoom.android:xamoomcontentblocks:0.9.1'
+    compile 'com.xamoom.android:xamoomcontentblocks:0.9.2'
 }
