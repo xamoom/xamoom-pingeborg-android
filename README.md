@@ -31,5 +31,4 @@ The pingeb.org app has some features that are special:
 
 ## Requirements
 
-* Minumum iOS Target: iOS 8
-* Dependencies
+* Android 4.3 and above
