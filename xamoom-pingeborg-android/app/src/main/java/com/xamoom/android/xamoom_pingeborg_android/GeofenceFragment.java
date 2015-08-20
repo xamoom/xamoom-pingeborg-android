@@ -102,7 +102,7 @@ public class GeofenceFragment extends android.support.v4.app.Fragment {
             overlayImageView.setImageResource(android.R.color.transparent);
 
             Glide.with(mCardView.getContext())
-                    .load(R.drawable.discoverable)
+                    .load(R.drawable.discoverme)
                     .dontTransform() //or the alpha will be ignored
                     .into(overlayImageView);
         } else {

@@ -305,7 +305,7 @@ public class ArtistListFragment extends Fragment {
                     //display "discover me"/"Entdecke mich" image
                     if (position == 0) {
                         Glide.with(mContext)
-                                .load(R.drawable.discoverable)
+                                .load(R.drawable.discoverme)
                                 .crossFade()
                                 .dontTransform() //or the alpha will be ignored
                                 .into(holder.mOverlayImageView);

@@ -49,7 +49,8 @@
                     android:id="@+id/geofenceOverlayImageView"
                     android:layout_width="match_parent"
                     android:layout_height="134dp"
-                    android:background="#88FFFFFF"/>
+                    android:background="#88FFFFFF"
+                    android:scaleType="centerInside"/>
 
                 <TextView
                     android:id="@+id/geofenceTextView"

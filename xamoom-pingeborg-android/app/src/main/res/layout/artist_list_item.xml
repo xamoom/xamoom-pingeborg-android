@@ -31,7 +31,8 @@
             android:id="@+id/artistListItemOverlayImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#88FFFFFF"/>
+            android:background="#88FFFFFF"
+            android:scaleType="centerInside"/>
 
         <TextView
             android:id="@+id/artistListItemTextView"
