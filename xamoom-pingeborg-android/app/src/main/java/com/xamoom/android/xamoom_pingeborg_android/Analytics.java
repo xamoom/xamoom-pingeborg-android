@@ -27,9 +27,8 @@ public class Analytics {
 
     public static void setupAnalytics(Context context) {
         mAnalytics = GoogleAnalytics.getInstance(context);
-        mAnalytics.setDryRun(true); //TODO REMOVE
         mTracker = mAnalytics.newTracker("UA-57427460-3");
-        //mTracker.enableExceptionReporting(true); //TODO ENABLE
+        mTracker.enableExceptionReporting(true);
         mTracker.enableAdvertisingIdCollection(true);
     }
 
