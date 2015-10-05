@@ -61,6 +61,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="http"
                     android:host="xm.gl" />
+                <data android:scheme="https"
+                      android:host="xm.gl" />
                 <data android:scheme="http"
                     android:host="pingeb.org" />
                 <data android:scheme="http"
