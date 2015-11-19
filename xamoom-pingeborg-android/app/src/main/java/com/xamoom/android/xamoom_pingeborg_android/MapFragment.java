@@ -1,5 +1,7 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -13,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArrayMap;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
@@ -133,6 +136,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * Setups a BestLocationProvider and BestLocationProvider to get the users location.
      */
     private void setupLocation() {
+
+        if (ContextCompat.checkSelfPermission(this.getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
         Log.v(Global.DEBUG_TAG, "Started BestLocationProvider");
         mBestLocationProvider = new BestLocationProvider(getActivity(), false, true, 1000, 1000, 5, 10);
         mBestLocationListener = new BestLocationListener() {
@@ -176,7 +185,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onStop() {
         super.onStop();
         Log.v(Global.DEBUG_TAG, "MapFragment - onStop");
-        mBestLocationProvider.stopLocationUpdates();
+
+        if (mBestLocationListener != null) {
+            mBestLocationProvider.stopLocationUpdates();
+        }
     }
 
     /**
@@ -320,7 +332,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         });
 
         setupMapMarkers(googleMap, markerMap);
-        googleMap.setMyLocationEnabled(true);
+
+        if (ContextCompat.checkSelfPermission(this.getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+        }
     }
 
     /**
@@ -371,7 +387,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             googleMap.clear();
             addMarkersToMap();
         } else {
-            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext(), getResources().getString(R.string.apiKey)).getSpotMap(null, new String[]{"showAllTheSpots"}, null, new APICallback<SpotMap>() {
+            XamoomEndUserApi.getInstance(this.getContext(),
+                    getResources().getString(R.string.apiKey)).getSpotMap(
+                    new String[]{"showAllTheSpots"}, null, false, new APICallback<SpotMap>() {
                 @Override
                 public void finished(SpotMap result) {
                     getDataFromSpotMap(result);
@@ -383,13 +401,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     mProgressBar.setVisibility(View.GONE);
                 }
             });
+
         }
     }
 
     /**
      * Adds Makers to map with the right mapMarker.
      *
-     * @param result Result of {@link com.xamoom.android.XamoomEndUserApi#getSpotMap(String, String[], String, APICallback)}
+     * @param result Result of {@link com.xamoom.android.XamoomEndUserApi#getSpotMap(String[], String, boolean,  APICallback)}
      */
     public void getDataFromSpotMap(SpotMap result) {
         //get the icon for the mapMarker (drawable image (eg. png) or SVG

@@ -58,7 +58,9 @@ public class AboutFragment extends android.support.v4.app.Fragment {
      */
     public void setupXamoomContentFragment () {
         Log.v(Global.DEBUG_TAG, "AboutFragment - setupXamoomContentFragment");
-        mFragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)), getResources().getString(R.string.apiKey));
+        mFragment = XamoomContentFragment.newInstance(
+                Integer.toHexString(getResources().getColor(R.color.pingeborg_green)),
+                getResources().getString(R.string.apiKey));
         mFragment.setContentId(Global.getInstance().getAboutPage());
         this.getChildFragmentManager().beginTransaction().replace(R.id.aboutContentFrameLayout, mFragment).commit();
     }

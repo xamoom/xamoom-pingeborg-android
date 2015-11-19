@@ -1,18 +1,23 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
+import android.Manifest;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -28,6 +33,7 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.xamoom.android.mapping.Content;
@@ -37,6 +43,9 @@ import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 public class MainActivity extends AppCompatActivity implements GeofenceFragment.OnGeofenceFragmentInteractionListener, XamoomContentFragment.OnXamoomContentFragmentInteractionListener, FragmentManager.OnBackStackChangedListener, SpotListFragment.OnSpotListFragmentInteractionListener {
 
     public final static int LOCATION_IDENTIFIER_REQUEST_CODE = 1;
+    private final static int LOCATION_PERMISSION_CODE = 2;
+    private final static int CAMERA_PERMISSION_CODE = 3;
+
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -77,6 +86,12 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         mQRScannerFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (ContextCompat.checkSelfPermission(getApplication(),
+                        Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    getCameraPermission();
+                    return;
+                }
                 Intent intent = new Intent(getApplicationContext(), QRCodeScannerActivity.class);
                 startActivityForResult(intent, LOCATION_IDENTIFIER_REQUEST_CODE);
             }
@@ -92,6 +107,9 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
 
         //setup artistListFragment
         setupArtistListFragment();
+
+        //ask for permission
+        getLocationPermission();
     }
 
     public void setupNavigationDrawer(NavigationView navigationView) {
@@ -174,10 +192,83 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
      * Check the pingeborg system
      */
     private void checkPingeborgSystem() {
-        ImageView imagView = (ImageView) this.findViewById(R.id.nav_drawer_image);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.inflateHeaderView(R.layout.nav_header);
+        ImageView imagView = (ImageView) headerView.findViewById(R.id.nav_drawer_image);
+
+        if (imagView == null) {
+            return;
+        }
+
         Glide.with(this.getApplicationContext())
                 .load(R.drawable.header_image_carinthia)
                 .into(imagView);
+    }
+
+    private void getLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                LayoutInflater inflater = this.getLayoutInflater();
+
+                builder.setView(inflater.inflate(R.layout.nfc_dialog, null))
+                        .setTitle("Location")
+                        .setMessage("We need your permission for your location to display you" +
+                                "location based informations.")
+                        .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                                requestPermission(Manifest.permission.ACCESS_FINE_LOCATION,
+                                        LOCATION_PERMISSION_CODE);
+                            }
+                        });
+                builder.create().show();
+            } else {
+                requestPermission(Manifest.permission.ACCESS_FINE_LOCATION,
+                        LOCATION_PERMISSION_CODE);
+            }
+        }
+    }
+
+    private void getCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.CAMERA)) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                LayoutInflater inflater = this.getLayoutInflater();
+
+                builder.setTitle("Camera")
+                        .setMessage("To scan QR codes, we need access to your camera")
+                        .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                                requestPermission(Manifest.permission.CAMERA, CAMERA_PERMISSION_CODE);
+                            }
+                        });
+                builder.create().show();
+
+
+            } else {
+                requestPermission(Manifest.permission.CAMERA, CAMERA_PERMISSION_CODE);
+            }
+        }
+    }
+
+    private void requestPermission(String permission, int permissioncode) {
+        ActivityCompat.requestPermissions(this,
+                new String[]{permission},
+                permissioncode);
     }
 
     /**
@@ -308,11 +399,6 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         }
     }
 
-    /**
-     * Add new XamoomContentFragment when a content contentBlock is clicked.
-     *
-     * @param content A {@link com.xamoom.android.mapping.Content}
-     */
     @Override
     public void clickedContentBlock(Content content) {
         //also discover this artist
@@ -320,6 +406,28 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
 
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
         fragment.setContentId(content.getContentId());
+        fragment.setLoadFullContent(true);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.bottom_swipe_in, 0, 0, R.anim.bottom_swipe_out)
+                .add(R.id.mainFrameLayout, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    /**
+     * Add new XamoomContentFragment when a content contentBlock is clicked.
+     *
+     * @param contentId A {@link com.xamoom.android.mapping.Content} contentId
+     */
+    @Override
+    public void clickedSpotMapContentLink(String contentId) {
+        //also discover this artist
+        Global.getInstance().saveArtist(contentId);
+
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
+        fragment.setContentId(contentId);
         fragment.setLoadFullContent(true);
 
         getSupportFragmentManager()
@@ -413,5 +521,29 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         Log.v(Global.DEBUG_TAG, "MainActivity: ClickedSpot");
         MapFragment mapFragment = (MapFragment) mMainFragment;
         mapFragment.displayMarker(spot);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case CAMERA_PERMISSION_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    mQRScannerFAB.callOnClick();
+
+                } else {
+
+                    Toast.makeText(this.getApplicationContext(), "Not allowed to use camera.",
+                            Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 }

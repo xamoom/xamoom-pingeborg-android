@@ -1,9 +1,12 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -75,6 +78,11 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
     }
 
     private void setupLocation() {
+        if (ContextCompat.checkSelfPermission(this.getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
         mBestLocationProvider = new BestLocationProvider(getActivity(), false, true, 10000, 10000, 10, 40);
         BestLocationListener mBestLocationListener = new BestLocationListener() {
 

@@ -132,7 +132,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         if (contentId != null) {
             if(Global.getInstance().getSavedArtists().contains(contentId)) {
                 Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mContentId: " + contentId);
-                XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentbyIdFull(contentId, false, false, null, true, new APICallback<ContentById>() {
+                XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentbyId(contentId, false, false, null, true, false, new APICallback<ContentById>() {
                     @Override
                     public void finished(ContentById result) {
                         setupXamoomContentFrameLayout(result.getContent());
@@ -146,7 +146,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
                 });
             } else {
                 Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mContentId: " + contentId);
-                XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentbyIdFull(contentId, false, false, null, false, new APICallback<ContentById>() {
+                XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentbyId(contentId, false, false, null, false, false, new APICallback<ContentById>() {
                     @Override
                     public void finished(ContentById result) {
                         setupXamoomContentFrameLayout(result.getContent());
@@ -161,7 +161,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
             }
         } else if (locationIdentifier != null) {
             Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
-            XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentByLocationIdentifier(locationIdentifier, false, false, null, new APICallback<ContentByLocationIdentifier>() {
+            XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentByLocationIdentifier(locationIdentifier, null, false, false, null, new APICallback<ContentByLocationIdentifier>() {
                 @Override
                 public void finished(ContentByLocationIdentifier result) {
 
@@ -276,6 +276,32 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
 
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
         fragment.setContentId(content.getContentId());
+        fragment.setLoadFullContent(true);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.bottom_swipe_in, 0, 0, R.anim.bottom_swipe_out)
+                .add(R.id.mainFrameLayout, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    /**
+     * Override the handling of SpotMap links.
+     * These are links to a contentBlock {@link com.xamoom.android.mapping.ContentBlocks.ContentBlockType6}
+     * and should be handled like you handle other contents.
+     *
+     * We add a new XamoomContentFragment to the activity.
+     *
+     * @param contentId ContentId you can pass to XamoomContentFragment
+     */
+    @Override
+    public void clickedSpotMapContentLink(String contentId) {
+        //also discover this artist
+        Global.getInstance().saveArtist(contentId);
+
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
+        fragment.setContentId(contentId);
         fragment.setLoadFullContent(true);
 
         getSupportFragmentManager()
