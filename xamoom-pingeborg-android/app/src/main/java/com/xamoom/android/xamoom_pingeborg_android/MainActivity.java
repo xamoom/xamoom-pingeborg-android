@@ -121,28 +121,48 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         //ask for permission
         getLocationPermission();
 
-        //check intent
-        if (getIntent() != null && getIntent().getExtras() != null && getIntent().getExtras().containsKey(XamoomPingeborgApp.BEACON_NOTIFICATION)) {
-            Log.v("pingeb.org", "Hellyeah");
-            mIsFromBeaconNotification = getIntent().getExtras().getBoolean(XamoomPingeborgApp.BEACON_NOTIFICATION);
-        } else {
-            Log.v("pingeb.org", "FUCK Hellyeah");
-        }
-
-        //register beacon broadcasts
-        registerReceiver(mFoundBeaconBroadCastReciever, new IntentFilter(XamoomBeaconService.FOUND_BEACON_BROADCAST));
         registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.v("pingeb.org", "Beacon Service connect");
                 XamoomBeaconService.getInstance(getApplicationContext()).startRangingBeacons();
             }
         }, new IntentFilter(XamoomBeaconService.BEACON_SERVICE_CONNECT_BROADCAST));
+
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+
+        //check if intent is from notification
+        if (getIntent() != null && getIntent().getExtras() != null && getIntent().getExtras().containsKey(XamoomPingeborgApp.BEACON_NOTIFICATION)) {
+            mIsFromBeaconNotification = getIntent().getExtras().getBoolean(XamoomPingeborgApp.BEACON_NOTIFICATION);
+        }
+
+        registerReceiver(mFoundBeaconBroadCastReciever, new IntentFilter(XamoomBeaconService.FOUND_BEACON_BROADCAST));
+        XamoomBeaconService.getInstance(getApplicationContext()).startRangingBeacons();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        //check if intent is from notification
+        if (intent != null && intent.getExtras() != null && intent.getExtras().containsKey(XamoomPingeborgApp.BEACON_NOTIFICATION)) {
+            mIsFromBeaconNotification = intent.getExtras().getBoolean(XamoomPingeborgApp.BEACON_NOTIFICATION);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        mLastBeacon = null;
+        mIsFromBeaconNotification = false;
+
+        //remove intent extra, to don't reopen the ArtistDetailActivity when opened via notification
+        getIntent().removeExtra(XamoomPingeborgApp.BEACON_NOTIFICATION);
+
         XamoomBeaconService.getInstance(getApplicationContext()).stopRangingBeacons();
         unregisterReceiver(mFoundBeaconBroadCastReciever);
     }
@@ -563,23 +583,20 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
                             @Override
                             public void onClick(View v) {
                                 Log.v("pingeb.org", "Click");
-                                //open artist in artistDetailActivity and save to savedArtists (unlock)
-                                //Global.getInstance().saveArtist(mContentId);
 
-                                //open ArtistDetail on click
+                                //open ArtistDetailActivity when clicking on snackbar
                                 Context context = getApplicationContext();
                                 Intent intent = new Intent(context, ArtistDetailActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 intent.putExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER, beacons.get(0).getId3().toString());
                                 intent.putExtra(ArtistDetailActivity.MAJOR, beacons.get(0).getId2().toString());
                                 context.startActivity(intent);
-
-                                mLastBeacon = null;
                             }
                         })
                         .show();
 
                 if (mIsFromBeaconNotification) {
+                    //open ArtistDetailActivity when app is opened with intent from notification
                     Context context2 = getApplicationContext();
                     Intent intent2 = new Intent(context, ArtistDetailActivity.class);
                     intent2.putExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER, beacons.get(0).getId3().toString());
