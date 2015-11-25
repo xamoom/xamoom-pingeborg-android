@@ -25,5 +25,6 @@
     <string name="overlay_unlocked_artists">Künstler haben wir für dich schon freigeschalten</string>
     <string name="map_instruction_text">Du bist in der Nähe eines pingeb.org-Stickers? Dann kannst du diesen auch hier entdecken!</string>
     <string name="discovered_pingeborg_geofence_message">pingeb.org entdeckt!</string>
+    <string name="Open">öffnen</string>
 
 </resources>

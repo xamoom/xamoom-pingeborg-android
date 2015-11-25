@@ -34,8 +34,11 @@ import retrofit.RetrofitError;
  */
 public class ArtistDetailActivity extends AppCompatActivity implements XamoomContentFragment.OnXamoomContentFragmentInteractionListener {
 
+    public static final String MAJOR = "MAJOR";
+
     private String mContentId;
     private String mLocationIdentifier;
+    private String mMajor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +73,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         Intent myIntent = getIntent();
         mContentId = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_CONTENT_ID);
         mLocationIdentifier = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
+        mMajor = myIntent.getStringExtra(MAJOR);
 
         if(mContentId != null || mLocationIdentifier != null) {
             loadData(mContentId, mLocationIdentifier);
@@ -161,7 +165,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
             }
         } else if (locationIdentifier != null) {
             Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
-            XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentByLocationIdentifier(locationIdentifier, null, false, false, null, new APICallback<ContentByLocationIdentifier>() {
+            XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentByLocationIdentifier(locationIdentifier, mMajor, false, false, null, new APICallback<ContentByLocationIdentifier>() {
                 @Override
                 public void finished(ContentByLocationIdentifier result) {
 
@@ -310,5 +314,9 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
                 .add(R.id.mainFrameLayout, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    public void setMajor(String major) {
+        mMajor = major;
     }
 }
