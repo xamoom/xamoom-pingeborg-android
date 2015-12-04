@@ -164,7 +164,12 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
                 });
             }
         } else if (locationIdentifier != null) {
-            Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
+            if (mMajor == null) {
+                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
+            } else {
+                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail with iBeacon", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
+            }
+
             XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentByLocationIdentifier(locationIdentifier, mMajor, false, false, null, new APICallback<ContentByLocationIdentifier>() {
                 @Override
                 public void finished(ContentByLocationIdentifier result) {

@@ -9,13 +9,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
-
 import com.xamoom.android.XamoomBeaconService;
 
-import org.altbeacon.beacon.Beacon;
-
-import java.util.ArrayList;
 
 /**
  * Created by raphaelseher on 25.11.15.
@@ -39,8 +34,6 @@ public class XamoomPingeborgApp extends Application {
     private final BroadcastReceiver mEnterRegionBroadCastReciever = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "background: enterRegion");
-
             Intent activityIntent = new Intent(XamoomPingeborgApp.this, MainActivity.class);
             activityIntent.putExtra(BEACON_NOTIFICATION, true);
             activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -50,14 +43,14 @@ public class XamoomPingeborgApp extends Application {
 
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
             notificationBuilder
-                    .setContentTitle("Discover a local artist")
-                    .setContentText("Open pingeb.org app")
-                    .setContentInfo("Near you")
-                    .setSmallIcon(R.drawable.ic_xamoom_ble)
+                    .setContentTitle(getString(R.string.beacon_notification_title))
+                    .setContentText(getString(R.string.beacon_notification_text))
+                    .setContentInfo(getString(R.string.beacon_notification_info))
+                    .setSmallIcon(R.drawable.ic_ble_notification)
                     .setContentIntent(pendingIntent);
 
             Notification notification = notificationBuilder.build();
-            notification.flags |= Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
+            //notification.flags |= Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
             notificationManager.notify(BEACON_NOTIFICATION_ID, notification);
@@ -67,7 +60,6 @@ public class XamoomPingeborgApp extends Application {
     private final BroadcastReceiver mExitRegionBroadCastReciever = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "background: exitRegion");
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
             notificationManager.cancel(BEACON_NOTIFICATION_ID);
         }

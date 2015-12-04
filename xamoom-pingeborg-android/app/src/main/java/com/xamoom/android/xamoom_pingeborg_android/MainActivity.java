@@ -47,9 +47,16 @@ import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 
 import org.altbeacon.beacon.Beacon;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
-public class MainActivity extends AppCompatActivity implements GeofenceFragment.OnGeofenceFragmentInteractionListener, XamoomContentFragment.OnXamoomContentFragmentInteractionListener, FragmentManager.OnBackStackChangedListener, SpotListFragment.OnSpotListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements
+        XamoomContentFragment.OnXamoomContentFragmentInteractionListener,
+        FragmentManager.OnBackStackChangedListener,
+        SpotListFragment.OnSpotListFragmentInteractionListener,
+        MapFragment.OnMapFragmentInteractionListener {
 
     public final static int LOCATION_IDENTIFIER_REQUEST_CODE = 1;
     private final static int LOCATION_PERMISSION_CODE = 2;
@@ -60,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
     private FloatingActionButton mQRScannerFAB;
     private Fragment mMainFragment;
     private Fragment mNewFragment;
+    private Snackbar mSnackbar;
     private Beacon mLastBeacon;
     private boolean mIsFromBeaconNotification;
 
@@ -140,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         }
 
         registerReceiver(mFoundBeaconBroadCastReciever, new IntentFilter(XamoomBeaconService.FOUND_BEACON_BROADCAST));
+        registerReceiver(mExitBroadCastReciever, new IntentFilter(XamoomBeaconService.EXIT_REGION_BROADCAST));
         XamoomBeaconService.getInstance(getApplicationContext()).startRangingBeacons();
     }
 
@@ -165,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
 
         XamoomBeaconService.getInstance(getApplicationContext()).stopRangingBeacons();
         unregisterReceiver(mFoundBeaconBroadCastReciever);
+        unregisterReceiver(mExitBroadCastReciever);
     }
 
     public void setupNavigationDrawer(NavigationView navigationView) {
@@ -443,17 +453,6 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
         return true;
     }
 
-    /**
-     * Close the geofenceFragment.
-     */
-    @Override
-    public void closeGeofenceFragment() {
-        if(mMainFragment.getClass().equals(MapFragment.class)) {
-            MapFragment mapFragment = (MapFragment) mMainFragment;
-            mapFragment.closeGeofenceFragment();
-        }
-    }
-
     @Override
     public void clickedContentBlock(Content content) {
         //also discover this artist
@@ -574,44 +573,81 @@ public class MainActivity extends AppCompatActivity implements GeofenceFragment.
     private final BroadcastReceiver mFoundBeaconBroadCastReciever = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            final ArrayList<Beacon> beacons = intent.getParcelableArrayListExtra(XamoomBeaconService.BEACONS);
+            ArrayList<Beacon> beacons = intent.getParcelableArrayListExtra(XamoomBeaconService.BEACONS);
+
+            beacons = sortBeaconsByRange(beacons);
 
             if (mLastBeacon == null || !beacons.get(0).equals(mLastBeacon)) {
+                mLastBeacon = beacons.get(0);
+
                 View coordinaterView = findViewById(R.id.main_content);
-                Snackbar.make(coordinaterView, R.string.discovered_pingeborg_geofence_message, Snackbar.LENGTH_INDEFINITE)
-                        .setAction(R.string.Open, new View.OnClickListener() {
+                mSnackbar = Snackbar.make(coordinaterView, R.string.discovered_pingeborg_geofence_message, Snackbar.LENGTH_INDEFINITE)
+                        .setAction(R.string.Discover, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Log.v("pingeb.org", "Click");
-
                                 //open ArtistDetailActivity when clicking on snackbar
-                                Context context = getApplicationContext();
-                                Intent intent = new Intent(context, ArtistDetailActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                intent.putExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER, beacons.get(0).getId3().toString());
-                                intent.putExtra(ArtistDetailActivity.MAJOR, beacons.get(0).getId2().toString());
-                                context.startActivity(intent);
+                                openArtistDetailView(mLastBeacon);
                             }
-                        })
-                        .show();
+                        });
+                mSnackbar.show();
 
                 if (mIsFromBeaconNotification) {
                     //open ArtistDetailActivity when app is opened with intent from notification
-                    Context context2 = getApplicationContext();
-                    Intent intent2 = new Intent(context, ArtistDetailActivity.class);
-                    intent2.putExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER, beacons.get(0).getId3().toString());
-                    intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent2.putExtra(ArtistDetailActivity.MAJOR, beacons.get(0).getId2().toString());
-                    context2.startActivity(intent2);
+                    openArtistDetailView(mLastBeacon);
                 }
-
-                mLastBeacon = beacons.get(0);
             }
         }
     };
 
-    private void test() {
+    private final BroadcastReceiver mExitBroadCastReciever = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mSnackbar.dismiss();
+            mLastBeacon = null;
+        }
+    };
 
+    private void openArtistDetailView(Beacon beacon) {
+        Context context = getApplicationContext();
+        Intent intent = new Intent(context, ArtistDetailActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER, beacon.getId3().toString());
+        intent.putExtra(ArtistDetailActivity.MAJOR, beacon.getId2().toString());
+        context.startActivity(intent);
+    }
+
+    private void openArtistDetailView(String contentId) {
+        Context context = getApplicationContext();
+        Intent intent = new Intent(context, ArtistDetailActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(XamoomContentFragment.XAMOOM_CONTENT_ID,contentId);
+        context.startActivity(intent);
+    }
+
+    private ArrayList<Beacon> sortBeaconsByRange(ArrayList<Beacon> beacons) {
+        Collections.sort(beacons, new Comparator<Beacon>() {
+            public int compare(Beacon beacon1, Beacon beacon2) {
+                return Double.valueOf(beacon1.getDistance()).compareTo(beacon2.getDistance());
+            }
+        });
+        return beacons;
+    }
+
+    @Override
+    public void foundGeofence(final String contentId) {
+        if (mLastBeacon == null && !Global.getInstance().getSavedArtists().contains(contentId)) {
+            View coordinaterView = findViewById(R.id.main_content);
+            Snackbar.make(coordinaterView, R.string.discovered_pingeborg_geofence_message, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.Discover, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //open ArtistDetailActivity when clicking on snackbar
+                            Global.getInstance().saveArtist(contentId);
+                            openArtistDetailView(contentId);
+                        }
+                    })
+                    .show();
+        }
     }
 
     @Override

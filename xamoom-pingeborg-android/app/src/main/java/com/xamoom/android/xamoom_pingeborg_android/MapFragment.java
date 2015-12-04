@@ -1,6 +1,7 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -67,7 +68,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private ViewPager mViewPager;
     private SupportMapFragment mSupportMapFragment;
     private MapAdditionFragment mMapAdditionFragment;
-    private GeofenceFragment mGeofenceFragment;
     private ProgressBar mProgressBar;
 
     private GoogleMap mGoogleMap;
@@ -77,6 +77,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private Location mUserLocation;
 
     private Bitmap mMarkerIcon;
+
+    private OnMapFragmentInteractionListener mListener;
 
     /**
      * Returns a MapFragment Singleton.
@@ -250,7 +252,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     //open geofence when there is at least on item (you can only get one geofence at a time - the nearest)
                     if (result.getItems().size() > 0) {
                         mBestLocationProvider.stopLocationUpdates();
-                        openGeofenceFragment(result.getItems().get(0));
+                        mListener.foundGeofence(result.getItems().get(0).getContentId());
                     }
                 }
 
@@ -261,35 +263,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             });
         }
 
-    }
-
-    /**
-     * Opens a GeofenceFragment.
-     *
-     * @param content A {@link com.xamoom.android.mapping.Content}.
-     */
-    public void openGeofenceFragment(ContentByLocationItem content) {
-        try {
-            FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-            if(mGeofenceFragment == null)
-                fragmentTransaction.setCustomAnimations(R.anim.slide_bottom_top, R.anim.slide_top_bottom);
-
-            mGeofenceFragment = GeofenceFragment.newInstance(content.getContentName(), content.getImagePublicUrl(), content.getContentId());
-            fragmentTransaction.replace(R.id.geofenceFrameLayout, mGeofenceFragment).commit();
-        } catch (NullPointerException e) {
-            Log.v(Global.DEBUG_TAG, "Exception: Geofencefragment is null.");
-        }
-    }
-
-    /**
-     * Closes a GeofenceFragment.
-     */
-    public void closeGeofenceFragment() {
-        try {
-            getActivity().getSupportFragmentManager().beginTransaction().remove(mGeofenceFragment).commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -401,7 +374,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     mProgressBar.setVisibility(View.GONE);
                 }
             });
-
         }
     }
 
@@ -592,6 +564,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
 
         return icon;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnMapFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnMapFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    /**
+     * closeGeofenceFragment must be implemented to remove the fragment from activity.
+     */
+    public interface OnMapFragmentInteractionListener {
+        void foundGeofence(String contentId);
     }
 
     static class Adapter extends FragmentPagerAdapter {

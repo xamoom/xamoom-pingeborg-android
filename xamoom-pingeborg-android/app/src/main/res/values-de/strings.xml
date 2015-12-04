@@ -24,7 +24,11 @@
     <string name="overlay_artist_number">3</string>
     <string name="overlay_unlocked_artists">Künstler haben wir für dich schon freigeschalten</string>
     <string name="map_instruction_text">Du bist in der Nähe eines pingeb.org-Stickers? Dann kannst du diesen auch hier entdecken!</string>
-    <string name="discovered_pingeborg_geofence_message">pingeb.org entdeckt!</string>
+    <string name="discovered_pingeborg_geofence_message">Neuen Künstler gefunden</string>
     <string name="Open">öffnen</string>
+    <string name="Discover">entdecken</string>
+    <string name="beacon_notification_info">In der Nähe</string>
+    <string name="beacon_notification_text">Öffne die pingeb.org app</string>
+    <string name="beacon_notification_title">Entdecke lokale Künstler</string>
 
 </resources>
