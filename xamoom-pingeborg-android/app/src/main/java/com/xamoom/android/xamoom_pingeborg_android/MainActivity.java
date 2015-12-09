@@ -2,6 +2,7 @@ package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.Manifest;
 import android.animation.ValueAnimator;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -118,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements
         checkPingeborgSystem();
 
         checkNFC();
+
+        checkBluetooth();
 
         //show instruction on first start
         if(Global.getInstance().checkFirstStartInstruction())
@@ -367,6 +370,39 @@ public class MainActivity extends AppCompatActivity implements
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         startActivityForResult(new Intent(Settings.ACTION_NFC_SETTINGS), 0);
+                    }
+                })
+                .setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        builder.create().show();
+    }
+
+    /**
+     *
+     */
+    private void checkBluetooth() {
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            // Device does not support Bluetooth
+        } else {
+            if (!mBluetoothAdapter.isEnabled()) {
+                openBluetoothDialog();
+            }
+        }
+    }
+
+    private void openBluetoothDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+
+        builder.setView(inflater.inflate(R.layout.bluetooth_dialog, null))
+                .setPositiveButton(R.string.activate_text, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        startActivityForResult(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS), 0);
                     }
                 })
                 .setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {

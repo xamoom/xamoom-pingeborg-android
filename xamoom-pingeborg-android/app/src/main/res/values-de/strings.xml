@@ -30,5 +30,7 @@
     <string name="beacon_notification_info">In der Nähe</string>
     <string name="beacon_notification_text">Öffne die pingeb.org app</string>
     <string name="beacon_notification_title">Entdecke lokale Künstler</string>
+    <string name="bluetooth_enable_text">Entdecke neue Künstler via IBeacons mit low energy Bluetooth.</string>
+    <string name="bluetooth_dialog_title">Aktiviere Bluetooth</string>
 
 </resources>
