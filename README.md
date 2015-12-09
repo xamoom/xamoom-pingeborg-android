@@ -2,7 +2,7 @@
 
 ![](http://pingeb.org/wp-content/uploads/2013/08/logo1.png)
 
-This app is a demonstration to show you, what you can do with the [xamoom-ios-sdk](https://github.com/xamoom/xamoom-ios-sdk) from [xamoom](https://xamoom.com/).
+This app is a demonstration to show you, what you can do with the [xamoom-android-sdk](https://github.com/xamoom/xamoom-android-sdk) from [xamoom](https://xamoom.com/).
 
 ## Getting Started
 
