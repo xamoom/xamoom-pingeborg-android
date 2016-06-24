@@ -7,6 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
+import com.xamoom.android.xamoomsdk.APICallback;
+import com.xamoom.android.xamoomsdk.EnduserApi;
+import com.xamoom.android.xamoomsdk.Enums.ContentFlags;
+import com.xamoom.android.xamoomsdk.Resource.Content;
+
+import java.util.EnumSet;
+import java.util.List;
+
+import at.rags.morpheus.Error;
 
 
 /**
@@ -58,10 +67,19 @@ public class AboutFragment extends android.support.v4.app.Fragment {
      */
     public void setupXamoomContentFragment () {
         Log.v(Global.DEBUG_TAG, "AboutFragment - setupXamoomContentFragment");
-        mFragment = XamoomContentFragment.newInstance(
-                Integer.toHexString(getResources().getColor(R.color.pingeborg_green)),
-                getResources().getString(R.string.apiKey));
-        mFragment.setContentId(Global.getInstance().getAboutPage());
-        this.getChildFragmentManager().beginTransaction().replace(R.id.aboutContentFrameLayout, mFragment).commit();
+        mFragment = XamoomContentFragment.newInstance(getResources().getString(R.string.youtubekey));
+
+        EnduserApi.getSharedInstance().getContent(Global.getInstance().getAboutPage(), new APICallback<Content, List<Error>>() {
+            @Override
+            public void finished(Content result) {
+                mFragment.setContent(result);
+                getChildFragmentManager().beginTransaction().replace(R.id.aboutContentFrameLayout, mFragment).commit();
+            }
+
+            @Override
+            public void error(List<Error> error) {
+                //TODO errorhandling
+            }
+        });
     }
 }

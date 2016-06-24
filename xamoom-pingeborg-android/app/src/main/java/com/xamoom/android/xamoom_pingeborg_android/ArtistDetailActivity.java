@@ -14,17 +14,18 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
 
-import com.xamoom.android.APICallback;
-import com.xamoom.android.XamoomEndUserApi;
-import com.xamoom.android.mapping.Content;
-import com.xamoom.android.mapping.ContentById;
-import com.xamoom.android.mapping.ContentByLocationIdentifier;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
+import com.xamoom.android.xamoomsdk.APICallback;
+import com.xamoom.android.xamoomsdk.EnduserApi;
+import com.xamoom.android.xamoomsdk.Enums.ContentFlags;
+import com.xamoom.android.xamoomsdk.Resource.Content;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.EnumSet;
+import java.util.List;
 
-import retrofit.RetrofitError;
+import at.rags.morpheus.Error;
 
 /**
  * ArtistDetailActivity can be used to display content from the xamoom cloud.
@@ -33,12 +34,13 @@ import retrofit.RetrofitError;
  *
  */
 public class ArtistDetailActivity extends AppCompatActivity implements XamoomContentFragment.OnXamoomContentFragmentInteractionListener {
-
-    public static final String MAJOR = "MAJOR";
+    public static final String CONTENT_ID = "0000";
+    public static final String LOCATION_IDENTIFIER = "0001";
+    public static final String MAJOR = "0002";
 
     private String mContentId;
     private String mLocationIdentifier;
-    private String mMajor;
+    private int mMajor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +73,9 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
 
         //get mContentId or mLocationIdentifier from intent
         Intent myIntent = getIntent();
-        mContentId = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_CONTENT_ID);
-        mLocationIdentifier = myIntent.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
-        mMajor = myIntent.getStringExtra(MAJOR);
+        mContentId = myIntent.getStringExtra(CONTENT_ID);
+        mLocationIdentifier = myIntent.getStringExtra(LOCATION_IDENTIFIER);
+        mMajor = Integer.parseInt(myIntent.getStringExtra(MAJOR));
 
         if(mContentId != null || mLocationIdentifier != null) {
             loadData(mContentId, mLocationIdentifier);
@@ -130,87 +132,6 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         }
     }
 
-    private void loadData(final String contentId, final String locationIdentifier) {
-        Log.v(Global.DEBUG_TAG, "ArtistDetailActivity - loadData");
-        //load data
-        if (contentId != null) {
-            if(Global.getInstance().getSavedArtists().contains(contentId)) {
-                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mContentId: " + contentId);
-                XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentbyId(contentId, false, false, null, true, false, new APICallback<ContentById>() {
-                    @Override
-                    public void finished(ContentById result) {
-                        setupXamoomContentFrameLayout(result.getContent());
-                    }
-
-                    @Override
-                    public void error(RetrofitError error) {
-                        Log.e(Global.DEBUG_TAG, "Error:" + error);
-                        openInBrowser(contentId, locationIdentifier);
-                    }
-                });
-            } else {
-                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mContentId: " + contentId);
-                XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentbyId(contentId, false, false, null, false, false, new APICallback<ContentById>() {
-                    @Override
-                    public void finished(ContentById result) {
-                        setupXamoomContentFrameLayout(result.getContent());
-                    }
-
-                    @Override
-                    public void error(RetrofitError error) {
-                        Log.e(Global.DEBUG_TAG, "Error:" + error);
-                        openInBrowser(contentId, locationIdentifier);
-                    }
-                });
-            }
-        } else if (locationIdentifier != null) {
-            if (mMajor == null) {
-                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
-            } else {
-                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail with iBeacon", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
-            }
-
-            XamoomEndUserApi.getInstance(this.getApplicationContext(), getResources().getString(R.string.apiKey)).getContentByLocationIdentifier(locationIdentifier, mMajor, false, false, null, new APICallback<ContentByLocationIdentifier>() {
-                @Override
-                public void finished(ContentByLocationIdentifier result) {
-
-                    if(!result.isHasSpot()) {
-                        openInBrowser(contentId, locationIdentifier);
-                    }
-
-                    //save artist
-                    Global.getInstance().saveArtist(result.getContent().getContentId());
-                    Log.v(Global.DEBUG_TAG, "Scanned artist: " + result.getContent().getContentId());
-                    Log.v(Global.DEBUG_TAG, "Saved artists: " + Global.getInstance().getSavedArtists());
-                    setupXamoomContentFrameLayout(result.getContent());
-                }
-
-                @Override
-                public void error(RetrofitError error) {
-                    Log.e(Global.DEBUG_TAG, "Error:" + error);
-                    openInBrowser(contentId, locationIdentifier);
-                }
-            });
-        } else {
-            Log.w(Global.DEBUG_TAG, "There is no mContentId or mLocationIdentifier");
-            finish();
-        }
-    }
-
-    private void setupXamoomContentFrameLayout(Content content) {
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
-        fragment.setContent(content);
-
-        try {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.XamoomContentFrameLayout, fragment)
-                    .commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
@@ -233,6 +154,22 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     /**
      * Opens the browser with a xamoom content.
      *
@@ -253,27 +190,102 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         startActivity(browserIntent);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    private void loadData(final String contentId, final String locationIdentifier) {
+        Log.v(Global.DEBUG_TAG, "ArtistDetailActivity - loadData");
+        //load data
+        if (contentId != null) {
+            if(Global.getInstance().getSavedArtists().contains(contentId)) {
+                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mContentId: " + contentId);
 
-        //noinspection SimplifiableIfStatement
-        if (id == android.R.id.home) {
+                EnduserApi.getSharedInstance().getContent(contentId, EnumSet.of(ContentFlags.PRIVATE), new APICallback<Content, List<Error>>() {
+                    @Override
+                    public void finished(Content result) {
+                        setupXamoomContentFrameLayout(result);
+                    }
+
+                    @Override
+                    public void error(List<Error> error) {
+                        Log.e(Global.DEBUG_TAG, "Error:" + error);
+                        openInBrowser(contentId, locationIdentifier);
+                    }
+                });
+            } else {
+                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mContentId: " + contentId);
+                EnduserApi.getSharedInstance().getContent(contentId, new APICallback<Content, List<Error>>() {
+                    @Override
+                    public void finished(Content result) {
+                        setupXamoomContentFrameLayout(result);
+
+                    }
+
+                    @Override
+                    public void error(List<Error> error) {
+                        Log.e(Global.DEBUG_TAG, "Error:" + error);
+                        openInBrowser(contentId, locationIdentifier);
+                    }
+                });
+            }
+        } else if (locationIdentifier != null) {
+            if (mMajor == 0) {
+                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
+            } else {
+                Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail with iBeacon", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
+            }
+
+            EnduserApi.getSharedInstance().getContentByBeacon(mMajor, Integer.parseInt(locationIdentifier), new APICallback<Content, List<Error>>() {
+                @Override
+                public void finished(Content result) {
+                    //save artist
+                    Global.getInstance().saveArtist(result.getId());
+                    setupXamoomContentFrameLayout(result);
+                }
+
+                @Override
+                public void error(List<Error> error) {
+                    openInBrowser(contentId, locationIdentifier);
+                }
+            });
+        } else {
+            Log.w(Global.DEBUG_TAG, "There is no mContentId or mLocationIdentifier");
             finish();
-            return true;
+        }
+    }
+
+    private void setupXamoomContentFrameLayout(Content content) {
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(getResources().getString(R.string.youtubekey));
+        fragment.setContent(content);
+
+        try {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.XamoomContentFrameLayout, fragment)
+                    .commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void downloadContent(String contentId, boolean full, final APICallback<Content, List<Error>> callback) {
+        EnumSet<ContentFlags> contentFlags = null;
+        if (full) {
+            contentFlags = EnumSet.of(ContentFlags.PRIVATE);
         }
 
-        return super.onOptionsItemSelected(item);
+        EnduserApi.getSharedInstance().getContent(contentId, contentFlags, new APICallback<Content, List<Error>>() {
+            @Override
+            public void finished(Content result) {
+                callback.finished(result);
+            }
+
+            @Override
+            public void error(List<Error> error) {
+                //TODO errorhandling
+            }
+        });
     }
 
     /**
      * Override the handling of content ContentBlocks.
-     * These are links to a contentBlock {@link com.xamoom.android.mapping.ContentBlocks.ContentBlockType6}
-     * and should be handled like you handle other contents.
-     *
      * We add a new XamoomContentFragment to the activity.
      *
      * @param content Content you can pass to XamoomContentFragment
@@ -281,24 +293,24 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
     @Override
     public void clickedContentBlock(Content content) {
         //also discover this artist
-        Global.getInstance().saveArtist(content.getContentId());
+        Global.getInstance().saveArtist(content.getId());
 
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
-        fragment.setContentId(content.getContentId());
-        fragment.setLoadFullContent(true);
+        downloadContent(content.getId(), true, new APICallback<Content, List<Error>>() {
+            @Override
+            public void finished(Content result) {
+                setupXamoomContentFrameLayout(result);
+            }
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.bottom_swipe_in, 0, 0, R.anim.bottom_swipe_out)
-                .add(R.id.mainFrameLayout, fragment)
-                .addToBackStack(null)
-                .commit();
+            @Override
+            public void error(List<Error> error) {
+                //already done
+            }
+        });
+
     }
 
     /**
      * Override the handling of SpotMap links.
-     * These are links to a contentBlock {@link com.xamoom.android.mapping.ContentBlocks.ContentBlockType6}
-     * and should be handled like you handle other contents.
      *
      * We add a new XamoomContentFragment to the activity.
      *
@@ -307,21 +319,8 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
     @Override
     public void clickedSpotMapContentLink(String contentId) {
         //also discover this artist
-        Global.getInstance().saveArtist(contentId);
-
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
-        fragment.setContentId(contentId);
-        fragment.setLoadFullContent(true);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.bottom_swipe_in, 0, 0, R.anim.bottom_swipe_out)
-                .add(R.id.mainFrameLayout, fragment)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    public void setMajor(String major) {
-        mMajor = major;
+        Content content = new Content();
+        content.setId(contentId);
+        clickedContentBlock(content);
     }
 }

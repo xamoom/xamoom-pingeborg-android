@@ -15,18 +15,20 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
-import com.xamoom.android.APICallback;
-import com.xamoom.android.XamoomEndUserApi;
-import com.xamoom.android.mapping.Content;
-import com.xamoom.android.mapping.ContentList;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
+import com.xamoom.android.xamoomsdk.APICallback;
+import com.xamoom.android.xamoomsdk.APIListCallback;
+import com.xamoom.android.xamoomsdk.EnduserApi;
+import com.xamoom.android.xamoomsdk.Enums.ContentFlags;
+import com.xamoom.android.xamoomsdk.Resource.Content;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import at.rags.morpheus.Error;
 import jp.wasabeef.glide.transformations.GrayscaleTransformation;
-import retrofit.RetrofitError;
-
 
 /**
  * TODO
@@ -133,15 +135,17 @@ public class ArtistListFragment extends Fragment {
             mContentList.add(null);
             mRecyclerView.getAdapter().notifyItemInserted(mContentList.size() - 1);
 
-            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext(), getResources().getString(R.string.apiKey)).getContentList(null, PAGE_SIZE, mCursor, new String[]{"artists"}, new APICallback<ContentList>() {
-                @Override
-                public void finished(final ContentList result) {
 
+            ArrayList<String> tags = new ArrayList<String>();
+            tags.add("artists");
+            EnduserApi.getSharedInstance().getContentsByTags(tags, PAGE_SIZE, null, null, new APIListCallback<List<Content>, List<Error>>() {
+                @Override
+                public void finished(List<Content> result, String cursor, boolean hasMore) {
                     //unlock 3 artists as a present for the user
                     if (Global.getInstance().checkFirstStart()) {
                         for (int i = 1; i < 4; i++) {
-                            Content c = result.getItems().get(i);
-                            Global.getInstance().saveArtist(c.getContentId());
+                            Content c = result.get(i);
+                            Global.getInstance().saveArtist(c.getId());
                         }
                     }
 
@@ -149,16 +153,16 @@ public class ArtistListFragment extends Fragment {
                     mContentList.remove(mContentList.size() - 1);
                     mRecyclerView.getAdapter().notifyItemInserted(mContentList.size());
 
-                    mContentList.addAll(result.getItems());
+                    mContentList.addAll(result);
                     mRecyclerView.getAdapter().notifyDataSetChanged();
 
-                    mCursor = result.getCursor();
-                    isMore = result.isMore();
+                    mCursor = cursor;
+                    isMore = hasMore;
                     isLoading = false;
                 }
 
                 @Override
-                public void error(RetrofitError error) {
+                public void error(List<Error> error) {
                     Log.e(Global.DEBUG_TAG, "Error:" + error);
                     isLoading = false;
                 }
@@ -166,27 +170,36 @@ public class ArtistListFragment extends Fragment {
         }
     }
 
-    /**
-     * Add XammomContentFragment to View to display the artist.
-     *
-     * @param mBoundContent A {@link com.xamoom.android.mapping.Content} to display
-     */
-    public void openArtistDetails(Content mBoundContent) {
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
+    private void setupXamoomContentFrameLayout(Content content) {
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(getResources().getString(R.string.youtubekey));
+        fragment.setContent(content);
 
-        //use contentId, when artist is alreay unlocked
-        if(Global.getInstance().getSavedArtists().contains(mBoundContent.getContentId())) {
-            fragment.setContentId(mBoundContent.getContentId());
-        } else {
-            fragment.setContent(mBoundContent);
+        try {
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.XamoomContentFrameLayout, fragment)
+                    .commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void downloadContent(String contentId, boolean full, final APICallback<Content, List<Error>> callback) {
+        EnumSet<ContentFlags> contentFlags = null;
+        if (full) {
+            contentFlags = EnumSet.of(ContentFlags.PRIVATE);
         }
 
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.bottom_swipe_in, 0, 0, R.anim.bottom_swipe_out)
-                .replace(R.id.mainFrameLayout, fragment)
-                .addToBackStack(null)
-                .commit();
+        EnduserApi.getSharedInstance().getContent(contentId, contentFlags, new APICallback<Content, List<Error>>() {
+            @Override
+            public void finished(Content result) {
+                callback.finished(result);
+            }
+
+            @Override
+            public void error(List<Error> error) {
+                //TODO errorhandling
+            }
+        });
     }
 
     /**
@@ -279,10 +292,10 @@ public class ArtistListFragment extends Fragment {
                 BitmapPool pool = Glide.get(mContext).getBitmapPool();
 
                 //download and set image via Glide
-                if(Global.getInstance().getSavedArtists().contains(holder.mBoundContent.getContentId())) {
+                if(Global.getInstance().getSavedArtists().contains(holder.mBoundContent.getId())) {
                     //set image normal
                     Glide.with(mContext)
-                            .load(holder.mBoundContent.getImagePublicUrl())
+                            .load(holder.mBoundContent.getPublicImageUrl())
                             .placeholder(R.drawable.placeholder)
                             .dontAnimate()
                             .into(holder.mImageView);
@@ -292,7 +305,7 @@ public class ArtistListFragment extends Fragment {
                 } else {
                     //set image grayscale, and overlayed
                     Glide.with(mContext)
-                            .load(holder.mBoundContent.getImagePublicUrl())
+                            .load(holder.mBoundContent.getPublicImageUrl())
                             .placeholder(R.drawable.placeholder)
                             .crossFade()
                             .bitmapTransform(new GrayscaleTransformation(pool))
@@ -315,7 +328,21 @@ public class ArtistListFragment extends Fragment {
                 holder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        openArtistDetails(holder.mBoundContent);
+                        if (Global.getInstance().getSavedArtists().contains(holder.mBoundContent.getId())) {
+                            downloadContent(holder.mBoundContent.getId(), true, new APICallback<Content, List<Error>>() {
+                                @Override
+                                public void finished(Content result) {
+                                    setupXamoomContentFrameLayout(result);
+                                }
+
+                                @Override
+                                public void error(List<Error> error) {
+
+                                }
+                            });
+                        } else {
+                            setupXamoomContentFrameLayout(holder.mBoundContent);
+                        }
                     }
                 });
             }
