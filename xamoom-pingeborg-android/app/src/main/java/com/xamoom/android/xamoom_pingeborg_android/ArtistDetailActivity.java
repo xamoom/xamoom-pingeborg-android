@@ -75,7 +75,9 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         Intent myIntent = getIntent();
         mContentId = myIntent.getStringExtra(CONTENT_ID);
         mLocationIdentifier = myIntent.getStringExtra(LOCATION_IDENTIFIER);
-        mMajor = Integer.parseInt(myIntent.getStringExtra(MAJOR));
+        if (myIntent.getStringExtra(MAJOR) != null) {
+            mMajor = Integer.parseInt(myIntent.getStringExtra(MAJOR));
+        }
 
         if(mContentId != null || mLocationIdentifier != null) {
             loadData(mContentId, mLocationIdentifier);
@@ -253,6 +255,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
 
     private void setupXamoomContentFrameLayout(Content content) {
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(getResources().getString(R.string.youtubekey));
+        fragment.setEnduserApi(EnduserApi.getSharedInstance());
         fragment.setContent(content);
 
         try {
@@ -267,7 +270,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
 
     public void downloadContent(String contentId, boolean full, final APICallback<Content, List<Error>> callback) {
         EnumSet<ContentFlags> contentFlags = null;
-        if (full) {
+        if (!full) {
             contentFlags = EnumSet.of(ContentFlags.PRIVATE);
         }
 

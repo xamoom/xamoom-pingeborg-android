@@ -40,20 +40,22 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.xamoom.android.APICallback;
-import com.xamoom.android.XamoomEndUserApi;
-import com.xamoom.android.mapping.ContentByLocation;
-import com.xamoom.android.mapping.ContentByLocationItem;
-import com.xamoom.android.mapping.Spot;
-import com.xamoom.android.mapping.SpotMap;
+import com.xamoom.android.xamoomsdk.APIListCallback;
+import com.xamoom.android.xamoomsdk.EnduserApi;
+import com.xamoom.android.xamoomsdk.Enums.SpotFlags;
+import com.xamoom.android.xamoomsdk.Resource.Content;
+import com.xamoom.android.xamoomsdk.Resource.Spot;
+
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import retrofit.RetrofitError;
+import at.rags.morpheus.Error;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -246,23 +248,24 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     public void setupGeofencing(Location location) {
         if(this.getActivity().getApplicationContext() != null) {
-            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext(), getResources().getString(R.string.apiKey)).getContentByLocation(location.getLatitude(), location.getLongitude(), null, new APICallback<ContentByLocation>() {
+
+            EnduserApi.getSharedInstance().getContentsByLocation(location, 20, null, null,
+                    new APIListCallback<List<Content>, List<Error>>() {
                 @Override
-                public void finished(ContentByLocation result) {
+                public void finished(List<Content> result, String cursor, boolean hasMore) {
                     //open geofence when there is at least on item (you can only get one geofence at a time - the nearest)
-                    if (result.getItems().size() > 0) {
+                    if (result.size() > 0) {
                         mBestLocationProvider.stopLocationUpdates();
-                        mListener.foundGeofence(result.getItems().get(0).getContentId());
+                        mListener.foundGeofence(result.get(0).getId());
                     }
                 }
 
                 @Override
-                public void error(RetrofitError error) {
-                    Log.e(Global.DEBUG_TAG, "Error:" + error);
+                public void error(List<Error> error) {
+
                 }
             });
         }
-
     }
 
     /**
@@ -324,12 +327,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         float distance = 0;
         if(mUserLocation != null) {
             Location spotLocation = new Location("xamoom-api");
-            spotLocation.setLatitude(spot.getLocation().getLat());
-            spotLocation.setLongitude(spot.getLocation().getLon());
+            spotLocation.setLatitude(spot.getLocation().getLatitude());
+            spotLocation.setLongitude(spot.getLocation().getLongitude());
             distance = spotLocation.distanceTo(mUserLocation);
         }
 
-        mMapAdditionFragment = MapAdditionFragment.newInstance(spot.getDisplayName(), spot.getDescription(), spot.getImage(), spot.getLocation(), distance);
+        mMapAdditionFragment = MapAdditionFragment.newInstance(spot.getName(), spot.getDescription(),
+                spot.getPublicImageUrl(), spot.getLocation(), distance);
         fragmentTransaction.replace(R.id.mapAdditionFrameLayout, mMapAdditionFragment).commit();
     }
 
@@ -360,17 +364,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             googleMap.clear();
             addMarkersToMap();
         } else {
-            XamoomEndUserApi.getInstance(this.getContext(),
-                    getResources().getString(R.string.apiKey)).getSpotMap(
-                    new String[]{"showAllTheSpots"}, null, false, new APICallback<SpotMap>() {
+            ArrayList<String> tags = new ArrayList<>();
+            tags.add("showAllTheSpots");
+            EnduserApi.getSharedInstance().getSpotsByTags(tags, 300, null, EnumSet.of(SpotFlags.HAS_LOCATION), null,
+                    new APIListCallback<List<Spot>, List<Error>>() {
                 @Override
-                public void finished(SpotMap result) {
+                public void finished(List<Spot> result, String cursor, boolean hasMore) {
                     getDataFromSpotMap(result);
                 }
 
                 @Override
-                public void error(RetrofitError error) {
-                    Log.e(Global.DEBUG_TAG, "Error:" + error);
+                public void error(List<Error> error) {
                     mProgressBar.setVisibility(View.GONE);
                 }
             });
@@ -380,10 +384,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     /**
      * Adds Makers to map with the right mapMarker.
      *
-     * @param result Result of {@link com.xamoom.android.XamoomEndUserApi#getSpotMap(String[], String, boolean,  APICallback)}
+     * @param result List of spots
      */
-    public void getDataFromSpotMap(SpotMap result) {
+    public void getDataFromSpotMap(List<Spot> result) {
         //get the icon for the mapMarker (drawable image (eg. png) or SVG
+        /*
         if (result.getStyle().getCustomMarker() != null) {
             String iconString = result.getStyle().getCustomMarker();
             mMarkerIcon = getIconFromBase64(iconString);
@@ -392,14 +397,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             float imageRatio = (float) mMarkerIcon.getWidth() / (float) mMarkerIcon.getHeight();
             mMarkerIcon = Bitmap.createScaledBitmap(mMarkerIcon, 70, (int) (70 / imageRatio), false);
         }
+        */
+        mMarkerIcon = BitmapFactory.decodeResource(getActivity().getResources(),
+                com.xamoom.android.xamoomsdk.R.drawable.ic_default_map_marker);
+        //todo marker
+        float imageRatio = (float) mMarkerIcon.getWidth() / (float) mMarkerIcon.getHeight();
+        mMarkerIcon = Bitmap.createScaledBitmap(mMarkerIcon, 70, (int) (70 / imageRatio), false);
 
         //show all markers
-        for (Spot s : result.getItems()) {
+        for (Spot s : result) {
             Marker marker = mGoogleMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromBitmap(mMarkerIcon))
                     .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
-                    .title(s.getDisplayName())
-                    .position(new LatLng(s.getLocation().getLat(), s.getLocation().getLon())));
+                    .title(s.getName())
+                    .position(new LatLng(s.getLocation().getLatitude(), s.getLocation().getLongitude())));
 
             markerMap.put(marker, s);
         }
@@ -419,8 +430,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Marker marker = mGoogleMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromBitmap(mMarkerIcon))
                     .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
-                    .title(s.getDisplayName())
-                    .position(new LatLng(s.getLocation().getLat(), s.getLocation().getLon())));
+                    .title(s.getName())
+                    .position(new LatLng(s.getLocation().getLatitude(), s.getLocation().getLongitude())));
 
             newMarkerMap.put(marker, s);
         }
@@ -480,13 +491,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     /**
      * Displays a marker connected to a spot.
      *
-     * @param spot A {@link com.xamoom.android.mapping.Spot}.
+     * @param spot A {@link com.xamoom.android.xamoomsdk.Resource.Spot}.
      */
     public void displayMarker(Spot spot) {
         Set<Marker> markerSet = markerMap.keySet();
 
         for (Marker marker : markerSet) {
-            if(marker.getTitle().equalsIgnoreCase(spot.getDisplayName())) {
+            if(marker.getTitle().equalsIgnoreCase(spot.getName())) {
                 mViewPager.setCurrentItem(0);
                 marker.showInfoWindow();
                 openMapAdditionFragment(spot);
@@ -557,10 +568,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-            return BitmapFactory.decodeResource(getActivity().getResources(), com.xamoom.android.xamoomcontentblocks.R.drawable.ic_default_map_marker);
+            return BitmapFactory.decodeResource(getActivity().getResources(),
+                    com.xamoom.android.xamoomsdk.R.drawable.ic_default_map_marker);
         } catch (SVGParseException e ) {
             e.printStackTrace();
-            BitmapFactory.decodeResource(getActivity().getResources(), com.xamoom.android.xamoomcontentblocks.R.drawable.ic_default_map_marker);
+            BitmapFactory.decodeResource(getActivity().getResources(),
+                    com.xamoom.android.xamoomsdk.R.drawable.ic_default_map_marker);
         }
 
         return icon;

@@ -68,6 +68,7 @@ public class AboutFragment extends android.support.v4.app.Fragment {
     public void setupXamoomContentFragment () {
         Log.v(Global.DEBUG_TAG, "AboutFragment - setupXamoomContentFragment");
         mFragment = XamoomContentFragment.newInstance(getResources().getString(R.string.youtubekey));
+        mFragment.setEnduserApi(EnduserApi.getSharedInstance());
 
         EnduserApi.getSharedInstance().getContent(Global.getInstance().getAboutPage(), new APICallback<Content, List<Error>>() {
             @Override

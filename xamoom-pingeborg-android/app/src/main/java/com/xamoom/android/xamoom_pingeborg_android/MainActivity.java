@@ -41,10 +41,12 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.xamoom.android.XamoomBeaconService;
-import com.xamoom.android.mapping.Content;
-import com.xamoom.android.mapping.Spot;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
+import com.xamoom.android.xamoomsdk.APICallback;
+import com.xamoom.android.xamoomsdk.EnduserApi;
+import com.xamoom.android.xamoomsdk.Enums.ContentFlags;
+import com.xamoom.android.xamoomsdk.Resource.Content;
+import com.xamoom.android.xamoomsdk.Resource.Spot;
 
 import org.altbeacon.beacon.Beacon;
 
@@ -52,6 +54,10 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.List;
+
+import at.rags.morpheus.Error;
 
 public class MainActivity extends AppCompatActivity implements
         XamoomContentFragment.OnXamoomContentFragmentInteractionListener,
@@ -138,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements
                 XamoomBeaconService.getInstance(getApplicationContext()).startRangingBeacons();
             }
         }, new IntentFilter(XamoomBeaconService.BEACON_SERVICE_CONNECT_BROADCAST));
-
     }
 
     @Override
@@ -246,11 +251,11 @@ public class MainActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LOCATION_IDENTIFIER_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                String locationIdentifier = data.getStringExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER);
+                String locationIdentifier = data.getStringExtra(ArtistDetailActivity.LOCATION_IDENTIFIER);
                 Log.v(Global.DEBUG_TAG, locationIdentifier);
 
                 Intent intent = new Intent(MainActivity.this, ArtistDetailActivity.class);
-                intent.putExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER, locationIdentifier);
+                intent.putExtra(ArtistDetailActivity.LOCATION_IDENTIFIER, locationIdentifier);
                 startActivity(intent);
             }
         }
@@ -492,40 +497,76 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void clickedContentBlock(Content content) {
         //also discover this artist
-        Global.getInstance().saveArtist(content.getContentId());
+        Global.getInstance().saveArtist(content.getId());
 
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
-        fragment.setContentId(content.getContentId());
-        fragment.setLoadFullContent(true);
+        downloadContent(content.getId(), true, new APICallback<Content, List<Error>>() {
+            @Override
+            public void finished(Content result) {
+                setupXamoomContentFrameLayout(result);
+            }
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.bottom_swipe_in, 0, 0, R.anim.bottom_swipe_out)
-                .add(R.id.mainFrameLayout, fragment)
-                .addToBackStack(null)
-                .commit();
+            @Override
+            public void error(List<Error> error) {
+
+            }
+        });
     }
 
     /**
      * Add new XamoomContentFragment when a content contentBlock is clicked.
      *
-     * @param contentId A {@link com.xamoom.android.mapping.Content} contentId
+     * @param contentId A {@link com.xamoom.android.xamoomsdk.Resource.Content} contentId
      */
     @Override
     public void clickedSpotMapContentLink(String contentId) {
         //also discover this artist
         Global.getInstance().saveArtist(contentId);
 
-        XamoomContentFragment fragment = XamoomContentFragment.newInstance(Integer.toHexString(getResources().getColor(R.color.pingeborg_green)).substring(2), getResources().getString(R.string.apiKey));
-        fragment.setContentId(contentId);
-        fragment.setLoadFullContent(true);
+        downloadContent(contentId, true, new APICallback<Content, List<Error>>() {
+            @Override
+            public void finished(Content result) {
+                setupXamoomContentFrameLayout(result);
+            }
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.bottom_swipe_in, 0, 0, R.anim.bottom_swipe_out)
-                .add(R.id.mainFrameLayout, fragment)
-                .addToBackStack(null)
-                .commit();
+            @Override
+            public void error(List<Error> error) {
+
+            }
+        });
+    }
+
+    private void setupXamoomContentFrameLayout(Content content) {
+        XamoomContentFragment fragment = XamoomContentFragment.newInstance(getResources().getString(R.string.youtubekey));
+        fragment.setEnduserApi(EnduserApi.getSharedInstance());
+        fragment.setContent(content);
+
+        try {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.XamoomContentFrameLayout, fragment)
+                    .commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void downloadContent(String contentId, boolean full, final APICallback<Content, List<Error>> callback) {
+        EnumSet<ContentFlags> contentFlags = null;
+        if (!full) {
+            contentFlags = EnumSet.of(ContentFlags.PRIVATE);
+        }
+
+        EnduserApi.getSharedInstance().getContent(contentId, contentFlags, new APICallback<Content, List<Error>>() {
+            @Override
+            public void finished(Content result) {
+                callback.finished(result);
+            }
+
+            @Override
+            public void error(List<Error> error) {
+                //TODO errorhandling
+            }
+        });
     }
 
     @Override
@@ -647,7 +688,7 @@ public class MainActivity extends AppCompatActivity implements
         Context context = getApplicationContext();
         Intent intent = new Intent(context, ArtistDetailActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER, beacon.getId3().toString());
+        intent.putExtra(ArtistDetailActivity.LOCATION_IDENTIFIER, beacon.getId3().toString());
         intent.putExtra(ArtistDetailActivity.MAJOR, beacon.getId2().toString());
         context.startActivity(intent);
     }
@@ -656,7 +697,7 @@ public class MainActivity extends AppCompatActivity implements
         Context context = getApplicationContext();
         Intent intent = new Intent(context, ArtistDetailActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(XamoomContentFragment.XAMOOM_CONTENT_ID,contentId);
+        intent.putExtra(ArtistDetailActivity.CONTENT_ID,contentId);
         context.startActivity(intent);
     }
 
@@ -686,7 +727,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
+
     public void clickedSpot(Spot spot) {
         Log.v(Global.DEBUG_TAG, "MainActivity: ClickedSpot");
         MapFragment mapFragment = (MapFragment) mMainFragment;

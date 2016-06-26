@@ -20,15 +20,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.xamoom.android.APICallback;
-import com.xamoom.android.XamoomEndUserApi;
-import com.xamoom.android.mapping.Spot;
-import com.xamoom.android.mapping.SpotMap;
+import com.xamoom.android.xamoomsdk.APIListCallback;
+import com.xamoom.android.xamoomsdk.EnduserApi;
+import com.xamoom.android.xamoomsdk.Resource.Spot;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import retrofit.RetrofitError;
+import at.rags.morpheus.Error;
 
 
 /**
@@ -123,17 +122,19 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
 
     private void getClosesSpots(final Location location) {
         if(this.isAdded()) {
-            XamoomEndUserApi.getInstance(this.getActivity().getApplicationContext(), getResources().getString(R.string.apiKey)).getClosestSpots(location.getLatitude(), location.getLongitude(), null, 2000, 20, new APICallback<SpotMap>() {
+
+            EnduserApi.getSharedInstance().getSpotsByLocation(location, 2000, 20, null, null, null,
+                    new APIListCallback<List<Spot>, List<Error>>() {
                 @Override
-                public void finished(final SpotMap result) {
+                public void finished(List<Spot> result, String cursor, boolean hasMore) {
                     mProgressBar.setVisibility(View.GONE);
-                    mSpotList.addAll(result.getItems());
+                    mSpotList.addAll(result);
                     mRecyclerView.getAdapter().notifyDataSetChanged();
                 }
 
                 @Override
-                public void error(RetrofitError error) {
-                    Log.e(Global.DEBUG_TAG, "Error:" + error);
+                public void error(List<Error> error) {
+
                 }
             });
         }
@@ -242,21 +243,21 @@ public class SpotListFragment extends android.support.v4.app.Fragment {
                 holder.mBoundContent = mSpotList.get(position);
 
                 //set text
-                holder.mTitleTextView.setText(holder.mBoundContent.getDisplayName());
+                holder.mTitleTextView.setText(holder.mBoundContent.getName());
 
                 //display distance
                 Location spotLocation = new Location("");
-                spotLocation.setLatitude(holder.mBoundContent.getLocation().getLat());
-                spotLocation.setLongitude(holder.mBoundContent.getLocation().getLon());
+                spotLocation.setLatitude(holder.mBoundContent.getLocation().getLatitude());
+                spotLocation.setLongitude(holder.mBoundContent.getLocation().getLongitude());
                 float distance = mUserLocation.distanceTo(spotLocation);
                 holder.mDistanceTextView.setText(String.valueOf(Math.round(distance)) + " Meter");
 
                 //holder.mImageView.setImageURI(null);
 
                 //add Image
-                if(holder.mBoundContent.getImage() != null) {
+                if(holder.mBoundContent.getPublicImageUrl() != null) {
                     Glide.with(mContext)
-                            .load(holder.mBoundContent.getImage())
+                            .load(holder.mBoundContent.getPublicImageUrl())
                             .dontTransform()
                             .crossFade()
                             .into(holder.mImageView);

@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.xamoom.android.request.Location;
+import com.xamoom.android.xamoomsdk.Resource.Location;
 
 
 /**
@@ -52,8 +52,8 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
         args.putString(ARG_PARAM1, name);
         args.putString(ARG_PARAM2, description);
         args.putString(ARG_PARAM3, imageUrl);
-        args.putDouble(ARG_PARAM4, location.getLat());
-        args.putDouble(ARG_PARAM5, location.getLon());
+        args.putDouble(ARG_PARAM4, location.getLatitude());
+        args.putDouble(ARG_PARAM5, location.getLatitude());
         args.putFloat(ARG_PARAM6, distance);
         fragment.setArguments(args);
         return fragment;
@@ -73,7 +73,8 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
             Double lat, lon;
             lat = getArguments().getDouble(ARG_PARAM4);
             lon = getArguments().getDouble(ARG_PARAM5);
-            mSpotLocation = new Location(lat, lon);
+            mSpotLocation = new Location();
+            //TODO check when sdk updated
             mDistance = getArguments().getFloat(ARG_PARAM6);
         }
     }
@@ -109,7 +110,8 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("google.navigation:q="+mSpotLocation.getLat()+","+mSpotLocation.getLon()));
+                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                        Uri.parse("google.navigation:q="+mSpotLocation.getLatitude()+","+mSpotLocation.getLongitude()));
                 startActivity(intent);
             }
         });

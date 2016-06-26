@@ -20,6 +20,7 @@ import com.xamoom.android.xamoomsdk.APICallback;
 import com.xamoom.android.xamoomsdk.APIListCallback;
 import com.xamoom.android.xamoomsdk.EnduserApi;
 import com.xamoom.android.xamoomsdk.Enums.ContentFlags;
+import com.xamoom.android.xamoomsdk.Enums.ContentSortFlags;
 import com.xamoom.android.xamoomsdk.Resource.Content;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import jp.wasabeef.glide.transformations.GrayscaleTransformation;
  * TODO
  */
 public class ArtistListFragment extends Fragment {
-
+    private final static String TAG = ArtistListFragment.class.getSimpleName();
     private final static int PAGE_SIZE = 7;
 
     private static ArtistListFragment mInstance;
@@ -138,7 +139,7 @@ public class ArtistListFragment extends Fragment {
 
             ArrayList<String> tags = new ArrayList<String>();
             tags.add("artists");
-            EnduserApi.getSharedInstance().getContentsByTags(tags, PAGE_SIZE, null, null, new APIListCallback<List<Content>, List<Error>>() {
+            EnduserApi.getSharedInstance().getContentsByTags(tags, PAGE_SIZE, mCursor, EnumSet.of(ContentSortFlags.NAME_DESC), new APIListCallback<List<Content>, List<Error>>() {
                 @Override
                 public void finished(List<Content> result, String cursor, boolean hasMore) {
                     //unlock 3 artists as a present for the user
@@ -172,20 +173,23 @@ public class ArtistListFragment extends Fragment {
 
     private void setupXamoomContentFrameLayout(Content content) {
         XamoomContentFragment fragment = XamoomContentFragment.newInstance(getResources().getString(R.string.youtubekey));
+        fragment.setEnduserApi(EnduserApi.getSharedInstance());
         fragment.setContent(content);
 
         try {
             getActivity().getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.XamoomContentFrameLayout, fragment)
+                    .replace(R.id.mainFrameLayout, fragment)
+                    .addToBackStack(null)
                     .commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     public void downloadContent(String contentId, boolean full, final APICallback<Content, List<Error>> callback) {
         EnumSet<ContentFlags> contentFlags = null;
-        if (full) {
+        if (!full) {
             contentFlags = EnumSet.of(ContentFlags.PRIVATE);
         }
 
@@ -328,21 +332,19 @@ public class ArtistListFragment extends Fragment {
                 holder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (Global.getInstance().getSavedArtists().contains(holder.mBoundContent.getId())) {
-                            downloadContent(holder.mBoundContent.getId(), true, new APICallback<Content, List<Error>>() {
-                                @Override
-                                public void finished(Content result) {
-                                    setupXamoomContentFrameLayout(result);
-                                }
+                        downloadContent(holder.mBoundContent.getId(),
+                                Global.getInstance().getSavedArtists().contains(holder.mBoundContent.getId()),
+                                new APICallback<Content, List<Error>>() {
+                                    @Override
+                                    public void finished(Content result) {
+                                        setupXamoomContentFrameLayout(result);
+                                    }
 
-                                @Override
-                                public void error(List<Error> error) {
-
-                                }
-                            });
-                        } else {
-                            setupXamoomContentFrameLayout(holder.mBoundContent);
-                        }
+                                    @Override
+                                    public void error(List<Error> error) {
+                                        Log.e(TAG, error.toString());
+                                    }
+                                });
                     }
                 });
             }

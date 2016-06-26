@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- pingeb.org System Strings -->
-    <string name="pingeborg_carinthia_about_page_id">d8be762e9b644fc4bb7aedfa8c0e17b7</string>
+    <string name="pingeborg_carinthia_about_page_id" translatable="false">d8be762e9b644fc4bb7aedfa8c0e17b7</string>
 </resources>

@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
-import com.xamoom.android.XamoomBeaconService;
 import com.xamoom.android.xamoomsdk.EnduserApi;
 
 
@@ -27,6 +26,7 @@ public class XamoomPingeborgApp extends Application {
     public void onCreate() {
         super.onCreate();
         EnduserApi.getSharedInstance(getResources().getString(R.string.apiKey));
+        XamoomBeaconService.getInstance(getApplicationContext()).startBeaconService(MAJOR_ID);
 
         registerReceiver(mEnterRegionBroadCastReciever, new IntentFilter(XamoomBeaconService.ENTER_REGION_BROADCAST));
         registerReceiver(mExitRegionBroadCastReciever, new IntentFilter(XamoomBeaconService.EXIT_REGION_BROADCAST));

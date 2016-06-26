@@ -146,7 +146,7 @@ public class QRCodeScannerActivity extends AppCompatActivity implements QRCodeRe
 
         //start artist detail activity
         Intent returnIntent = new Intent();
-        returnIntent.putExtra(XamoomContentFragment.XAMOOM_LOCATION_IDENTIFIER, locationIdentifier);
+        returnIntent.putExtra(ArtistDetailActivity.LOCATION_IDENTIFIER, locationIdentifier);
         setResult(RESULT_OK, returnIntent);
         finish();
     }
