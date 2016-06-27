@@ -29,10 +29,6 @@ import java.util.List;
 
 import at.rags.morpheus.Error;
 
-
-/**
- * TODO
- */
 public class SpotListFragment extends android.support.v4.app.Fragment {
 
     private RecyclerView mRecyclerView;

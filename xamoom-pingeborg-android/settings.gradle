@@ -1,1 +1,1 @@
-include ':app', ':qrcodereaderview'
+include ':app', ':qrcodereaderview', ':xamoomsdk'

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="APIKEY">0UR-GR34T-D3V-AP1-K3Y-H3LLY34H</string>
+    <string name="XDEVKEY">!chB1nS031nT0ll3rS3cur1tyK3yG44444nZT0ll</string>
+    <string name="contentID">e9c917086aca465eb454e38c0146428b</string>
+    <string name="qrMarker">7qpqr</string>
+    <string name="beaconMajor">54222</string>
+    <string name="beaconMinor">39361</string>
+</resources>

@@ -53,7 +53,7 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
         args.putString(ARG_PARAM2, description);
         args.putString(ARG_PARAM3, imageUrl);
         args.putDouble(ARG_PARAM4, location.getLatitude());
-        args.putDouble(ARG_PARAM5, location.getLatitude());
+        args.putDouble(ARG_PARAM5, location.getLongitude());
         args.putFloat(ARG_PARAM6, distance);
         fragment.setArguments(args);
         return fragment;
@@ -74,7 +74,8 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
             lat = getArguments().getDouble(ARG_PARAM4);
             lon = getArguments().getDouble(ARG_PARAM5);
             mSpotLocation = new Location();
-            //TODO check when sdk updated
+            mSpotLocation.setLatitude(lat);
+            mSpotLocation.setLongitude(lon);
             mDistance = getArguments().getFloat(ARG_PARAM6);
         }
     }
