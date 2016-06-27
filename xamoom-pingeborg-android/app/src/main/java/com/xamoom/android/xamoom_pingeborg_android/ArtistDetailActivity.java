@@ -239,7 +239,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
                 });
             }
         } else if (locationIdentifier != null) {
-            if (mMajor < 0) {
+            if (mMajor != 0) {
                 Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
 
                 EnduserApi.getSharedInstance().getContentByBeacon(mMajor, Integer.parseInt(locationIdentifier), new APICallback<Content, List<Error>>() {
