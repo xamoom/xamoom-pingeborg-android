@@ -109,6 +109,12 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
                         final String newUrl = ucon.getHeaderField("Location");
                         ucon.disconnect();
 
+                        if (newUrl == null) {
+                            Uri fallbackUri = Uri.parse(url[0]);
+                            openInBrowser(null, fallbackUri.getLastPathSegment());
+                            return;
+                        }
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -228,25 +234,40 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
                 });
             }
         } else if (locationIdentifier != null) {
-            if (mMajor == 0) {
+            if (mMajor < 0) {
                 Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
+
+                EnduserApi.getSharedInstance().getContentByBeacon(mMajor, Integer.parseInt(locationIdentifier), new APICallback<Content, List<Error>>() {
+                    @Override
+                    public void finished(Content result) {
+                        //save artist
+                        Global.getInstance().saveArtist(result.getId());
+                        setupXamoomContentFrameLayout(result);
+                    }
+
+                    @Override
+                    public void error(List<Error> error) {
+                        openInBrowser(contentId, locationIdentifier);
+                    }
+                });
             } else {
                 Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail with iBeacon", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
+
+                EnduserApi.getSharedInstance().getContentByLocationIdentifier(locationIdentifier, new APICallback<Content, List<Error>>() {
+                    @Override
+                    public void finished(Content result) {
+                        Global.getInstance().saveArtist(result.getId());
+                        setupXamoomContentFrameLayout(result);
+                    }
+
+                    @Override
+                    public void error(List<Error> error) {
+                        openInBrowser(contentId, locationIdentifier);
+                    }
+                });
             }
 
-            EnduserApi.getSharedInstance().getContentByBeacon(mMajor, Integer.parseInt(locationIdentifier), new APICallback<Content, List<Error>>() {
-                @Override
-                public void finished(Content result) {
-                    //save artist
-                    Global.getInstance().saveArtist(result.getId());
-                    setupXamoomContentFrameLayout(result);
-                }
 
-                @Override
-                public void error(List<Error> error) {
-                    openInBrowser(contentId, locationIdentifier);
-                }
-            });
         } else {
             Log.w(Global.DEBUG_TAG, "There is no mContentId or mLocationIdentifier");
             finish();

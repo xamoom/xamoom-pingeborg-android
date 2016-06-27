@@ -22,7 +22,6 @@ public class XamoomPingeborgApp extends Application {
     private static final int BEACON_NOTIFICATION_ID = 1;
     public static final String BEACON_NOTIFICATION = "BEACON_NOTIFICATION";
 
-
     @Override
     public void onCreate() {
         super.onCreate();
