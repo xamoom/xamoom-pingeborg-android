@@ -6,6 +6,7 @@ import android.content.ServiceConnection;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import org.altbeacon.beacon.Beacon;
@@ -142,7 +143,7 @@ public class XamoomBeaconService implements BootstrapNotifier, RangeNotifier, Be
             intent.putParcelableArrayListExtra(BEACONS, beacons);
         }
 
-        mContext.sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 
     /*

@@ -9,9 +9,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -21,6 +23,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.content.res.TypedArrayUtils;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -138,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements
         //ask for permission
         getLocationPermission();
 
-        registerReceiver(new BroadcastReceiver() {
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 XamoomBeaconService.getInstance(getApplicationContext()).startRangingBeacons();
@@ -155,8 +159,8 @@ public class MainActivity extends AppCompatActivity implements
             mIsFromBeaconNotification = getIntent().getExtras().getBoolean(XamoomPingeborgApp.BEACON_NOTIFICATION);
         }
 
-        registerReceiver(mFoundBeaconBroadCastReciever, new IntentFilter(XamoomBeaconService.FOUND_BEACON_BROADCAST));
-        registerReceiver(mExitBroadCastReciever, new IntentFilter(XamoomBeaconService.EXIT_REGION_BROADCAST));
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mFoundBeaconBroadCastReciever, new IntentFilter(XamoomBeaconService.FOUND_BEACON_BROADCAST));
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mExitBroadCastReciever, new IntentFilter(XamoomBeaconService.EXIT_REGION_BROADCAST));
         XamoomBeaconService.getInstance(getApplicationContext()).startRangingBeacons();
     }
 
@@ -181,8 +185,8 @@ public class MainActivity extends AppCompatActivity implements
         getIntent().removeExtra(XamoomPingeborgApp.BEACON_NOTIFICATION);
 
         XamoomBeaconService.getInstance(getApplicationContext()).stopRangingBeacons();
-        unregisterReceiver(mFoundBeaconBroadCastReciever);
-        unregisterReceiver(mExitBroadCastReciever);
+        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mFoundBeaconBroadCastReciever);
+        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mExitBroadCastReciever);
     }
 
     public void setupNavigationDrawer(NavigationView navigationView) {
@@ -679,7 +683,9 @@ public class MainActivity extends AppCompatActivity implements
     private final BroadcastReceiver mExitBroadCastReciever = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            mSnackbar.dismiss();
+            if (mSnackbar != null) {
+                mSnackbar.dismiss();
+            }
             mLastBeacon = null;
         }
     };
