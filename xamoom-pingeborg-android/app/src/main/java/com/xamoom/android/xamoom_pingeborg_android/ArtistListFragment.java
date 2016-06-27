@@ -31,9 +31,6 @@ import java.util.List;
 import at.rags.morpheus.Error;
 import jp.wasabeef.glide.transformations.GrayscaleTransformation;
 
-/**
- * TODO
- */
 public class ArtistListFragment extends Fragment {
     private final static String TAG = ArtistListFragment.class.getSimpleName();
     private final static int PAGE_SIZE = 7;
