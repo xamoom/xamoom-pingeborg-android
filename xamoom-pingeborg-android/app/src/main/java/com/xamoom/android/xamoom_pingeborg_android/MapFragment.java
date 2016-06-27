@@ -40,11 +40,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.xamoom.android.xamoomsdk.APICallback;
 import com.xamoom.android.xamoomsdk.APIListCallback;
 import com.xamoom.android.xamoomsdk.EnduserApi;
 import com.xamoom.android.xamoomsdk.Enums.SpotFlags;
 import com.xamoom.android.xamoomsdk.Resource.Content;
 import com.xamoom.android.xamoomsdk.Resource.Spot;
+import com.xamoom.android.xamoomsdk.Resource.Style;
 
 
 import java.io.UnsupportedEncodingException;
@@ -370,7 +372,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     new APIListCallback<List<Spot>, List<Error>>() {
                 @Override
                 public void finished(List<Spot> result, String cursor, boolean hasMore) {
-                    getDataFromSpotMap(result);
+                    downloadStyle(result);
                 }
 
                 @Override
@@ -381,28 +383,32 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    public void downloadStyle(final List<Spot> result) {
+        EnduserApi.getSharedInstance().getStyle(result.get(0).getSystem().getId(), new APICallback<Style, List<Error>>() {
+            @Override
+            public void finished(Style style) {
+                String iconString = style.getCustomMarker();
+                mMarkerIcon = getIconFromBase64(iconString);
+                getDataFromSpotMap(result);
+            }
+
+            @Override
+            public void error(List<Error> error) {
+                getDataFromSpotMap(result);
+            }
+        });
+    }
     /**
      * Adds Makers to map with the right mapMarker.
      *
      * @param result List of spots
      */
     public void getDataFromSpotMap(List<Spot> result) {
-        //get the icon for the mapMarker (drawable image (eg. png) or SVG
-        /*
-        if (result.getStyle().getCustomMarker() != null) {
-            String iconString = result.getStyle().getCustomMarker();
-            mMarkerIcon = getIconFromBase64(iconString);
-        } else {
-            mMarkerIcon = BitmapFactory.decodeResource(getActivity().getResources(), com.xamoom.android.xamoomcontentblocks.R.drawable.ic_default_map_marker);
+        if (mMarkerIcon == null) {
+            mMarkerIcon = BitmapFactory.decodeResource(getActivity().getResources(), com.xamoom.android.xamoomsdk.R.drawable.ic_default_map_marker);
             float imageRatio = (float) mMarkerIcon.getWidth() / (float) mMarkerIcon.getHeight();
             mMarkerIcon = Bitmap.createScaledBitmap(mMarkerIcon, 70, (int) (70 / imageRatio), false);
         }
-        */
-        mMarkerIcon = BitmapFactory.decodeResource(getActivity().getResources(),
-                com.xamoom.android.xamoomsdk.R.drawable.ic_default_map_marker);
-        //todo marker
-        float imageRatio = (float) mMarkerIcon.getWidth() / (float) mMarkerIcon.getHeight();
-        mMarkerIcon = Bitmap.createScaledBitmap(mMarkerIcon, 70, (int) (70 / imageRatio), false);
 
         //show all markers
         for (Spot s : result) {
@@ -517,10 +523,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     public Bitmap getIconFromBase64(String base64String) {
         Bitmap icon = null;
-        byte[] data1;
-        byte[] data2 = "".getBytes();
-        String decodedString1 = "";
-        String decodedString2 = "";
+        byte[] data;
         float newImageWidth = 25.0f;
 
         //image will be resized depending on the density of the screen
@@ -532,21 +535,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             return null;
 
         try {
-            //encode 2 times
-            data1 = Base64.decode(base64String, Base64.DEFAULT);
-            decodedString1 = new String(data1, "UTF-8");
-
             //get rid of image/xxxx base64,
-            int index = decodedString1.indexOf("base64,");
-            String decodedString1WithoutPrefix = decodedString1.substring(index + 7);
+            int index = base64String.indexOf("base64,");
+            String base64StringWithoutPrefix = base64String.substring(index + 7);
 
-            data2 = Base64.decode(decodedString1WithoutPrefix, Base64.DEFAULT);
-            decodedString2 = new String(data2, "UTF-8");
+            data = Base64.decode(base64StringWithoutPrefix, Base64.DEFAULT);
 
-            if (decodedString1.contains("data:image/svg+xml")) {
+            if (base64String.contains("data:image/svg+xml")) {
                 //svg stuff
                 SVG svg = null;
-                svg = SVG.getFromString(decodedString2);
+                svg = SVG.getFromString(base64String);
 
                 if (svg != null) {
                     //resize svg
@@ -558,18 +556,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     Canvas canvas1 = new Canvas(icon);
                     svg.renderToCanvas(canvas1);
                 }
-            } else if (decodedString1.contains("data:image/")) {
+            } else if (base64String.contains("data:image/")) {
                 //normal image stuff
-                icon = BitmapFactory.decodeByteArray(data2, 0, data2.length);
+                icon = BitmapFactory.decodeByteArray(data, 0, data.length);
                 //resize the icon
                 double imageRatio = (double) icon.getWidth() / (double) icon.getHeight();
                 double newHeight = newImageWidth / imageRatio;
                 icon = Bitmap.createScaledBitmap(icon, (int) newImageWidth, (int) newHeight, false);
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return BitmapFactory.decodeResource(getActivity().getResources(),
-                    com.xamoom.android.xamoomsdk.R.drawable.ic_default_map_marker);
         } catch (SVGParseException e ) {
             e.printStackTrace();
             BitmapFactory.decodeResource(getActivity().getResources(),
