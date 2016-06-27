@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements
     private final static int LOCATION_PERMISSION_CODE = 2;
     private final static int CAMERA_PERMISSION_CODE = 3;
 
+    private View mView;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private FloatingActionButton mQRScannerFAB;
@@ -88,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements
         Log.v(Global.DEBUG_TAG, "onCreate");
 
         setContentView(R.layout.activity_main);
+
+        mView = findViewById(R.id.main_content);
 
         getSupportFragmentManager().addOnBackStackChangedListener(this);
 
@@ -568,7 +571,8 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void error(List<Error> error) {
-                //TODO errorhandling
+                Snackbar snackbar = Snackbar.make(mView, "Error loading data.", Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
             }
         });
     }

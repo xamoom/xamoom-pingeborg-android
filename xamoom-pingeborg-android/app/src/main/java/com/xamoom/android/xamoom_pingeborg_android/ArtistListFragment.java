@@ -2,6 +2,7 @@ package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +37,7 @@ public class ArtistListFragment extends Fragment {
     private final static int PAGE_SIZE = 7;
 
     private static ArtistListFragment mInstance;
+    private View mView;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private List<Content> mContentList = new LinkedList<>();
@@ -68,8 +70,8 @@ public class ArtistListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_artist_list, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.artistListRecyclerView);
+        mView = inflater.inflate(R.layout.fragment_artist_list, container, false);
+        mRecyclerView = (RecyclerView) mView.findViewById(R.id.artistListRecyclerView);
         setupRecyclerView(mRecyclerView);
 
         //check if the contentList is already loaded
@@ -81,7 +83,7 @@ public class ArtistListFragment extends Fragment {
             setupContentList();
         }
 
-        return view;
+        return mView;
     }
 
     @Override
@@ -162,6 +164,8 @@ public class ArtistListFragment extends Fragment {
                 @Override
                 public void error(List<Error> error) {
                     Log.e(Global.DEBUG_TAG, "Error:" + error);
+                    Snackbar snackbar = Snackbar.make(mView, "Error loading data.", Snackbar.LENGTH_INDEFINITE);
+                    snackbar.show();
                     isLoading = false;
                 }
             });
@@ -198,7 +202,8 @@ public class ArtistListFragment extends Fragment {
 
             @Override
             public void error(List<Error> error) {
-                //TODO errorhandling
+                Snackbar snackbar = Snackbar.make(mView, "Error loading data.", Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
             }
         });
     }

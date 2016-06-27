@@ -5,12 +5,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
@@ -38,6 +40,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
     public static final String LOCATION_IDENTIFIER = "0001";
     public static final String MAJOR = "0002";
 
+    private View mView;
     private String mContentId;
     private String mLocationIdentifier;
     private int mMajor;
@@ -48,6 +51,8 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
         setContentView(R.layout.activity_artist_detail);
 
         Log.v(Global.DEBUG_TAG, "ArtistDetailActivity - onCreate");
+
+        mView = findViewById(R.id.main_content);
 
         //set statusbar color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -303,7 +308,8 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
 
             @Override
             public void error(List<Error> error) {
-                //TODO errorhandling
+                Snackbar snackbar = Snackbar.make(mView, "Error loading data.", Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
             }
         });
     }

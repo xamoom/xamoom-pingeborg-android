@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Debug;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -378,6 +379,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 @Override
                 public void error(List<Error> error) {
                     mProgressBar.setVisibility(View.GONE);
+                    Snackbar snackbar = Snackbar.make(mCoordinaterLayout, "Error loading data.", Snackbar.LENGTH_INDEFINITE);
+                    snackbar.show();
                 }
             });
         }
