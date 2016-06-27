@@ -308,7 +308,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements XamoomCon
 
             @Override
             public void error(List<Error> error) {
-                Snackbar snackbar = Snackbar.make(mView, "Error loading data.", Snackbar.LENGTH_INDEFINITE);
+                Snackbar snackbar = Snackbar.make(mView, R.string.error_message_api_call_failed, Snackbar.LENGTH_INDEFINITE);
                 snackbar.show();
             }
         });

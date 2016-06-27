@@ -164,7 +164,7 @@ public class ArtistListFragment extends Fragment {
                 @Override
                 public void error(List<Error> error) {
                     Log.e(Global.DEBUG_TAG, "Error:" + error);
-                    Snackbar snackbar = Snackbar.make(mView, "Error loading data.", Snackbar.LENGTH_INDEFINITE);
+                    Snackbar snackbar = Snackbar.make(mView, R.string.error_message_api_call_failed, Snackbar.LENGTH_INDEFINITE);
                     snackbar.show();
                     isLoading = false;
                 }
@@ -202,7 +202,7 @@ public class ArtistListFragment extends Fragment {
 
             @Override
             public void error(List<Error> error) {
-                Snackbar snackbar = Snackbar.make(mView, "Error loading data.", Snackbar.LENGTH_INDEFINITE);
+                Snackbar snackbar = Snackbar.make(mView, R.string.error_message_api_call_failed, Snackbar.LENGTH_INDEFINITE);
                 snackbar.show();
             }
         });

@@ -39,5 +39,6 @@
 
     <string name="bluetooth_dialog_title">Activate Bluetooth</string>
     <string name="bluetooth_enable_text">Discover artists via iBeacons with low energy Bluetooth.</string>
+    <string name="error_message_api_call_failed">Error loading data</string>
 
 </resources>

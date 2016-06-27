@@ -32,5 +32,6 @@
     <string name="beacon_notification_title">Entdecke lokale Künstler</string>
     <string name="bluetooth_enable_text">Entdecke neue Künstler via IBeacons mit low energy Bluetooth.</string>
     <string name="bluetooth_dialog_title">Aktiviere Bluetooth</string>
+    <string name="error_message_api_call_failed">Fehler beim Laden</string>
 
 </resources>
