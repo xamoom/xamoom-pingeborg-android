@@ -550,7 +550,8 @@ public class MainActivity extends AppCompatActivity implements
         try {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.XamoomContentFrameLayout, fragment)
+                    .replace(R.id.mainFrameLayout, fragment)
+                    .addToBackStack(null)
                     .commit();
         } catch (Exception e) {
             e.printStackTrace();
