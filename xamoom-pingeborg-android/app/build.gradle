@@ -8,8 +8,8 @@ android {
         applicationId "com.xamoom.android.xamoom_pingeborg_android"
         minSdkVersion 18
         targetSdkVersion 23
-        versionCode 10
-        versionName "0.4.0"
+        versionCode 11
+        versionName "0.4.1"
         multiDexEnabled true
     }
     buildTypes {
