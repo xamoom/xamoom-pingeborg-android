@@ -367,10 +367,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             googleMap.clear();
             addMarkersToMap();
         } else {
-            ArrayList<String> tags = new ArrayList<>();
-            tags.add("showAllTheSpots");
-            EnduserApi.getSharedInstance().getSpotsByTags(tags, 300, null, EnumSet.of(SpotFlags.HAS_LOCATION), null,
-                    new APIListCallback<List<Spot>, List<Error>>() {
+            downloadAllSpots(null, new APIListCallback<List<Spot>, List<Error>>() {
                 @Override
                 public void finished(List<Spot> result, String cursor, boolean hasMore) {
                     downloadStyle(result);
@@ -384,6 +381,32 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 }
             });
         }
+    }
+
+    private void downloadAllSpots(String cursor, final APIListCallback<List<Spot>, List<Error>> callback) {
+        final ArrayList<Spot> allSpots = new ArrayList<>();
+
+        ArrayList<String> tags = new ArrayList<>();
+        tags.add("showAllTheSpots");
+        EnduserApi.getSharedInstance().getSpotsByTags(tags, 100, cursor, EnumSet.of(SpotFlags.HAS_LOCATION), null,
+                new APIListCallback<List<Spot>, List<Error>>() {
+                    @Override
+                    public void finished(List<Spot> result, String cursor, boolean hasMore) {
+                        allSpots.addAll(result);
+                        if (hasMore) {
+                            downloadAllSpots(cursor, callback);
+                        }
+
+                        callback.finished(allSpots, null, false);
+                    }
+
+                    @Override
+                    public void error(List<Error> error) {
+                        mProgressBar.setVisibility(View.GONE);
+                        Snackbar snackbar = Snackbar.make(mCoordinaterLayout, R.string.error_message_api_call_failed, Snackbar.LENGTH_INDEFINITE);
+                        snackbar.show();
+                    }
+                });
     }
 
     public void downloadStyle(final List<Spot> result) {
