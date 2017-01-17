@@ -37,11 +37,12 @@ import retrofit2.Retrofit;
 @LargeTest
 public class IntegrationTest extends InstrumentationTestCase {
   private static final String TAG = IntegrationTest.class.getSimpleName();
-  private static final String API_URL = "https://xamoom-cloud-dev.appspot.com/";
+  private static final String API_URL = "https://localhost:9000/";
 
   private EnduserApi api;
-  private String mQRMarker;
-  private String mContentId;
+  private String mQRMarker = "";
+  private String mContentId = "";
+  private String systemId = "";
 
   @Before
   public void setUp() {
@@ -51,8 +52,6 @@ public class IntegrationTest extends InstrumentationTestCase {
       public Response intercept(Chain chain) throws IOException {
         Request request = chain.request().newBuilder()
             .addHeader("Content-Type", "application/vnd.api+json")
-            .addHeader("APIKEY", InstrumentationRegistry.getContext().getResources().getString(R.string.APIKEY))
-            .addHeader("X-DEVKEY", InstrumentationRegistry.getContext().getString(R.string.XDEVKEY))
             .build();
         return chain.proceed(request);
       }
@@ -65,9 +64,6 @@ public class IntegrationTest extends InstrumentationTestCase {
         .build();
 
     api = new EnduserApi(retrofit);
-
-    mQRMarker = InstrumentationRegistry.getContext().getResources().getString(R.string.qrMarker);
-    mContentId =  InstrumentationRegistry.getContext().getResources().getString(R.string.contentID);
   }
 
   @Test
