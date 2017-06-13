@@ -5,8 +5,6 @@
     <string name="title_activity_artist_detail" translatable="false">ArtistDetailActivity</string>
     <string name="title_activity_qrcode_scanner">QRCodeScannerActivity</string>
 
-    <string name="pingeborg_carinthia_system_name">pingeb.org Carinthia</string>
-
     <string name="action_refresh" translatable="false">Refresh</string>
     <string name="menu_item_artists_name">Artists</string>
     <string name="menu_item_map_name">Map</string>

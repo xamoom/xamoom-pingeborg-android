@@ -3,8 +3,6 @@
 
     <string name="title_activity_qrcode_scanner">QRCodeScannerActivity</string>
 
-    <string name="pingeborg_carinthia_system_name">pingeb.org Kärnten</string>
-
     <string name="menu_item_artists_name">Künstler</string>
     <string name="menu_item_map_name">Map</string>
     <string name="menu_item_about_name">Über pingeb.org</string>

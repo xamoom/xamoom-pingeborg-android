@@ -170,11 +170,11 @@ public class Global {
         switch (id) {
             case 0:
                 mAboutPage = mContext.getString(R.string.pingeborg_carinthia_about_page_id);
-                mSystemName = mContext.getString(R.string.pingeborg_carinthia_system_name);
+                mSystemName = mContext.getString(R.string.app_name);
                 break;
             default:
                 mAboutPage = mContext.getString(R.string.pingeborg_carinthia_about_page_id);
-                mSystemName = mContext.getString(R.string.pingeborg_carinthia_system_name);
+                mSystemName = mContext.getString(R.string.app_name);
                 break;
         }
         mCurrentSystem = id;
