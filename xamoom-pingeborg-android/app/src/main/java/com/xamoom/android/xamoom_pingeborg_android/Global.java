@@ -15,6 +15,7 @@ public class Global {
     private static final String IS_FIRST_START_KEY = "checkFirstStart.android.xamoom.at";
     private static final String FIRST_START_INSTRUCTION_KEY = "checkFirstStartInstruction.android.xamoom.at";
     private static final String FIRST_START_MAP_INSTRUCTION_KEY = "checkFirstStartMapInstruction.android.xamoom.at";
+    public static final String BLUETOOTH_NOTIFICATION_MUTED = "bluetoothNotificationMuted.android.xamoom.at";
 
     private static Global mInstance;
 
