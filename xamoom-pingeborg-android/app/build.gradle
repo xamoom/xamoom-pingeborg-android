@@ -30,7 +30,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:9.4.0'
     compile 'com.google.android.gms:play-services-analytics:9.4.0'
     compile 'jp.wasabeef:glide-transformations:1.0.6@aar'
-    compile 'com.xamoom.android:xamoomsdk:3.2.4'
+    compile 'com.xamoom.android:xamoomsdk:3.2.5'
     compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.2.3@aar'
     compile 'org.altbeacon:android-beacon-library:2.7'
     compile project(path: ':qrcodereaderview')
