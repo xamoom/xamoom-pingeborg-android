@@ -68,7 +68,8 @@ public class MainActivity extends AppCompatActivity implements
         XamoomContentFragment.OnXamoomContentFragmentInteractionListener,
         FragmentManager.OnBackStackChangedListener,
         SpotListFragment.OnSpotListFragmentInteractionListener,
-        MapFragment.OnMapFragmentInteractionListener {
+        MapFragment.OnMapFragmentInteractionListener,
+        ArtistListFragment.ArtistListInteractionListener {
 
   public final static int LOCATION_IDENTIFIER_REQUEST_CODE = 1;
   private final static int LOCATION_PERMISSION_CODE = 2;
@@ -719,11 +720,11 @@ public class MainActivity extends AppCompatActivity implements
     context.startActivity(intent);
   }
 
-  private void openArtistDetailView(String contentId) {
+  private void openArtistDetailView(Content content) {
     Context context = getApplicationContext();
     Intent intent = new Intent(context, ArtistDetailActivity.class);
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    intent.putExtra(ArtistDetailActivity.CONTENT_ID,contentId);
+    //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.putExtra(ArtistDetailActivity.CONTENT, content);
     context.startActivity(intent);
   }
 
@@ -746,7 +747,9 @@ public class MainActivity extends AppCompatActivity implements
                 public void onClick(View v) {
                   //open ArtistDetailActivity when clicking on snackbar
                   Global.getInstance().saveArtist(contentId);
-                  openArtistDetailView(contentId);
+                  Content content = new Content();
+                  content.setId(contentId);
+                  openArtistDetailView(content);
                 }
               })
               .show();
@@ -782,5 +785,10 @@ public class MainActivity extends AppCompatActivity implements
       // other 'case' lines to check for other
       // permissions this app might request
     }
+  }
+
+  @Override
+  public void didClickContent(Content content) {
+    openArtistDetailView(content);
   }
 }
