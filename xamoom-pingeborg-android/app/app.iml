@@ -111,7 +111,7 @@
     <orderEntry type="library" exported="" name="play-services-base-9.4.0" level="project" />
     <orderEntry type="library" exported="" name="gson-2.6.2" level="project" />
     <orderEntry type="library" exported="" name="gpuimage-library-1.2.3" level="project" />
-    <orderEntry type="library" exported="" name="android-beacon-library-2.7" level="project" />
+    <orderEntry type="library" exported="" name="android-beacon-library-2.10" level="project" />
     <orderEntry type="library" exported="" name="glide-transformations-1.0.6" level="project" />
     <orderEntry type="library" exported="" name="play-services-maps-9.4.0" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-24.2.1" level="project" />
