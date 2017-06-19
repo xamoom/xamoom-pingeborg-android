@@ -29,22 +29,32 @@ public class XamoomPingeborgApp extends Application {
     super.onCreate();
     EnduserApi.getSharedInstance(getResources().getString(R.string.apiKey), getApplicationContext());
     XamoomBeaconService.getInstance(getApplicationContext()).startBeaconService(MAJOR_ID);
-    XamoomBeaconService.getInstance(getApplicationContext()).automaticRanging = true;
+    XamoomBeaconService.getInstance(getApplicationContext()).automaticRanging = false;
 
-    LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mExitRegionBroadCastReciever, new IntentFilter(XamoomBeaconService.EXIT_REGION_BROADCAST));
-    LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mRangeBroadCastReceiver, new IntentFilter(XamoomBeaconService.FOUND_BEACON_BROADCAST));
+    LocalBroadcastManager.getInstance(getApplicationContext())
+            .registerReceiver(mEnterRegionBroadCastReciever, new IntentFilter(XamoomBeaconService.ENTER_REGION_BROADCAST));
+    LocalBroadcastManager.getInstance(getApplicationContext())
+            .registerReceiver(mExitRegionBroadCastReciever, new IntentFilter(XamoomBeaconService.EXIT_REGION_BROADCAST));
+    LocalBroadcastManager.getInstance(getApplicationContext()).
+            registerReceiver(mRangeBroadCastReceiver, new IntentFilter(XamoomBeaconService.FOUND_BEACON_BROADCAST));
   }
 
   private final BroadcastReceiver mRangeBroadCastReceiver = new BroadcastReceiver() {
     @Override
     public void onReceive(Context context, Intent intent) {
       ArrayList<Beacon> beacons = intent.getExtras().getParcelableArrayList(XamoomBeaconService.BEACONS);
-
-      Log.v("BEACON", "Ranging...." + String.valueOf(beacons));
+      Log.v(TAG, "Ranging...." + String.valueOf(beacons));
     }
   };
 
-  private final BroadcastReceiver mExitRegionBroadCastReciever = new BroadcastReceiver() {
+  private final BroadcastReceiver mEnterRegionBroadCastReciever = new BroadcastReceiver() {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      sendBeaconNotification();
+    }
+  };
+
+    private final BroadcastReceiver mExitRegionBroadCastReciever = new BroadcastReceiver() {
     @Override
     public void onReceive(Context context, Intent intent) {
       Log.v("BEACON", "Did exit");
