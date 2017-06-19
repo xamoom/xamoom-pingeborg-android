@@ -64,8 +64,13 @@
                       android:host="xm.gl" />
                 <data android:scheme="http"
                     android:host="pingeb.org" />
+                <data android:scheme="https"
+                      android:host="pingeb.org" />
                 <data android:scheme="http"
-                    android:host="*.pingeb.org" />
+                    android:host="m.pingeb.org" />
+                <data android:scheme="https"
+                      android:host="m.pingeb.org" />
+
             </intent-filter>
 
         </activity>

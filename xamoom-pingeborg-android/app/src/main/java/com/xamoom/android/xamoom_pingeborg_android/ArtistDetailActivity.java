@@ -120,8 +120,8 @@ public class ArtistDetailActivity extends AppCompatActivity implements
     final String[] url = {intent.getDataString()};
 
     Analytics.getInstance(this).sendEvent("App", "NFC Scan in App", "User scanned an NFC Sticker");
-
-    if(url[0].contains("pingeb.org")) {
+    
+    if(url[0].contains("pingeb.org") && !url[0].contains("m.pingeb.org")) { // compat for old pingeb.org stickers
       Thread thread = new Thread() {
         @Override
         public void run() {
