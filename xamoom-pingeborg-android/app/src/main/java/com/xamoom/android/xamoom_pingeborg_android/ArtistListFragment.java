@@ -74,15 +74,7 @@ public class ArtistListFragment extends Fragment {
     mView = inflater.inflate(R.layout.fragment_artist_list, container, false);
     mRecyclerView = (RecyclerView) mView.findViewById(R.id.artistListRecyclerView);
     setupRecyclerView(mRecyclerView);
-
-    //check if the contentList is already loaded
-    if(mContentList.size() > 0) {
-      setupContentList();
-      mRecyclerView.getAdapter().notifyDataSetChanged();
-    } else {
-      downloadArtists();
-      setupContentList();
-    }
+    setupContentList();
 
     return mView;
   }
@@ -90,7 +82,13 @@ public class ArtistListFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    mRecyclerView.getAdapter().notifyDataSetChanged();
+
+    //check if the contentList is already loaded
+    if(mContentList.size() > 0) {
+      mRecyclerView.getAdapter().notifyDataSetChanged();
+    } else {
+      downloadArtists();
+    }
   }
 
   public void setupRecyclerView(final RecyclerView recyclerView) {
