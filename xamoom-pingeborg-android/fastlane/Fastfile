@@ -35,11 +35,14 @@ platform :android do
 
   desc "Submit a new Beta Build to Crashlytics Beta"
   lane :beta do
-    gradle(task: "assembleRelease")
-    crashlytics
-
-    # sh "your_script.sh"
-    # You can also use other beta testing services here
+    gradle(
+      task: ":app:assemble",
+      build_type: "Release"
+    )
+    supply(
+      track: "beta",
+      skip_upload_metadata: true
+    )
   end
 
   desc "Deploy a new version to the Google Play"
@@ -50,6 +53,7 @@ platform :android do
     )
     supply(
       track: "beta",
+      track_promote_to: "production",
       skip_upload_metadata: true
     )
   end
