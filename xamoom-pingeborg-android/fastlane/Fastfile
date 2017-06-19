@@ -19,12 +19,12 @@ platform :android do
   before_all do
     # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
     increment_version_code
-    git_commit(path: "./build.gradle", message: "Version Bump")
+    git_commit(path: "./app/build.gradle", message: "Version Bump")
     push_to_git_remote(
       remote: "origin",
       local_branch: "dev",
       remote_branch: "dev",
-      force: true,   
+      force: true,
     )
   end
 
