@@ -32,7 +32,7 @@
     <string name="Open">Open</string>
     <string name="Discover">discover</string>
 
-    <string name="beacon_notification_title">Music & Literature from Carinthia</string>
+    <string name="beacon_notification_title">Music &amp; Literature from Carinthia</string>
     <string name="beacon_notification_text">Discover in your pingeb.org App</string>
     <string name="beacon_notification_info">Near you</string>
 
