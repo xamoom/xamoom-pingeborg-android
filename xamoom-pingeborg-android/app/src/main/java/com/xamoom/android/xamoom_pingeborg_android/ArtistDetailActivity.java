@@ -240,7 +240,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements
       if(Global.getInstance().getSavedArtists().contains(contentId)) {
         Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mContentId: " + contentId);
 
-        EnduserApi.getSharedInstance().getContent(contentId, EnumSet.of(ContentFlags.PRIVATE), new APICallback<Content, List<Error>>() {
+        EnduserApi.getSharedInstance().getContent(contentId, new APICallback<Content, List<Error>>() {
           @Override
           public void finished(Content result) {
             setupXamoomContentFrameLayout(result, addToBackstack);
@@ -254,7 +254,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements
         });
       } else {
         Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mContentId: " + contentId);
-        EnduserApi.getSharedInstance().getContent(contentId, new APICallback<Content, List<Error>>() {
+        EnduserApi.getSharedInstance().getContent(contentId, EnumSet.of(ContentFlags.PRIVATE), new APICallback<Content, List<Error>>() {
           @Override
           public void finished(Content result) {
             setupXamoomContentFrameLayout(result, addToBackstack);
