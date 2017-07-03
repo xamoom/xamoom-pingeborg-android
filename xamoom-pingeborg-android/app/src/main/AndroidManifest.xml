@@ -28,6 +28,9 @@
 
         <meta-data android:name="android.max_aspect" android:value="2.1" />
 
+        <meta-data android:name="PW_APPID" android:value="694BB-4ABF9" />
+        <meta-data android:name="PW_PROJECT_ID" android:value="A640368099251" />
+
         <receiver
             android:name="com.google.android.gms.analytics.AnalyticsReceiver"
             android:enabled="true" >
@@ -40,6 +43,14 @@
             android:name="com.google.android.gms.analytics.AnalyticsService"
             android:enabled="true"
             android:exported="false" />
+
+        <receiver android:name=".Notifications.NotificationHandler">
+            <intent-filter>
+                <action android:name="XAMOOM_PUSH_HANDLER"></action>
+            </intent-filter>
+        </receiver>
+
+        <meta-data android:name="XAMOOM_PUSH_HANDLE" android:value="NotificationHandler"/>
 
         <activity
             android:name=".MainActivity"

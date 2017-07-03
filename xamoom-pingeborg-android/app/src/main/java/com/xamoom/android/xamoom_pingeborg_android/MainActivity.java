@@ -46,6 +46,9 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.xamoom.android.pushnotifications.XamoomNotificationReceiver;
+import com.xamoom.android.pushnotifications.XamoomPushActivity;
+import com.xamoom.android.xamoom_pingeborg_android.Notifications.NotificationFactory;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 import com.xamoom.android.xamoomsdk.APICallback;
 import com.xamoom.android.xamoomsdk.EnduserApi;
@@ -64,7 +67,7 @@ import java.util.List;
 
 import at.rags.morpheus.Error;
 
-public class MainActivity extends AppCompatActivity implements
+public class MainActivity extends XamoomPushActivity implements
         XamoomContentFragment.OnXamoomContentFragmentInteractionListener,
         FragmentManager.OnBackStackChangedListener,
         SpotListFragment.OnSpotListFragmentInteractionListener,
@@ -89,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Log.v(Global.DEBUG_TAG, "onCreate");
+
+    registerNotificationFactory(new NotificationFactory());
 
     setContentView(R.layout.activity_main);
 
@@ -715,6 +720,11 @@ public class MainActivity extends AppCompatActivity implements
     Context context = getApplicationContext();
     Intent intent = new Intent(context, ArtistDetailActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+    if (beacon == null) {
+      return;
+    }
+
     intent.putExtra(ArtistDetailActivity.LOCATION_IDENTIFIER, beacon.getId3().toString());
     intent.putExtra(ArtistDetailActivity.MAJOR, beacon.getId2().toString());
     context.startActivity(intent);
