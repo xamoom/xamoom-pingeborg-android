@@ -362,12 +362,16 @@ public class ArtistDetailActivity extends AppCompatActivity implements
   private Content addCustomHeader(Content content) {
     ArrayList<ContentBlock> contentBlocks = (ArrayList<ContentBlock>) content.getContentBlocks();
 
+    ContentBlock spacer = new ContentBlock();
+    spacer.setBlockType(0);
+
     ContentBlock titleBlock = new ContentBlock();
     titleBlock.setBlockType(-1);
     titleBlock.setTitle(content.getTitle());
     titleBlock.setText(content.getDescription());
 
-    contentBlocks.add(0, titleBlock);
+    contentBlocks.add(0, spacer);
+    contentBlocks.add(1, titleBlock);
 
     content.setContentBlocks(contentBlocks);
     return content;
