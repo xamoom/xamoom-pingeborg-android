@@ -171,42 +171,6 @@ public class ArtistListFragment extends Fragment {
     }
   }
 
-  private void setupXamoomContentFrameLayout(Content content) {
-    XamoomContentFragment fragment = XamoomContentFragment.newInstance(getResources().getString(R.string.youtubekey));
-    fragment.setEnduserApi(EnduserApi.getSharedInstance());
-    fragment.setContent(content);
-
-    try {
-      getActivity().getSupportFragmentManager()
-              .beginTransaction()
-              .replace(R.id.mainFrameLayout, fragment)
-              .addToBackStack(null)
-              .commit();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  public void downloadContent(String contentId, boolean full, final APICallback<Content, List<Error>> callback) {
-    EnumSet<ContentFlags> contentFlags = null;
-    if (!full) {
-      contentFlags = EnumSet.of(ContentFlags.PRIVATE);
-    }
-
-    EnduserApi.getSharedInstance().getContent(contentId, contentFlags, new APICallback<Content, List<Error>>() {
-      @Override
-      public void finished(Content result) {
-        callback.finished(result);
-      }
-
-      @Override
-      public void error(List<Error> error) {
-        Snackbar snackbar = Snackbar.make(mView, R.string.error_message_api_call_failed, Snackbar.LENGTH_INDEFINITE);
-        snackbar.show();
-      }
-    });
-  }
-
   /**
    * Adapter for recyclerView to display the artistList.
    *

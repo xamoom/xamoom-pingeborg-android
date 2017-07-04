@@ -365,13 +365,21 @@ public class ArtistDetailActivity extends AppCompatActivity implements
     ContentBlock spacer = new ContentBlock();
     spacer.setBlockType(0);
 
+    contentBlocks.add(0, spacer);
+    contentBlocks.add(1, spacer);
+
     ContentBlock titleBlock = new ContentBlock();
     titleBlock.setBlockType(-1);
     titleBlock.setTitle(content.getTitle());
-    titleBlock.setText(content.getDescription());
 
-    contentBlocks.add(0, spacer);
-    contentBlocks.add(1, titleBlock);
+    contentBlocks.add(2, titleBlock);
+    contentBlocks.add(3, spacer);
+
+    ContentBlock excerptBlock = new ContentBlock();
+    excerptBlock.setBlockType(-1);
+    excerptBlock.setText(content.getDescription());
+
+    contentBlocks.add(4, excerptBlock);
 
     content.setContentBlocks(contentBlocks);
     return content;
