@@ -44,13 +44,9 @@
             android:enabled="true"
             android:exported="false" />
 
-        <receiver android:name=".Notifications.NotificationHandler">
-            <intent-filter>
-                <action android:name="XAMOOM_PUSH_HANDLER"></action>
-            </intent-filter>
-        </receiver>
-
-        <meta-data android:name="XAMOOM_PUSH_HANDLE" android:value="NotificationHandler"/>
+        <receiver android:name="com.xamoom.android.xamoom_pingeborg_android.Notifications.NotificationHandler"></receiver>
+        <meta-data android:name="XAMOOM_PUSH_HANDLE"
+                   android:value="com.xamoom.android.xamoom_pingeborg_android.Notifications.NotificationHandler"/>
 
         <activity
             android:name=".MainActivity"
