@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -33,9 +32,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Stack;
 
 import at.rags.morpheus.Error;
 
@@ -49,14 +46,14 @@ public class ArtistDetailActivity extends AppCompatActivity implements
         XamoomContentFragment.OnXamoomContentFragmentInteractionListener {
   public static final String CONTENT = "0000";
   public static final String LOCATION_IDENTIFIER = "0001";
-  public static final String MAJOR = "0002";
+  public static final String MINOR = "0002";
 
   private View mView;
   private ProgressBar mProgressBar;
   private Content mContent;
   private String mLocationIdentifier;
   private ImageView mImageView;
-  private int mMajor;
+  private int mMinor;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -95,15 +92,13 @@ public class ArtistDetailActivity extends AppCompatActivity implements
     Intent myIntent = getIntent();
     mContent = myIntent.getParcelableExtra(CONTENT);
     mLocationIdentifier = myIntent.getStringExtra(LOCATION_IDENTIFIER);
-    if (myIntent.getStringExtra(MAJOR) != null) {
-      mMajor = Integer.parseInt(myIntent.getStringExtra(MAJOR));
-    }
+    mMinor = myIntent.getIntExtra(MINOR, 0);
 
     String contentId = null;
     if (mContent != null) {
       contentId = mContent.getId();
     }
-    if(contentId != null || mLocationIdentifier != null) {
+    if(contentId != null || mLocationIdentifier != null || mMinor != 0) {
       loadData(contentId, mLocationIdentifier, false);
     } else {
       onNewIntent(getIntent());
@@ -269,24 +264,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements
         });
       }
     } else if (locationIdentifier != null) {
-      if (mMajor != 0) {
         Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
-
-        EnduserApi.getSharedInstance().getContentByBeacon(mMajor, Integer.parseInt(locationIdentifier), new APICallback<Content, List<Error>>() {
-          @Override
-          public void finished(Content result) {
-            //save artist
-            Global.getInstance().saveArtist(result.getId());
-            setupXamoomContentFrameLayout(result, addToBackstack);
-          }
-
-          @Override
-          public void error(List<Error> error) {
-            openInBrowser(contentId, locationIdentifier);
-          }
-        });
-      } else {
-        Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail with iBeacon", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
 
         EnduserApi.getSharedInstance().getContentByLocationIdentifier(locationIdentifier, new APICallback<Content, List<Error>>() {
           @Override
@@ -300,16 +278,27 @@ public class ArtistDetailActivity extends AppCompatActivity implements
             openInBrowser(contentId, locationIdentifier);
           }
         });
-      }
+    } else if (mMinor != 0) {
+      Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail with iBeacon", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
 
+      EnduserApi.getSharedInstance().getContentByBeacon(Global.BEACON_MAJOR, mMinor, new APICallback<Content, List<Error>>() {
+        @Override
+        public void finished(Content result) {
+          //save artist
+          Global.getInstance().saveArtist(result.getId());
+          setupXamoomContentFrameLayout(result, addToBackstack);
+        }
 
+        @Override
+        public void error(List<Error> error) {
+          openInBrowser(contentId, locationIdentifier);
+        }
+      });
     } else {
       Log.w(Global.DEBUG_TAG, "There is no mContentId or mLocationIdentifier");
       finish();
     }
   }
-
-
 
   private void setupXamoomContentFrameLayout(Content content, boolean addToBackstack) {
     mContent = content;

@@ -8,13 +8,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -22,17 +19,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.content.res.TypedArrayUtils;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,7 +39,6 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.xamoom.android.pushnotifications.XamoomNotificationReceiver;
 import com.xamoom.android.pushnotifications.XamoomPushActivity;
 import com.xamoom.android.xamoom_pingeborg_android.Notifications.NotificationFactory;
 import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
@@ -58,7 +50,6 @@ import com.xamoom.android.xamoomsdk.Resource.Spot;
 
 import org.altbeacon.beacon.Beacon;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -725,8 +716,7 @@ public class MainActivity extends XamoomPushActivity implements
       return;
     }
 
-    intent.putExtra(ArtistDetailActivity.LOCATION_IDENTIFIER, beacon.getId3().toString());
-    intent.putExtra(ArtistDetailActivity.MAJOR, beacon.getId2().toString());
+    intent.putExtra(ArtistDetailActivity.MINOR, beacon.getId3().toInt());
     context.startActivity(intent);
   }
 
