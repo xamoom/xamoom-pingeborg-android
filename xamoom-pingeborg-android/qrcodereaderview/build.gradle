@@ -21,7 +21,7 @@ def gitUrl = 'https://github.com/dlazaro66/QRCodeReaderView/tree/master/QRCodeRe
 
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 25
     buildToolsVersion '25.0.0'
 
     defaultConfig {
