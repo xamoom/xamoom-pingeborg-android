@@ -8,8 +8,8 @@ android {
         applicationId "com.xamoom.android.xamoom_pingeborg_android"
         minSdkVersion 18
         targetSdkVersion 25
-        versionCode 32
-        versionName "1.5.3"
+        versionCode 33
+        versionName "1.5.4"
         multiDexEnabled true
     }
     signingConfigs {
