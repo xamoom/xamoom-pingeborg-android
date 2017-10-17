@@ -14,6 +14,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.xamoom.android.xamoomsdk.Resource.Location;
 
+import java.util.Locale;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -111,9 +113,14 @@ public class MapAdditionFragment extends android.support.v4.app.Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                        Uri.parse("google.navigation:q="+mSpotLocation.getLatitude()+","+mSpotLocation.getLongitude()));
-                startActivity(intent);
+                String urlString = String.format(Locale.US, "geo:0,0?q=%f,%f(%s)", mSpotLocation.getLatitude(),
+                    mSpotLocation.getLongitude(), mSpotName);
+                Uri gmmIntentUri = Uri.parse(urlString);
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(mapIntent);
+                }
             }
         });
 
