@@ -25,6 +25,7 @@ import com.xamoom.android.xamoomcontentblocks.XamoomContentFragment;
 import com.xamoom.android.xamoomsdk.APICallback;
 import com.xamoom.android.xamoomsdk.EnduserApi;
 import com.xamoom.android.xamoomsdk.Enums.ContentFlags;
+import com.xamoom.android.xamoomsdk.Enums.ContentReason;
 import com.xamoom.android.xamoomsdk.Resource.Content;
 import com.xamoom.android.xamoomsdk.Resource.ContentBlock;
 
@@ -93,6 +94,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements
     mContent = myIntent.getParcelableExtra(CONTENT);
     mLocationIdentifier = myIntent.getStringExtra(LOCATION_IDENTIFIER);
     mMinor = myIntent.getIntExtra(MINOR, 0);
+
 
     String contentId = null;
     if (mContent != null) {
@@ -281,7 +283,7 @@ public class ArtistDetailActivity extends AppCompatActivity implements
     } else if (mMinor != 0) {
       Analytics.getInstance(this).sendEvent("UX", "Open Artist Detail with iBeacon", "User opened artist detail activity with mLocationIdentifier: " + locationIdentifier);
 
-      EnduserApi.getSharedInstance().getContentByBeacon(Global.BEACON_MAJOR, mMinor, new APICallback<Content, List<Error>>() {
+      EnduserApi.getSharedInstance().getContentByBeacon(Global.BEACON_MAJOR, mMinor, null, null, ContentReason.NOTIFICATION_OPEN, new APICallback<Content, List<Error>>() {
         @Override
         public void finished(Content result) {
           //save artist

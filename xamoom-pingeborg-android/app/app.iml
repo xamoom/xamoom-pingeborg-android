@@ -108,7 +108,6 @@
     <orderEntry type="library" exported="" name="com.android.support:multidex-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-v13-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="org.jetbrains.kotlin:kotlin-stdlib-jre7:1.1.51@jar" level="project" />
-    <orderEntry type="library" exported="" name="com.squareup.okhttp3:okhttp:3.2.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.google.android.gms:play-services-analytics-11.0.4" level="project" />
     <orderEntry type="library" exported="" name="com.xamoom.android:htmltextview-1.0.8" level="project" />
     <orderEntry type="library" exported="" name="com.google.android.gms:play-services-tagmanager-v4-impl-11.0.4" level="project" />
@@ -119,14 +118,16 @@
     <orderEntry type="library" exported="" name="com.android.support:support-compat-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="com.google.android.gms:play-services-iid-11.0.4" level="project" />
     <orderEntry type="library" exported="" name="com.google.code.gson:gson:2.6.2@jar" level="project" />
-    <orderEntry type="library" exported="" name="com.squareup.retrofit2:retrofit:2.0.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.google.android.gms:play-services-basement-11.0.4" level="project" />
     <orderEntry type="library" exported="" name="org.jsoup:jsoup:1.10.3@jar" level="project" />
     <orderEntry type="library" exported="" name="com.xamoom.android:morpheus-0.4.3" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-core-utils-25.3.1" level="project" />
+    <orderEntry type="library" exported="" name="com.squareup.okio:okio:1.13.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-v4-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-fragment-25.3.1" level="project" />
+    <orderEntry type="library" exported="" name="com.squareup.retrofit2:retrofit:2.3.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-media-compat-25.3.1" level="project" />
+    <orderEntry type="library" exported="" name="com.squareup.okhttp3:okhttp:3.8.0@jar" level="project" />
     <orderEntry type="library" exported="" name="jp.wasabeef:glide-transformations-1.0.6" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:animated-vector-drawable-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="com.google.android.gms:play-services-gcm-11.0.4" level="project" />
@@ -138,16 +139,16 @@
     <orderEntry type="library" exported="" name="org.jetbrains.kotlin:kotlin-stdlib:1.1.51@jar" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:appcompat-v7-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="com.google.android.gms:play-services-maps-11.0.4" level="project" />
-    <orderEntry type="library" exported="" name="com.squareup.okio:okio:1.6.0@jar" level="project" />
-    <orderEntry type="library" exported="" name="com.xamoom.android:xamoomsdk-3.8.0" level="project" />
+    <orderEntry type="library" exported="" name="com.xamoom.android:xamoomsdk-3.9.0" level="project" />
     <orderEntry type="library" exported="" name="org.altbeacon:android-beacon-library-2.10" level="project" />
     <orderEntry type="library" exported="" name="org.jetbrains:annotations:13.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.google.android.gms:play-services-analytics-impl-11.0.4" level="project" />
+    <orderEntry type="library" exported="" name="com.android.support:support-annotations:27.0.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-vector-drawable-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:recyclerview-v7-25.3.1" level="project" />
-    <orderEntry type="library" exported="" name="com.android.support:support-annotations:25.3.1@jar" level="project" />
     <orderEntry type="library" exported="" name="com.google.android.gms:play-services-location-11.0.4" level="project" />
     <orderEntry type="library" exported="" name="com.github.bumptech.glide:glide:3.7.0@jar" level="project" />
+    <orderEntry type="library" exported="" name="com.google.android.exoplayer:exoplayer-core-2.6.1" level="project" />
     <orderEntry type="library" exported="" name="com.google.android.gms:play-services-base-11.0.4" level="project" />
     <orderEntry type="module" module-name="qrcodereaderview" exported="" />
   </component>
