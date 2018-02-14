@@ -12,7 +12,7 @@ android {
         applicationId "com.xamoom.android.xamoom_pingeborg_android"
         minSdkVersion 18
         targetSdkVersion 25
-        versionCode 43
+        versionCode 44
         versionName "1.5.9"
         multiDexEnabled true
     }
