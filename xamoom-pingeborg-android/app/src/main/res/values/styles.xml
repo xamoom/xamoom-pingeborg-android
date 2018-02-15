@@ -51,7 +51,7 @@
         <item name="facebook_background_color">@color/pingeborg_yellow</item>
         <item name="facebook_tint_color">@android:color/black</item>
         <item name="twitter_background_color">@color/pingeborg_yellow</item>
-        <item name="twitter_tint_color">@color/linkblock_default_tint_color</item>
+        <item name="twitter_tint_color">@android:color/black</item>
         <item name="web_background_color">@color/pingeborg_yellow</item>
         <item name="web_tint_color">@android:color/black</item>
         <item name="shop_background_color">@color/pingeborg_yellow</item>
