@@ -1,6 +1,7 @@
 package com.xamoom.android.xamoom_pingeborg_android;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +24,8 @@ import at.rags.morpheus.Error;
  */
 public class AboutFragment extends android.support.v4.app.Fragment {
 
-    XamoomContentFragment mFragment;
+    private XamoomContentFragment mFragment;
+    private View mView;
 
     /**
      * Use this factory method to create a new instance of
@@ -50,8 +52,8 @@ public class AboutFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.v(Global.DEBUG_TAG, "AboutFragment - onCreateView");
-        View view = inflater.inflate(R.layout.fragment_about, container, false);
-        return view;
+        mView = inflater.inflate(R.layout.fragment_about, container, false);
+        return mView;
     }
 
     @Override
@@ -79,7 +81,8 @@ public class AboutFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void error(List<Error> error) {
-                //TODO errorhandling
+                Snackbar snackbar = Snackbar.make(mView, "Error loading data.", Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
             }
         });
     }

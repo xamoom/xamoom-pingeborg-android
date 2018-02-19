@@ -19,4 +19,89 @@
         <item name="color">@color/black</item>
     </style>
 
+    <style name="AppTheme.CollapsedToolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColorSecondary">@android:color/black</item>
+    </style>
+    <style name="AppTheme.ExpandedToolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColor">@android:color/transparent</item>
+        <item name="android:textColorSecondary">@android:color/transparent</item>
+    </style>
+
+    <style name="ContentBlocksTheme.AudioPlayer" parent="ContentBlocksTheme">
+        <item name="android:background">@color/pingeborg_yellow</item>
+        <item name="android:textColor">@color/audio_player_tint_color</item>
+        <item name="audio_player_button_tint">@color/audio_player_tint_color</item>
+        <item name="audio_player_notification_background">@color/pingeborg_yellow</item>
+        <item name="audio_player_default_asset_drawable">@drawable/default_audioplayer_image</item>
+    </style>
+
+    <style name="ContentBlocksTheme.AudioPlayer.MovingBars">
+        <item name="barColor">@color/audio_player_tint_color</item>
+    </style>
+
+    <style name="ContentBlocksTheme.AudioPlayer.ProgressBar" parent="android:Widget.ProgressBar.Horizontal">
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:minHeight">6dp</item>
+        <item name="android:progressDrawable">@drawable/custom_song_progress_bar</item>
+        <item name="android:layoutDirection">ltr</item>
+    </style>
+
+    <style name="ContentBlocksTheme.Links" parent="ContentBlocksTheme">
+        <item name="facebook_background_color">@color/pingeborg_yellow</item>
+        <item name="facebook_tint_color">@android:color/black</item>
+        <item name="twitter_background_color">@color/pingeborg_yellow</item>
+        <item name="twitter_tint_color">@android:color/black</item>
+        <item name="web_background_color">@color/pingeborg_yellow</item>
+        <item name="web_tint_color">@android:color/black</item>
+        <item name="shop_background_color">@color/pingeborg_yellow</item>
+        <item name="shop_tint_color">@android:color/black</item>
+        <item name="wikipedia_background_color">@color/pingeborg_yellow</item>
+        <item name="wikipedia_tint_color">@android:color/black</item>
+        <item name="linkedin_background_color">@color/pingeborg_yellow</item>
+        <item name="linkedin_tint_color">@android:color/black</item>
+        <item name="flickr_background_color">@color/pingeborg_yellow</item>
+        <item name="flickr_tint_color">@android:color/black</item>
+        <item name="soundcloud_background_color">@color/pingeborg_yellow</item>
+        <item name="soundcloud_tint_color">@android:color/black</item>
+        <item name="itunes_background_color">@color/pingeborg_yellow</item>
+        <item name="itunes_tint_color">@android:color/black</item>
+        <item name="youtube_background_color">@color/pingeborg_yellow</item>
+        <item name="youtube_tint_color">@android:color/black</item>
+        <item name="google_background_color">@color/pingeborg_yellow</item>
+        <item name="google_tint_color">@android:color/black</item>
+        <item name="phone_background_color">@color/pingeborg_yellow</item>
+        <item name="phone_tint_color">@android:color/black</item>
+        <item name="email_background_color">@color/pingeborg_yellow</item>
+        <item name="email_tint_color">@android:color/black</item>
+        <item name="spotify_background_color">@color/pingeborg_yellow</item>
+        <item name="spotify_tint_color">@android:color/black</item>
+        <item name="navigation_background_color">@color/pingeborg_yellow</item>
+        <item name="navigation_tint_color">@android:color/black</item>
+        <item name="apple_background_color">@color/pingeborg_yellow</item>
+        <item name="apple_tint_color">@android:color/black</item>
+        <item name="android_background_color">@color/pingeborg_yellow</item>
+        <item name="android_tint_color">@android:color/black</item>
+        <item name="windows_background_color">@color/pingeborg_yellow</item>
+        <item name="windows_tint_color">@android:color/black</item>
+        <item name="instagram_background_color">@color/pingeborg_yellow</item>
+        <item name="instagram_tint_color">@android:color/black</item>
+        <item name="default_background_color">@color/pingeborg_yellow</item>
+        <item name="default_tint_color">@android:color/black</item>
+    </style>
+
+    <style name="ContentBlocksTheme.Ebook" parent="ContentBlocksTheme">
+        <item name="android:background">@color/pingeborg_yellow</item>
+        <item name="android:tint">@android:color/black</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="ContentBlocksTheme.Download" parent="ContentBlocksTheme">
+        <item name="calendar_background_color">@color/pingeborg_yellow</item>
+        <item name="calendar_tint_color">@android:color/black</item>
+        <item name="contact_background_color">@color/pingeborg_yellow</item>
+        <item name="contact_tint_color">@android:color/black</item>
+        <item name="default_background_color">@color/pingeborg_yellow</item>
+        <item name="default_tint_color">@android:color/black</item>
+    </style>
 </resources>

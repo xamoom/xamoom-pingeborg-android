@@ -5,8 +5,6 @@
     <string name="title_activity_artist_detail" translatable="false">ArtistDetailActivity</string>
     <string name="title_activity_qrcode_scanner">QRCodeScannerActivity</string>
 
-    <string name="pingeborg_carinthia_system_name">pingeb.org Carinthia</string>
-
     <string name="action_refresh" translatable="false">Refresh</string>
     <string name="menu_item_artists_name">Artists</string>
     <string name="menu_item_map_name">Map</string>
@@ -33,11 +31,14 @@
     <string name="pingeborg_cover_image_text" translatable="false">Pingeborg Cover Image</string>
     <string name="Open">Open</string>
     <string name="Discover">discover</string>
-    <string name="beacon_notification_title">Discover a local artist</string>
-    <string name="beacon_notification_text">Open pingeb.org app</string>
+
+    <string name="beacon_notification_title">Music &amp; Literature from Carinthia</string>
+    <string name="beacon_notification_text">Discover in your pingeb.org App</string>
     <string name="beacon_notification_info">Near you</string>
 
     <string name="bluetooth_dialog_title">Activate Bluetooth</string>
     <string name="bluetooth_enable_text">Discover artists via iBeacons with low energy Bluetooth.</string>
+    <string name="error_message_api_call_failed">Error loading data</string>
+    <string name="bluetooth_mute_button">Don\'t show again</string>
 
 </resources>

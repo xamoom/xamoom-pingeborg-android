@@ -17,16 +17,19 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Pingeborg" >
-        <!--meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAVyr_-KqwFpjoAKPW7li7UbFoL6ZENktY" /-->
+        android:theme="@style/Theme.Pingeborg">
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAVyr_-KqwFpjoAKPW7li7UbFoL6ZENktY" />
+            android:value="AIzaSyAwqlcbUB9bfmRQgt6u2fRAjpwCfvzoL0c" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <meta-data android:name="android.max_aspect" android:value="2.1" />
+
+        <meta-data android:name="PW_APPID" android:value="694BB-4ABF9" />
+        <meta-data android:name="PW_PROJECT_ID" android:value="A640368099251" />
 
         <receiver
             android:name="com.google.android.gms.analytics.AnalyticsReceiver"
@@ -41,23 +44,28 @@
             android:enabled="true"
             android:exported="false" />
 
+        <receiver android:name="com.xamoom.android.xamoom_pingeborg_android.Notifications.NotificationHandler"></receiver>
+        <meta-data android:name="XAMOOM_PUSH_HANDLE"
+                   android:value="com.xamoom.android.xamoom_pingeborg_android.Notifications.NotificationHandler"/>
+
         <activity
-            android:launchMode="singleInstance"
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                android:screenOrientation="portrait"
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ArtistDetailActivity"
-            android:label="@string/app_name"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
-            >
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+
 
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
@@ -68,8 +76,13 @@
                       android:host="xm.gl" />
                 <data android:scheme="http"
                     android:host="pingeb.org" />
+                <data android:scheme="https"
+                      android:host="pingeb.org" />
                 <data android:scheme="http"
-                    android:host="*.pingeb.org" />
+                    android:host="m.pingeb.org" />
+                <data android:scheme="https"
+                      android:host="m.pingeb.org" />
+
             </intent-filter>
 
         </activity>

@@ -3,8 +3,6 @@
 
     <string name="title_activity_qrcode_scanner">QRCodeScannerActivity</string>
 
-    <string name="pingeborg_carinthia_system_name">pingeb.org Kärnten</string>
-
     <string name="menu_item_artists_name">Künstler</string>
     <string name="menu_item_map_name">Map</string>
     <string name="menu_item_about_name">Über pingeb.org</string>
@@ -28,9 +26,11 @@
     <string name="Open">öffnen</string>
     <string name="Discover">entdecken</string>
     <string name="beacon_notification_info">In der Nähe</string>
-    <string name="beacon_notification_text">Öffne die pingeb.org app</string>
-    <string name="beacon_notification_title">Entdecke lokale Künstler</string>
+    <string name="beacon_notification_text">Entdecke Neues in deiner pingeb.org App</string>
+    <string name="beacon_notification_title">Musik &amp; Literatur aus Kärnten</string>
     <string name="bluetooth_enable_text">Entdecke neue Künstler via IBeacons mit low energy Bluetooth.</string>
     <string name="bluetooth_dialog_title">Aktiviere Bluetooth</string>
+    <string name="error_message_api_call_failed">Fehler beim Laden</string>
+    <string name="bluetooth_mute_button">Nicht mehr anzeigen</string>
 
 </resources>
